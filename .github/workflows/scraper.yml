@@ -1,9 +1,9 @@
 name: 🤖 Automated Job Scraper
 
 on:
-  # Run every 30 minutes
+  # Run every 10 minutes
   schedule:
-    - cron: '*/30 * * * *'  # Every 30 minutes
+    - cron: '*/10 * * * *'  # Every 10 minutes
   
   # Allow manual triggering from GitHub Actions tab
   workflow_dispatch:
