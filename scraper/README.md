@@ -3,34 +3,78 @@
 ## ✅ What's Been Set Up
 
 ### Phase 1: Database Schema (COMPLETE)
-- ✅ SEO-optimized `jobs` table with new fields:
+- ✅ SEO-optimized `jobs` table with enhanced fields:
   - `slug` - URL-friendly job identifier
   - `summary` - Short description for previews
   - `job_type` - CDI, CDD, Stage, Freelance
   - `category` - IT, Design, Commercial, etc.
   - `skills[]` - Array of extracted skills (React, PHP, etc.)
-  - `source_url` - Original job URL (unique constraint)
+  - `city` - Extracted city (Casablanca, Rabat, etc.)
+  - `company_email` - Company contact email
+  - `company_phone` - Company phone number
+  - `company_website` - Company website URL
+  - `source_url` (now `url`) - Original job URL (unique constraint)
   - `published_at` - Publication date
 - ✅ SEO indexes for fast queries
 - ✅ Full-text search index
 - ✅ Auto-slug generation trigger
 - ✅ Auto-cleanup function (deletes jobs > 7 days)
 
-### Phase 2: Scraper System (COMPLETE)
+### Phase 2: Enhanced Scraper System (COMPLETE)
 - ✅ `scraper/` folder with Playwright scrapers
-- ✅ `scrape_emploi_ma.js` - Scrapes Emploi.ma
-- ✅ `scrape_rekrute.js` - Scrapes ReKrute.com
-- ✅ Auto-categorization (10 categories)
-- ✅ Skills extraction (25+ tech skills)
-- ✅ Duplicate prevention via `source_url`
-- ✅ Playwright + Supabase integration
+- ✅ **International Job Sites:**
+  - `scrape_linkedin.js` - LinkedIn Morocco jobs
+  - `scrape_indeed.js` - Indeed Morocco jobs
+  - `scrape_glassdoor.js` - Glassdoor Morocco jobs
+  - `scrape_monster.js` - Monster Gulf Morocco jobs
+- ✅ **Moroccan Job Sites:**
+  - `scrape_emploi_ma.js` - Emploi.ma
+  - `scrape_rekrute.js` - ReKrute.com
+  - `scrape_anapec.js` - ANAPEC
+  - `scrape_joblike.js` - JobLike
+  - `scrape_bayt.js` - Bayt
+  - `scrape_mitula.js` - Mitula
+  - `scrape_jooble.js` - Jooble
+  - `scrape_talent.js` - Talent.com
+  - `scrape_marocemploi.js` - MarocEmploi
+- ✅ **AI Enrichment:**
+  - OpenAI GPT-3.5-turbo for smart extraction
+  - Google Gemini-Pro as backup AI
+  - Automatic category detection (10+ categories)
+  - Skills extraction (50+ tech & business skills)
+  - City detection (16+ Moroccan cities, Arabic + French)
+  - Contact extraction (email, phone, website)
+  - Salary parsing
+- ✅ Duplicate prevention via unique `url` constraint
+- ✅ Playwright + Supabase + AI integration
 
 ### Phase 3: GitHub Actions (COMPLETE)
 - ✅ `.github/workflows/scraper.yml`
 - ✅ Hourly cron schedule
 - ✅ Manual trigger available
 - ✅ Automated browser installation
-- ✅ Environment variables via GitHub Secrets
+- ✅ Environment variables via GitHub Secrets (OPENAI_API_KEY, GEMINI_API_KEY)
+
+## 🚀 Job Sites Scraped
+
+### International Platforms (High Quality)
+1. **LinkedIn** - Professional networking, verified companies
+2. **Indeed** - Global job aggregator
+3. **Glassdoor** - Company reviews + jobs
+4. **Monster** - International recruitment
+
+### Moroccan Platforms
+5. **Emploi.ma** - Leading Moroccan job site
+6. **ReKrute** - Premium Moroccan recruitment
+7. **ANAPEC** - Government employment agency
+8. **JobLike** - Moroccan job aggregator
+9. **Bayt** - Middle East job portal
+10. **Mitula** - Classified ads aggregator
+11. **Jooble** - International job search engine
+12. **Talent.com** - Global job matching
+13. **MarocEmploi** - Moroccan employment platform
+
+**Note:** Alwadifa has been removed per user request.
 
 ## 🚀 Next Steps
 

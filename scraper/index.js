@@ -3,14 +3,17 @@ import { scrapeRekrute } from './scrape_rekrute.js';
 import { scrapeAnapec } from './scrape_anapec.js';
 import { scrapeJobLike } from './scrape_joblike.js';
 import { scrapeBayt } from './scrape_bayt.js';
-import { scrapeAlwadifa } from './scrape_alwadifa.js';
 import { scrapeMitula } from './scrape_mitula.js';
 import { scrapeJooble } from './scrape_jooble.js';
 import { scrapeTalent } from './scrape_talent.js';
 import { scrapeMarocEmploi } from './scrape_marocemploi.js';
+import { scrapeLinkedIn } from './scrape_linkedin.js';
+import { scrapeIndeed } from './scrape_indeed.js';
+import { scrapeGlassdoor } from './scrape_glassdoor.js';
+import { scrapeMonster } from './scrape_monster.js';
 
 console.log('🚀 HireMe Maroc Job Scraper Started');
-console.log('📍 Scraping 10 major Moroccan job sites...');
+console.log('📍 Scraping international & local job sites for Morocco...');
 console.log('==================================');
 
 async function runAllScrapers() {
@@ -18,12 +21,18 @@ async function runAllScrapers() {
   let totalJobs = 0;
   
   const scrapers = [
+    // International job sites with Morocco listings
+    { name: 'LinkedIn', fn: scrapeLinkedIn },
+    { name: 'Indeed', fn: scrapeIndeed },
+    { name: 'Glassdoor', fn: scrapeGlassdoor },
+    { name: 'Monster', fn: scrapeMonster },
+    
+    // Moroccan job sites
     { name: 'Emploi.ma', fn: scrapeEmploiMa },
     { name: 'ReKrute', fn: scrapeRekrute },
     { name: 'ANAPEC', fn: scrapeAnapec },
     { name: 'JobLike', fn: scrapeJobLike },
     { name: 'Bayt', fn: scrapeBayt },
-    { name: 'Alwadifa', fn: scrapeAlwadifa },
     { name: 'Mitula', fn: scrapeMitula },
     { name: 'Jooble', fn: scrapeJooble },
     { name: 'Talent.com', fn: scrapeTalent },
