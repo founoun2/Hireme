@@ -55,7 +55,10 @@ Return JSON with:
   "category": "one of: Informatique & Tech, Design & Création, Commercial & Ventes, Service Client, Finance & Administration, Logistique & Transport, Ingénierie, Santé, Éducation, Hôtellerie & Tourisme, Général",
   "job_type": "CDI, CDD, Stage, Freelance, or Non spécifié",
   "skills": ["skill1", "skill2", ...] (max 10 relevant technical skills),
-  "summary": "2-sentence compelling summary in French"
+  "summary": "2-sentence compelling summary in French",
+  "company_email": "extract email if found, or null",
+  "company_phone": "extract phone number if found, or null",
+  "company_website": "extract website URL if found, or null"
 }`;
 
     const response = await openai.chat.completions.create({
@@ -75,7 +78,10 @@ Return JSON with:
       category: result.category,
       job_type: result.job_type,
       skills: result.skills,
-      summary: result.summary
+      summary: result.summary,
+      company_email: result.company_email || this.extractEmail(job.description),
+      company_phone: result.company_phone || this.extractPhone(job.description),
+      company_website: result.company_website || null
     };
   },
 
@@ -95,7 +101,10 @@ Return ONLY valid JSON with:
   "category": "one of: Informatique & Tech, Design & Création, Commercial & Ventes, Service Client, Finance & Administration, Logistique & Transport, Ingénierie, Santé, Éducation, Hôtellerie & Tourisme, Général",
   "job_type": "CDI, CDD, Stage, Freelance, or Non spécifié",
   "skills": ["skill1", "skill2"] (max 10 relevant technical skills),
-  "summary": "2-sentence compelling summary in French"
+  "summary": "2-sentence compelling summary in French",
+  "company_email": "extract email if found, or null",
+  "company_phone": "extract phone number if found, or null",
+  "company_website": "extract website URL if found, or null"
 }`;
 
     const result = await geminiModel.generateContent(prompt);
@@ -110,7 +119,10 @@ Return ONLY valid JSON with:
     
     return {
       ...job,
-      category: parsed.category,
+      category: parsed.catego,
+      company_email: parsed.company_email || this.extractEmail(job.description),
+      company_phone: parsed.company_phone || this.extractPhone(job.description),
+      company_website: parsed.company_website || nullry,
       job_type: parsed.job_type,
       skills: parsed.skills,
       summary: parsed.summary
@@ -147,12 +159,35 @@ Return ONLY valid JSON with:
     const summary = job.description?.substring(0, 200) || job.title;
     
     return {
-      ...job,
       category,
+      skills,
+      summary,
       job_type,
-      skills: skills.slice(0, 10),
-      summary
+      company_email: this.extractEmail(job.description),
+      company_phone: this.extractPhone(job.description),
+      company_website: null
     };
+  },
+
+  /**
+   * Extract email from text using regex
+   */
+  extractEmail(text) {
+    if (!text) return null;
+    const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
+    const matches = text.match(emailRegex);
+    return matches ? matches[0] : null;
+  },
+
+  /**
+   * Extract phone number from text (Moroccan formats)
+   */
+  extractPhone(text) {
+    if (!text) return null;
+    // Moroccan phone patterns: 0612345678, +212612345678, 06 12 34 56 78, etc.
+    const phoneRegex = /(?:\+212|0)[5-7]\d{8}|(?:\+212|0)[5-7][\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}/gi;
+    const matches = text.match(phoneRegex);
+    return matches ? matches[0].replace(/[\s.-]/g, '') : null;
   },
 
   /**

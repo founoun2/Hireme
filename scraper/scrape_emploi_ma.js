@@ -76,7 +76,7 @@ export async function scrapeEmploiMa() {
       const { data, error } = await supabase
         .from('jobs')
         .upsert(formatted, { 
-          onConflict: 'source_url',
+          onConflict: 'url',
           ignoreDuplicates: true 
         });
 

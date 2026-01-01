@@ -62,7 +62,7 @@ export async function scrapeAlwadifa() {
 
     if (formatted.length > 0) {
       const { error } = await supabase.from('jobs').upsert(formatted, { 
-        onConflict: 'source_url',
+        onConflict: 'url',
         ignoreDuplicates: true 
       });
       if (error) console.error('❌ Supabase error:', error.message);
