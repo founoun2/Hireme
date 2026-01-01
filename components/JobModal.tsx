@@ -125,24 +125,32 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
               </section>
             )}
 
-            {(job.email || job.contactPhone) && (
+            {(job.email || job.contactPhone || job.company_email || job.company_phone || job.company_website) && (
               <section className="p-7 sm:p-10 bg-zinc-900 rounded-[2rem] sm:rounded-[3rem] text-white overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
                 <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-8">Contact Direct</h4>
                 <div className="flex flex-col gap-6">
-                  {job.email && (
+                  {(job.email || job.company_email) && (
                     <div className="group">
                       <p className="text-[9px] font-black text-zinc-500 uppercase mb-2">Email</p>
-                      <a href={`mailto:${job.email}`} className="text-sm sm:text-lg font-black hover:text-indigo-400 transition-colors flex items-center gap-3 truncate">
-                        <i className="fa fa-envelope-open text-zinc-700"></i> {job.email}
+                      <a href={`mailto:${job.company_email || job.email}`} className="text-sm sm:text-lg font-black hover:text-indigo-400 transition-colors flex items-center gap-3 truncate">
+                        <i className="fa fa-envelope-open text-zinc-700"></i> {job.company_email || job.email}
                       </a>
                     </div>
                   )}
-                  {job.contactPhone && (
+                  {(job.contactPhone || job.company_phone) && (
                     <div className="group">
                       <p className="text-[9px] font-black text-zinc-500 uppercase mb-2">Téléphone</p>
-                      <a href={`tel:${job.contactPhone}`} className="text-sm sm:text-lg font-black hover:text-indigo-400 transition-colors flex items-center gap-3">
-                        <i className="fa fa-phone-volume text-zinc-700"></i> {job.contactPhone}
+                      <a href={`tel:${job.company_phone || job.contactPhone}`} className="text-sm sm:text-lg font-black hover:text-indigo-400 transition-colors flex items-center gap-3">
+                        <i className="fa fa-phone-volume text-zinc-700"></i> {job.company_phone || job.contactPhone}
+                      </a>
+                    </div>
+                  )}
+                  {job.company_website && (
+                    <div className="group">
+                      <p className="text-[9px] font-black text-zinc-500 uppercase mb-2">Site Web</p>
+                      <a href={job.company_website} target="_blank" rel="noopener noreferrer" className="text-sm sm:text-lg font-black hover:text-indigo-400 transition-colors flex items-center gap-3 truncate">
+                        <i className="fa fa-globe text-zinc-700"></i> {job.company_website}
                       </a>
                     </div>
                   )}
