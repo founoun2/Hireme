@@ -10,7 +10,7 @@ import { jobService } from './services/jobService';
 import { aggregateJobs } from './services/jobAggregator';
 
 const PAGE_SIZE = 12;
-const SYNC_INTERVAL = 20000;
+const SYNC_INTERVAL = 30000; // 30 seconds - auto-refresh
 const CLEANUP_INTERVAL = 3600000; // 1 hour
 
 const App: React.FC = () => {

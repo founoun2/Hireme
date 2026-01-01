@@ -91,3 +91,27 @@ export function extractSkills(text) {
   
   return skills.length > 0 ? skills : null;
 }
+
+export function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export function normalizeJobData(job) {
+  return {
+    title: job.title,
+    company: job.company || 'Entreprise confidentielle',
+    city: job.city || 'Maroc',
+    description: job.description || 'Description non disponible',
+    url: job.url,
+    source: job.source,
+    contract_type: job.contract_type || 'Non spécifié',
+    salary: job.salary || null,
+    category: job.category || 'Général',
+    skills: job.skills || [],
+    summary: job.summary || job.description?.substring(0, 200) || job.title,
+    company_email: job.company_email || null,
+    company_phone: job.company_phone || null,
+    company_website: job.company_website || null,
+    posted_date: job.posted_date || new Date().toISOString()
+  };
+}

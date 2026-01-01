@@ -258,3 +258,8 @@ Return ONLY valid JSON with:
 };
 
 console.log('🤖 AI Service initialized (OpenAI + Gemini)');
+
+// Export for direct use in scrapers
+export async function enrichJobWithAI(job) {
+  return aiService.enrichJob(job);
+}
