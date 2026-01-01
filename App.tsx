@@ -14,6 +14,8 @@ const PAGE_SIZE = 12;
 const SYNC_INTERVAL = 30000; // 30 seconds - auto-refresh
 const CLEANUP_INTERVAL = 3600000; // 1 hour
 
+console.log('🚀 HIREME App Loading...');
+
 const App: React.FC = () => {
   const [allJobs, setAllJobs] = useState<Job[]>([]);
   const [keyword, setKeyword] = useState('');
