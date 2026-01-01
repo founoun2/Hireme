@@ -6,6 +6,7 @@ import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { JobCard } from './components/JobCard';
 import { JobModal } from './components/JobModal';
+import { CookieConsent } from './components/CookieConsent';
 import { jobService } from './services/jobService';
 import { aggregateJobs } from './services/jobAggregator';
 
@@ -257,9 +258,13 @@ const App: React.FC = () => {
         @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .fade-in { animation-name: fadeIn; }
         .slide-in-from-bottom-4 { animation-name: slideInFromBottom; }
+        .slide-in-from-bottom-8 { animation-name: slideInFromBottom; }
         .slide-in-from-top-2 { animation-name: slideInFromTop; }
         .zoom-in-95 { animation-name: zoomIn; }
       `}</style>
+
+      {/* Cookie Consent Popup */}
+      <CookieConsent />
     </div>
   );
 };
