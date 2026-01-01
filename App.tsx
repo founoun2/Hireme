@@ -7,6 +7,7 @@ import { Sidebar } from './components/Sidebar';
 import { JobCard } from './components/JobCard';
 import { JobModal } from './components/JobModal';
 import { CookieConsent } from './components/CookieConsent';
+import { SidebarAd, InFeedAd } from './components/AdBanner';
 import { jobService } from './services/jobService';
 import { aggregateJobs } from './services/jobAggregator';
 
@@ -214,6 +215,9 @@ const App: React.FC = () => {
 
       <Sidebar activeKey={activeSidebar} onClose={() => setActiveSidebar(null)} />
       
+      {/* Google AdSense - Desktop Left Sidebar */}
+      <SidebarAd />
+      
       {/* Scanning Splash Screen (Mobile/Desktop Optimized) */}
       {isScanning && allJobs.length === 0 && (
         <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-700">
@@ -295,13 +299,19 @@ const App: React.FC = () => {
           <div className="grid grid-cols-1 gap-2.5 sm:gap-3 md:gap-4">
             {currentJobs.length > 0 ? (
               currentJobs.map((job, idx) => (
-                <div key={`${job.id}-${idx}`} className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: `${(idx % PAGE_SIZE) * 50}ms` }}>
-                  <JobCard 
-                    job={job} 
-                    isApplied={appliedJobs.has(job.id)}
-                    onClick={() => setSelectedJob(job)}
-                  />
-                </div>
+                <React.Fragment key={`${job.id}-${idx}`}>
+                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: `${(idx % PAGE_SIZE) * 50}ms` }}>
+                    <JobCard 
+                      job={job} 
+                      isApplied={appliedJobs.has(job.id)}
+                      onClick={() => setSelectedJob(job)}
+                    />
+                  </div>
+                  {/* Show ad after every 4 jobs on mobile */}
+                  {(idx + 1) % 4 === 0 && idx < currentJobs.length - 1 && (
+                    <InFeedAd />
+                  )}
+                </React.Fragment>
               ))
             ) : (
               <div className="py-24 sm:py-32 text-center bg-white rounded-[2.5rem] border border-dashed border-zinc-100 animate-in zoom-in-95 duration-500">
