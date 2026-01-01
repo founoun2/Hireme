@@ -47,8 +47,10 @@ export const aiService = {
 
 Job Title: ${job.title}
 Company: ${job.company}
-Location: ${job.location}
+Location: ${job.location || job.city || 'Maroc'}
 Description: ${job.description?.substring(0, 500)}
+
+Moroccan cities to detect: Casablanca, Rabat, Marrakech, Fès, Tanger, Agadir, Meknès, Oujda, Kenitra, Tétouan, Safi, Mohammedia, El Jadida, Béni Mellal, Nador, Khouribga
 
 Return JSON with:
 {
@@ -56,25 +58,27 @@ Return JSON with:
   "job_type": "CDI, CDD, Stage, Freelance, or Non spécifié",
   "skills": ["skill1", "skill2", ...] (max 10 relevant technical skills),
   "summary": "2-sentence compelling summary in French",
+  "city": "detected Moroccan city from title/location/description, or 'Maroc'",
   "company_email": "extract email if found, or null",
-  "company_phone": "extract phone number if found, or null",
+  "company_phone": "extract phone number if found (prefer +212 or 0 format), or null",
   "company_website": "extract website URL if found, or null"
 }`;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
-        { role: 'system', content: 'You are a job posting analyzer for Morocco. Always respond with valid JSON only.' },
+        { role: 'system', content: 'You are a job posting analyzer for Morocco. Extract city names from French/Arabic text. Always respond with valid JSON only.' },
         { role: 'user', content: prompt }
       ],
       temperature: 0.3,
-      max_tokens: 300
+      max_tokens: 350
     });
 
     const result = JSON.parse(response.choices[0].message.content);
     
     return {
       ...job,
+      city: result.city || this.extractCity(job.title + ' ' + (job.location || '') + ' ' + (job.description || '')) || job.city || 'Maroc',
       category: result.category,
       job_type: result.job_type,
       skills: result.skills,
@@ -93,8 +97,10 @@ Return JSON with:
 
 Job Title: ${job.title}
 Company: ${job.company}
-Location: ${job.location}
+Location: ${job.location || job.city || 'Maroc'}
 Description: ${job.description?.substring(0, 500)}
+
+Moroccan cities: Casablanca, Rabat, Marrakech, Fès, Tanger, Agadir, Meknès, Oujda, Kenitra, Tétouan
 
 Return ONLY valid JSON with:
 {
@@ -102,8 +108,9 @@ Return ONLY valid JSON with:
   "job_type": "CDI, CDD, Stage, Freelance, or Non spécifié",
   "skills": ["skill1", "skill2"] (max 10 relevant technical skills),
   "summary": "2-sentence compelling summary in French",
+  "city": "detected Moroccan city or 'Maroc'",
   "company_email": "extract email if found, or null",
-  "company_phone": "extract phone number if found, or null",
+  "company_phone": "extract phone number (prefer +212 or 0 format), or null",
   "company_website": "extract website URL if found, or null"
 }`;
 
@@ -119,10 +126,8 @@ Return ONLY valid JSON with:
     
     return {
       ...job,
-      category: parsed.catego,
-      company_email: parsed.company_email || this.extractEmail(job.description),
-      company_phone: parsed.company_phone || this.extractPhone(job.description),
-      company_website: parsed.company_website || nullry,
+      city: parsed.city || this.extractCity(job.title + ' ' + (job.location || '') + ' ' + (job.description || '')) || job.city || 'Maroc',
+      category: parsed.category,
       job_type: parsed.job_type,
       skills: parsed.skills,
       summary: parsed.summary
@@ -163,6 +168,7 @@ Return ONLY valid JSON with:
       skills,
       summary,
       job_type,
+      city: this.extractCity(job.title + ' ' + (job.location || job.city || '') + ' ' + (job.description || '')) || job.city || 'Maroc',
       company_email: this.extractEmail(job.description),
       company_phone: this.extractPhone(job.description),
       company_website: null
@@ -188,6 +194,44 @@ Return ONLY valid JSON with:
     const phoneRegex = /(?:\+212|0)[5-7]\d{8}|(?:\+212|0)[5-7][\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}/gi;
     const matches = text.match(phoneRegex);
     return matches ? matches[0].replace(/[\s.-]/g, '') : null;
+  },
+
+  /**
+   * Extract city from text (Moroccan cities)
+   */
+  extractCity(text) {
+    if (!text) return null;
+    const moroccanCities = [
+      'Casablanca', 'Rabat', 'Marrakech', 'Fès', 'Fes', 'Tanger', 'Tangier',
+      'Agadir', 'Meknès', 'Meknes', 'Oujda', 'Kenitra', 'Tétouan', 'Tetouan',
+      'Safi', 'Mohammedia', 'El Jadida', 'Béni Mellal', 'Beni Mellal',
+      'Nador', 'Khouribga', 'Salé', 'Sale', 'Settat', 'Larache', 'Ksar El Kebir',
+      'الدار البيضاء', 'الرباط', 'مراكش', 'فاس', 'طنجة', 'أكادير', 'مكناس'
+    ];
+    
+    const textLower = text.toLowerCase();
+    for (const city of moroccanCities) {
+      if (textLower.includes(city.toLowerCase())) {
+        // Return French version
+        const frenchCities = {
+          'الدار البيضاء': 'Casablanca',
+          'الرباط': 'Rabat',
+          'مراكش': 'Marrakech',
+          'فاس': 'Fès',
+          'طنجة': 'Tanger',
+          'أكادير': 'Agadir',
+          'مكناس': 'Meknès',
+          'tangier': 'Tanger',
+          'fes': 'Fès',
+          'meknes': 'Meknès',
+          'tetouan': 'Tétouan',
+          'beni mellal': 'Béni Mellal',
+          'sale': 'Salé'
+        };
+        return frenchCities[city.toLowerCase()] || city;
+      }
+    }
+    return null;
   },
 
   /**
