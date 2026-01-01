@@ -19,103 +19,90 @@ export const JobCard: React.FC<JobCardProps> = ({ job, isApplied, onClick, style
     <div 
       onClick={onClick}
       style={style}
-      className="group bg-white p-5 sm:p-7 flex flex-col cursor-pointer border border-zinc-100 rounded-[1.5rem] sm:rounded-[2rem] transition-all duration-500 hover:shadow-[0_25px_60px_-15px_rgba(79,70,229,0.08)] hover:border-indigo-100 hover:translate-y-[-2px] active:scale-[0.98]"
+      className="group bg-white p-4 sm:p-5 flex flex-row gap-4 sm:gap-6 cursor-pointer border border-zinc-100 rounded-xl sm:rounded-2xl transition-all duration-300 hover:shadow-lg hover:border-indigo-200 hover:bg-indigo-50/30 active:scale-[0.99]"
       dir={hasArabic ? 'rtl' : 'ltr'}
     >
-      {/* Top section: Title and badges */}
-      <div className="mb-4">
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-          <h3 className="text-lg sm:text-2xl font-black text-zinc-900 group-hover:text-indigo-600 transition-colors tracking-tight flex-grow" style={{ fontFamily: hasArabic ? 'Cairo, sans-serif' : 'inherit' }}>
-            {job.title}
-          </h3>
-        </div>
-        
-        <div className="flex gap-1.5 flex-wrap">
-          {isLive ? (
-            <span className="bg-emerald-50 text-emerald-600 text-[9px] sm:text-[10px] font-black uppercase px-3 py-1.5 rounded-lg tracking-tighter flex items-center gap-1.5 border border-emerald-100">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Live
-            </span>
-          ) : job.isNew && (
-            <span className="bg-indigo-600 text-white text-[9px] sm:text-[10px] font-black uppercase px-3 py-1.5 rounded-lg tracking-tighter">Nouveau</span>
-          )}
-
-          {isApplied && (
-            <span className="bg-zinc-100 text-zinc-500 px-3 py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-tighter">✓ Postulé</span>
-          )}
-        </div>
-      </div>
-
-      {/* Company info with enhanced design */}
-      <div className="flex items-center gap-3 mb-4 pb-4 border-b border-zinc-50">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl flex items-center justify-center shrink-0">
-          <span className="text-xl sm:text-2xl font-black text-indigo-600">{job.company[0]}</span>
-        </div>
-        <div className="flex-grow min-w-0">
-          <p className="text-base sm:text-lg font-black text-zinc-800 truncate" style={{ fontFamily: hasArabic ? 'Cairo, sans-serif' : 'inherit' }}>
-            {job.company}
-          </p>
-          <div className="flex items-center gap-2 text-xs sm:text-sm text-zinc-400 font-bold">
-            <i className="fa fa-location-dot text-[10px]"></i>
-            <span style={{ fontFamily: hasArabic ? 'Cairo, sans-serif' : 'inherit' }}>{job.city || 'Maroc'}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Job details grid */}
-      <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-100">
-          <div className="flex items-center gap-2 mb-1">
-            <i className="fa fa-file-contract text-indigo-600 text-xs"></i>
-            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-wider">Contrat</span>
-          </div>
-          <p className="text-sm font-bold text-zinc-800">{job.contract || 'CDI'}</p>
-        </div>
-        
-        {job.salary && (
-          <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
-            <div className="flex items-center gap-2 mb-1">
-              <i className="fa fa-money-bill-wave text-emerald-600 text-xs"></i>
-              <span className="text-[9px] font-black text-emerald-600 uppercase tracking-wider">Salaire</span>
+      {/* Left section: Main info */}
+      <div className="flex-grow min-w-0 space-y-3">
+        {/* Title and badges */}
+        <div>
+          <div className="flex items-start gap-3 mb-2">
+            <h3 className="text-base sm:text-xl font-bold text-zinc-900 group-hover:text-indigo-600 transition-colors line-clamp-2" style={{ fontFamily: hasArabic ? 'Cairo, sans-serif' : 'inherit' }}>
+              {job.title}
+            </h3>
+            <div className="flex gap-1.5 flex-wrap shrink-0">
+              {isApplied ? (
+                <span className="bg-yellow-400 text-black text-[9px] font-bold uppercase px-3 py-1.5 rounded-md flex items-center gap-1.5 border border-yellow-500">
+                  ✓ Postulé
+                </span>
+              ) : (
+                <>
+                  {isLive && (
+                    <span className="bg-emerald-50 text-emerald-600 text-[9px] font-bold uppercase px-2 py-1 rounded-md flex items-center gap-1 border border-emerald-200">
+                      <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Live
+                    </span>
+                  )}
+                  {job.isNew && !isLive && (
+                    <span className="bg-indigo-600 text-white text-[9px] font-bold uppercase px-2 py-1 rounded-md">New</span>
+                  )}
+                </>
+              )}
             </div>
-            <p className="text-sm font-bold text-emerald-800 truncate">{job.salary}</p>
           </div>
-        )}
+          
+          {/* Company and location */}
+          <div className="flex items-center gap-4 text-sm text-zinc-600">
+            <div className="flex items-center gap-2">
+              <i className="fa fa-building text-indigo-500 text-xs"></i>
+              <span className="font-semibold" style={{ fontFamily: hasArabic ? 'Cairo, sans-serif' : 'inherit' }}>{job.company}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <i className="fa fa-location-dot text-indigo-500 text-xs"></i>
+              <span className="font-medium" style={{ fontFamily: hasArabic ? 'Cairo, sans-serif' : 'inherit' }}>{job.city || 'Maroc'}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Job details inline */}
+        <div className="flex flex-wrap items-center gap-3 text-sm">
+          <div className="flex items-center gap-2 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-100">
+            <i className="fa fa-file-contract text-indigo-600 text-xs"></i>
+            <span className="font-semibold text-zinc-700">{job.contract || 'CDI'}</span>
+          </div>
+          
+          {job.salary && (
+            <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
+              <i className="fa fa-money-bill-wave text-emerald-600 text-xs"></i>
+              <span className="font-bold text-emerald-700">{job.salary}</span>
+            </div>
+          )}
+
+          {job.company_email && (
+            <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">
+              <i className="fa fa-envelope text-blue-600 text-xs"></i>
+              <span className="font-medium text-blue-700 text-xs truncate max-w-[150px]">{job.company_email}</span>
+            </div>
+          )}
+
+          {job.company_phone && (
+            <div className="flex items-center gap-2 bg-purple-50 px-3 py-1.5 rounded-lg border border-purple-100">
+              <i className="fa fa-phone text-purple-600 text-xs"></i>
+              <span className="font-medium text-purple-700 text-xs">{job.company_phone}</span>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Contact info if available */}
-      {(job.company_email || job.company_phone) && (
-        <div className="bg-indigo-50 p-3 rounded-xl border border-indigo-100 mb-4">
-          <div className="flex items-center gap-2 mb-2">
-            <i className="fa fa-address-card text-indigo-600 text-xs"></i>
-            <span className="text-[9px] font-black text-indigo-600 uppercase tracking-wider">Contact Direct</span>
-          </div>
-          <div className="space-y-1">
-            {job.company_email && (
-              <div className="flex items-center gap-2 text-xs font-bold text-indigo-700">
-                <i className="fa fa-envelope text-[9px]"></i>
-                <span className="truncate">{job.company_email}</span>
-              </div>
-            )}
-            {job.company_phone && (
-              <div className="flex items-center gap-2 text-xs font-bold text-indigo-700">
-                <i className="fa fa-phone text-[9px]"></i>
-                <span>{job.company_phone}</span>
-              </div>
-            )}
-          </div>
+      {/* Right section: Time and action */}
+      <div className="flex flex-col items-end justify-between shrink-0 min-w-[120px]">
+        <div className="flex items-center gap-2 text-xs text-zinc-400 font-medium">
+          <i className="fa fa-clock text-[10px]"></i>
+          <span>{job.time}</span>
         </div>
-      )}
-
-      {/* Footer: Time and action */}
-      <div className="flex items-center justify-between pt-3 border-t border-zinc-50">
-        <div className="flex items-center gap-2">
-          <i className="fa fa-clock text-zinc-300 text-xs"></i>
-          <span className="text-xs font-bold text-zinc-400">{job.time}</span>
-        </div>
-        <div className="flex items-center gap-2 text-indigo-600 font-black text-sm group-hover:gap-3 transition-all">
-          <span>Voir détails</span>
-          <i className="fa fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
-        </div>
+        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md flex items-center gap-2 group/btn">
+          <span>Détails</span>
+          <i className="fa fa-arrow-right text-xs group-hover/btn:translate-x-1 transition-transform"></i>
+        </button>
       </div>
     </div>
   );

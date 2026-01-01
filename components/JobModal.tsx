@@ -13,10 +13,14 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
   if (!job) return null;
 
   const handleExternalApply = () => {
+    // Mark as applied first (saves to localStorage)
     onApply(job.id);
+    // Redirect to job URL in new tab
+    window.open(job.url, '_blank', 'noopener,noreferrer');
+    // Close modal after short delay
     setTimeout(() => {
-        window.open(job.url, '_blank', 'noopener,noreferrer');
-    }, 300);
+      onClose();
+    }, 500);
   };
 
   return (
@@ -163,16 +167,17 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
           <div className="sticky bottom-0 bg-white/80 backdrop-blur-xl pt-4 pb-4 sm:pb-0 border-t border-zinc-50 flex flex-col items-center">
             <button 
               onClick={handleExternalApply}
+              disabled={isApplied}
               className={`w-full py-5 sm:py-7 rounded-2xl sm:rounded-[2rem] font-black text-base sm:text-xl transition-all duration-500 shadow-2xl relative overflow-hidden active:scale-95 flex items-center justify-center gap-4 ${
                 isApplied 
-                ? 'bg-emerald-600 text-white' 
-                : 'bg-zinc-900 text-white hover:bg-indigo-600 shadow-indigo-500/10'
+                ? 'bg-yellow-400 text-black cursor-not-allowed opacity-75' 
+                : 'bg-zinc-900 text-white hover:bg-indigo-600 shadow-indigo-500/10 hover:shadow-indigo-500/30'
               }`}
             >
               {isApplied ? (
                 <>
-                  <i className="fa fa-external-link text-xs"></i>
-                  <span>Consulter la Source</span>
+                  <i className="fa fa-check-circle text-sm"></i>
+                  <span>Déjà Postulé</span>
                 </>
               ) : (
                 <>
