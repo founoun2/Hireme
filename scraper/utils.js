@@ -104,7 +104,7 @@ export function normalizeJobData(job) {
     description: job.description || 'Description non disponible',
     url: job.url,
     source: job.source,
-    contract_type: job.contract_type || 'Non spécifié',
+    contract: job.contract || job.contract_type || 'Non spécifié',
     salary: job.salary || null,
     category: job.category || 'Général',
     skills: job.skills || [],

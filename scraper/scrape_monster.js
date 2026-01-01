@@ -71,7 +71,7 @@ export async function scrapeMonster() {
             url: fullUrl,
             source: 'Monster',
             salary: salary || null,
-            contract_type: 'CDI',
+            contract: 'CDI',
             posted_date: new Date().toISOString()
           };
           

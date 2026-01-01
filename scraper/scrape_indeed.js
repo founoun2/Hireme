@@ -69,7 +69,7 @@ export async function scrapeIndeed() {
           description,
           url: jobUrl,
           source: 'Indeed',
-          contract_type: salary ? 'CDI' : 'Non spécifié',
+          contract: salary ? 'CDI' : 'Non spécifié',
           salary: salary || null,
           posted_date: new Date().toISOString()
         };

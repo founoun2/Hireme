@@ -68,7 +68,7 @@ export async function scrapeGlassdoor() {
           url: jobUrl,
           source: 'Glassdoor',
           salary: salary || null,
-          contract_type: 'CDI',
+          contract: 'CDI',
           posted_date: new Date().toISOString()
         };
         

@@ -61,7 +61,7 @@ export async function scrapeLinkedIn() {
             description,
             url,
             source: 'LinkedIn',
-            contract_type: 'CDI',
+            contract: 'CDI',
             posted_date: new Date().toISOString()
           };
           
