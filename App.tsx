@@ -31,6 +31,7 @@ const App: React.FC = () => {
   });
   const [isScanning, setIsScanning] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [shakeRefresh, setShakeRefresh] = useState(false);
   
   const suggestionRef = useRef<HTMLDivElement>(null);
 
@@ -38,6 +39,16 @@ const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('appliedJobs', JSON.stringify([...appliedJobs]));
   }, [appliedJobs]);
+
+  // Shake refresh button every 20 seconds
+  useEffect(() => {
+    const shakeInterval = setInterval(() => {
+      setShakeRefresh(true);
+      setTimeout(() => setShakeRefresh(false), 1000); // Animation duration
+    }, 20000); // Every 20 seconds
+    
+    return () => clearInterval(shakeInterval);
+  }, []);
 
   // Load jobs from database on mount
   useEffect(() => {
@@ -108,11 +119,25 @@ const App: React.FC = () => {
   };
 
   const filteredJobs = useMemo(() => {
-    return allJobs.filter(j => 
-      (!keyword || j.title.toLowerCase().includes(keyword.toLowerCase()) || j.company.toLowerCase().includes(keyword.toLowerCase())) &&
-      (!selectedCity || j.city === selectedCity) &&
-      (!selectedContract || j.contract === selectedContract)
-    );
+    return allJobs.filter(j => {
+      // Enhanced keyword search - searches across multiple fields
+      const searchTerm = keyword.toLowerCase().trim();
+      const matchesKeyword = !searchTerm || 
+        j.title.toLowerCase().includes(searchTerm) ||
+        j.company.toLowerCase().includes(searchTerm) ||
+        j.city.toLowerCase().includes(searchTerm) ||
+        j.contract.toLowerCase().includes(searchTerm) ||
+        (j.description && j.description.toLowerCase().includes(searchTerm)) ||
+        (j.salary && j.salary.toLowerCase().includes(searchTerm));
+      
+      // City filter - exact match
+      const matchesCity = !selectedCity || j.city === selectedCity;
+      
+      // Contract filter - exact match
+      const matchesContract = !selectedContract || j.contract === selectedContract;
+      
+      return matchesKeyword && matchesCity && matchesContract;
+    });
   }, [allJobs, keyword, selectedCity, selectedContract]);
 
   const currentJobs = useMemo(() => filteredJobs.slice(0, displayedCount), [filteredJobs, displayedCount]);
@@ -120,19 +145,32 @@ const App: React.FC = () => {
   const suggestions = useMemo(() => {
     if (!keyword.trim()) return [];
     
-    // First check profession matches
+    const searchTerm = keyword.toLowerCase();
+    
+    // Priority 1: Profession matches (most relevant)
     const professionMatches = PROFESSIONS.filter(p => 
-      p.toLowerCase().includes(keyword.toLowerCase())
-    );
+      p.toLowerCase().includes(searchTerm)
+    ).slice(0, 5);
     
-    // Then check job title matches from current jobs
+    // Priority 2: Job titles from database
     const titleMatches = Array.from(new Set(allJobs.map(j => j.title)))
-      .filter(t => t.toLowerCase().includes(keyword.toLowerCase()));
+      .filter(t => t.toLowerCase().includes(searchTerm))
+      .slice(0, 5);
     
-    // Combine both, prioritize professions, then titles, limit to 8 suggestions
-    return [...professionMatches, ...titleMatches]
+    // Priority 3: Company names
+    const companyMatches = Array.from(new Set(allJobs.map(j => j.company)))
+      .filter(c => c.toLowerCase().includes(searchTerm))
+      .slice(0, 3);
+    
+    // Priority 4: Cities
+    const cityMatches = CITIES.filter(city => 
+      city.toLowerCase().includes(searchTerm)
+    ).slice(0, 3);
+    
+    // Combine all suggestions, remove duplicates, limit to 10
+    return [...professionMatches, ...titleMatches, ...companyMatches, ...cityMatches]
       .filter((item, index, self) => self.indexOf(item) === index)
-      .slice(0, 8);
+      .slice(0, 10);
   }, [keyword, allJobs]);
 
   // Fix: Added handleApply function to manage job applications state
@@ -189,20 +227,72 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <main className="max-w-5xl mx-auto w-full px-4 sm:px-6 flex-grow pb-24 pt-48">
-        {/* Content Area */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between mb-8 px-2">
-            <h2 className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400">
-              {filteredJobs.length} Opportunités détectées
+      <main className="max-w-5xl mx-auto w-full px-3 sm:px-6 flex-grow pb-16 sm:pb-24 pt-[13.5rem] sm:pt-[14.875rem]">
+        {/* Active Filters & Stats */}
+        <div className="mb-4 sm:mb-6">
+          {/* Mobile/Desktop Header with Count and Refresh */}
+          <div className="flex items-center justify-between gap-2 mb-3 sm:mb-4 px-1 sm:px-2">
+            <h2 className="text-[9px] sm:text-[11px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-zinc-400 flex-shrink-0">
+              {filteredJobs.length} Opportunités {keyword || selectedCity || selectedContract ? 'Trouvées' : 'Détectées'}
             </h2>
-            <div className="flex gap-2 items-center bg-zinc-900 px-3 py-1.5 rounded-full shadow-lg shadow-zinc-900/20">
-               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-               <span className="text-[8px] sm:text-[9px] font-black text-white uppercase tracking-widest">Live Scan</span>
-            </div>
+            
+            {/* Refresh Live Button */}
+            <button 
+              onClick={() => loadJobsFromDatabase()}
+              disabled={isScanning}
+              className={`flex gap-1.5 sm:gap-2 items-center bg-zinc-900 hover:bg-green-600 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg shadow-zinc-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group ${shakeRefresh ? 'animate-shake' : ''}`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_6px_rgba(34,197,94,0.6)]"></span>
+              <i className={`fa fa-rotate text-[7px] sm:text-[9px] text-green-400 group-hover:text-white transition-all ${isScanning ? 'animate-spin' : ''}`}></i>
+              <span className="text-[8px] sm:text-[9px] font-black text-white uppercase tracking-widest">Refresh Live</span>
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:gap-4">
+          {/* Active Filter Badges */}
+          {(keyword || selectedCity || selectedContract) && (
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-3 sm:mb-4 px-1 sm:px-2">
+              {keyword && (
+                <span className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-full text-[10px] font-bold">
+                  <i className="fa fa-search text-[8px]"></i>
+                  <span className="max-w-[120px] truncate">{keyword}</span>
+                  <button onClick={() => setKeyword('')} className="hover:bg-indigo-100 rounded-full w-4 h-4 flex items-center justify-center transition-colors">
+                    <i className="fa fa-times text-[8px]"></i>
+                  </button>
+                </span>
+              )}
+              {selectedCity && (
+                <span className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-[10px] font-bold">
+                  <i className="fa fa-location-dot text-[8px]"></i>
+                  {selectedCity}
+                  <button onClick={() => setSelectedCity('')} className="hover:bg-emerald-100 rounded-full w-4 h-4 flex items-center justify-center transition-colors">
+                    <i className="fa fa-times text-[8px]"></i>
+                  </button>
+                </span>
+              )}
+              {selectedContract && (
+                <span className="inline-flex items-center gap-2 bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full text-[10px] font-bold">
+                  <i className="fa fa-file-contract text-[8px]"></i>
+                  {selectedContract}
+                  <button onClick={() => setSelectedContract('')} className="hover:bg-amber-100 rounded-full w-4 h-4 flex items-center justify-center transition-colors">
+                    <i className="fa fa-times text-[8px]"></i>
+                  </button>
+                </span>
+              )}
+              <button 
+                onClick={() => { setKeyword(''); setSelectedCity(''); setSelectedContract(''); }}
+                className="inline-flex items-center gap-1 bg-red-50 text-red-600 px-3 py-1.5 rounded-full text-[10px] font-bold hover:bg-red-100 transition-colors active:scale-95"
+              >
+                <i className="fa fa-times-circle text-[8px]"></i>
+                Effacer tout
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Content Area */}
+        <div className="space-y-3 sm:space-y-4">
+
+          <div className="grid grid-cols-1 gap-2.5 sm:gap-3 md:gap-4">
             {currentJobs.length > 0 ? (
               currentJobs.map((job, idx) => (
                 <div key={`${job.id}-${idx}`} className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: `${(idx % PAGE_SIZE) * 50}ms` }}>
@@ -258,11 +348,19 @@ const App: React.FC = () => {
         @keyframes slideInFromBottom { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes slideInFromTop { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+          20%, 40%, 60%, 80% { transform: translateX(2px); }
+        }
         .fade-in { animation-name: fadeIn; }
         .slide-in-from-bottom-4 { animation-name: slideInFromBottom; }
         .slide-in-from-bottom-8 { animation-name: slideInFromBottom; }
         .slide-in-from-top-2 { animation-name: slideInFromTop; }
         .zoom-in-95 { animation-name: zoomIn; }
+        .animate-shake {
+          animation: shake 0.6s ease-in-out;
+        }
       `}</style>
 
       {/* Cookie Consent Popup */}

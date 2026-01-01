@@ -12,14 +12,22 @@ const openai = new OpenAI({
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const geminiModel = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
+// Initialize Z.AI client
+const zaiApiKey = process.env.Z_AI_API_KEY || '75df170404d94325946741076dd51913.pDSyIhqtVv5hZOG2';
+const zaiBaseUrl = 'https://api.z.ai/v1'; // Z.AI API endpoint
+
+// Initialize Flowith.io client
+const flowithApiKey = process.env.FLOWITH_API_KEY || 'flo_5f32d7d9ef916a6ffd3248e883d6809614326a365d3e4f047f31d35bd4f6625d';
+const flowithBaseUrl = 'https://api.flowith.io/v1'; // Flowith.io API endpoint
+
 /**
  * Multi-AI Job Enrichment Service
- * Uses OpenAI + Gemini for intelligent job processing
+ * Uses OpenAI + Gemini + Z.AI + Flowith for intelligent job processing
  */
 export const aiService = {
   /**
    * Enrich job with AI (categorization, skills, summary)
-   * Uses OpenAI as primary, falls back to Gemini
+   * Uses OpenAI → Gemini → Z.AI → Flowith fallback chain
    */
   async enrichJob(job) {
     try {
@@ -33,8 +41,22 @@ export const aiService = {
         console.log(`  ✨ Gemini enriched: ${job.title}`);
         return enriched;
       } catch (geminiError) {
-        console.log(`  ⚠️  Both AIs failed, using fallback`);
-        return this.fallbackEnrichment(job);
+        console.log(`  ⚠️  Gemini failed, trying Z.AI...`);
+        try {
+          const enriched = await this.enrichWithZAI(job);
+          console.log(`  🚀 Z.AI enriched: ${job.title}`);
+          return enriched;
+        } catch (zaiError) {
+          console.log(`  ⚠️  Z.AI failed, trying Flowith...`);
+          try {
+            const enriched = await this.enrichWithFlowith(job);
+            console.log(`  🌊 Flowith enriched: ${job.title}`);
+            return enriched;
+          } catch (flowithError) {
+            console.log(`  ⚠️  All AIs failed, using fallback`);
+            return this.fallbackEnrichment(job);
+          }
+        }
       }
     }
   },
@@ -131,6 +153,138 @@ Return ONLY valid JSON with:
       job_type: parsed.job_type,
       skills: parsed.skills,
       summary: parsed.summary
+    };
+  },
+
+  /**
+   * Enrich job using Z.AI (Third fallback option)
+   */
+  async enrichWithZAI(job) {
+    const prompt = `Analyze this Moroccan job posting and extract structured information.
+
+Job Title: ${job.title}
+Company: ${job.company}
+Location: ${job.location || job.city || 'Maroc'}
+Description: ${job.description?.substring(0, 500)}
+
+Moroccan cities: Casablanca, Rabat, Marrakech, Fès, Tanger, Agadir, Meknès, Oujda, Kenitra, Tétouan
+
+Return ONLY valid JSON with:
+{
+  "category": "one of: Informatique & Tech, Design & Création, Commercial & Ventes, Service Client, Finance & Administration, Logistique & Transport, Ingénierie, Santé, Éducation, Hôtellerie & Tourisme, Général",
+  "job_type": "CDI, CDD, Stage, Freelance, or Non spécifié",
+  "skills": ["skill1", "skill2"] (max 10 relevant technical skills),
+  "summary": "2-sentence compelling summary in French",
+  "city": "detected Moroccan city or 'Maroc'",
+  "company_email": "extract email if found, or null",
+  "company_phone": "extract phone number (prefer +212 or 0 format), or null",
+  "company_website": "extract website URL if found, or null"
+}`;
+
+    const response = await fetch(`${zaiBaseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${zaiApiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo', // Z.AI supports OpenAI-compatible models
+        messages: [
+          { role: 'system', content: 'You are a job posting analyzer for Morocco. Always respond with valid JSON only.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.3,
+        max_tokens: 350
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Z.AI API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const text = data.choices[0].message.content;
+    
+    // Extract JSON from response
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : text);
+    
+    return {
+      ...job,
+      city: parsed.city || this.extractCity(job.title + ' ' + (job.location || '') + ' ' + (job.description || '')) || job.city || 'Maroc',
+      category: parsed.category,
+      job_type: parsed.job_type,
+      skills: parsed.skills,
+      summary: parsed.summary,
+      company_email: parsed.company_email || this.extractEmail(job.description),
+      company_phone: parsed.company_phone || this.extractPhone(job.description),
+      company_website: parsed.company_website || null
+    };
+  },
+
+  /**
+   * Enrich job using Flowith.io (Fourth fallback option)
+   */
+  async enrichWithFlowith(job) {
+    const prompt = `Analyze this Moroccan job posting and extract structured information.
+
+Job Title: ${job.title}
+Company: ${job.company}
+Location: ${job.location || job.city || 'Maroc'}
+Description: ${job.description?.substring(0, 500)}
+
+Moroccan cities: Casablanca, Rabat, Marrakech, Fès, Tanger, Agadir, Meknès, Oujda, Kenitra, Tétouan
+
+Return ONLY valid JSON with:
+{
+  "category": "one of: Informatique & Tech, Design & Création, Commercial & Ventes, Service Client, Finance & Administration, Logistique & Transport, Ingénierie, Santé, Éducation, Hôtellerie & Tourisme, Général",
+  "job_type": "CDI, CDD, Stage, Freelance, or Non spécifié",
+  "skills": ["skill1", "skill2"] (max 10 relevant technical skills),
+  "summary": "2-sentence compelling summary in French",
+  "city": "detected Moroccan city or 'Maroc'",
+  "company_email": "extract email if found, or null",
+  "company_phone": "extract phone number (prefer +212 or 0 format), or null",
+  "company_website": "extract website URL if found, or null"
+}`;
+
+    const response = await fetch(`${flowithBaseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${flowithApiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini', // Flowith.io supports OpenAI-compatible models
+        messages: [
+          { role: 'system', content: 'You are a job posting analyzer for Morocco. Always respond with valid JSON only.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.3,
+        max_tokens: 350
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Flowith API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const text = data.choices[0].message.content;
+    
+    // Extract JSON from response
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : text);
+    
+    return {
+      ...job,
+      city: parsed.city || this.extractCity(job.title + ' ' + (job.location || '') + ' ' + (job.description || '')) || job.city || 'Maroc',
+      category: parsed.category,
+      job_type: parsed.job_type,
+      skills: parsed.skills,
+      summary: parsed.summary,
+      company_email: parsed.company_email || this.extractEmail(job.description),
+      company_phone: parsed.company_phone || this.extractPhone(job.description),
+      company_website: parsed.company_website || null
     };
   },
 
@@ -257,7 +411,7 @@ Return ONLY valid JSON with:
   }
 };
 
-console.log('🤖 AI Service initialized (OpenAI + Gemini)');
+console.log('🤖 AI Service initialized (OpenAI + Gemini + Z.AI + Flowith)');
 
 // Export for direct use in scrapers
 export async function enrichJobWithAI(job) {

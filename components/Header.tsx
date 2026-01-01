@@ -138,7 +138,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
       <div className="border-t border-zinc-100/50">
         <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-2">
           <div className="bg-white/70 backdrop-blur-3xl border border-zinc-100 shadow-2xl shadow-indigo-500/5 rounded-[2rem] sm:rounded-[2.5rem] p-2">
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex flex-col gap-2">
+              {/* Search Bar - Full Width */}
               <div className="relative flex-1 flex items-center bg-zinc-50/50 rounded-2xl px-5 py-2 sm:py-3 transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/10" ref={suggestionRef}>
                 <i className="fa fa-search text-zinc-300 mr-4 text-sm sm:text-base"></i>
                 <input 
@@ -166,30 +167,33 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
                 )}
               </div>
               
-              <div className="relative group bg-zinc-50/50 rounded-2xl transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/10 w-full sm:w-48">
-                <i className="fa fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 text-[10px] sm:text-[11px]"></i>
-                <select 
-                  value={selectedCity}
-                  onChange={(e) => { setSelectedCity(e.target.value); onFilterChange(); }}
-                  className="w-full pl-10 pr-4 py-2 sm:py-3 bg-transparent text-[11px] sm:text-[13px] font-bold text-zinc-600 outline-none cursor-pointer appearance-none"
-                >
-                  <option value="">Toutes Villes</option>
-                  {cities.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-                <i className="fa fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-zinc-300 pointer-events-none group-hover:text-indigo-500 transition-colors"></i>
-              </div>
+              {/* City and Contract Filters - Side by Side on Mobile */}
+              <div className="flex gap-2">
+                <div className="relative group bg-zinc-50/50 rounded-2xl transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/10 flex-1">
+                  <i className="fa fa-location-dot absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-zinc-300 text-[10px] sm:text-[11px]"></i>
+                  <select 
+                    value={selectedCity}
+                    onChange={(e) => { setSelectedCity(e.target.value); onFilterChange(); }}
+                    className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 bg-transparent text-[11px] sm:text-[13px] font-bold text-zinc-600 outline-none cursor-pointer appearance-none"
+                  >
+                    <option value="">Toutes Villes</option>
+                    {cities.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <i className="fa fa-chevron-down absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-[10px] text-zinc-300 pointer-events-none group-hover:text-indigo-500 transition-colors"></i>
+                </div>
 
-              <div className="relative group bg-zinc-50/50 rounded-2xl transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/10 w-full sm:w-48">
-                <i className="fa fa-file-contract absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 text-[10px] sm:text-[11px]"></i>
-                <select 
-                  value={selectedContract}
-                  onChange={(e) => { setSelectedContract(e.target.value); onFilterChange(); }}
-                  className="w-full pl-10 pr-4 py-2 sm:py-3 bg-transparent text-[11px] sm:text-[13px] font-bold text-zinc-600 outline-none cursor-pointer appearance-none"
-                >
-                  <option value="">Contrats</option>
-                  {contracts.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-                <i className="fa fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-zinc-300 pointer-events-none group-hover:text-indigo-500 transition-colors"></i>
+                <div className="relative group bg-zinc-50/50 rounded-2xl transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/10 flex-1">
+                  <i className="fa fa-file-contract absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-zinc-300 text-[10px] sm:text-[11px]"></i>
+                  <select 
+                    value={selectedContract}
+                    onChange={(e) => { setSelectedContract(e.target.value); onFilterChange(); }}
+                    className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 bg-transparent text-[11px] sm:text-[13px] font-bold text-zinc-600 outline-none cursor-pointer appearance-none"
+                  >
+                    <option value="">Contrats</option>
+                    {contracts.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <i className="fa fa-chevron-down absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-[10px] text-zinc-300 pointer-events-none group-hover:text-indigo-500 transition-colors"></i>
+                </div>
               </div>
             </div>
           </div>
