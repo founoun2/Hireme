@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Job, SidebarKey } from './types';
-import { generateMockJobs, CITIES, CONTRACTS } from './constants';
+import { generateMockJobs, CITIES, CONTRACTS, PROFESSIONS } from './constants';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { JobCard } from './components/JobCard';
 import { JobModal } from './components/JobModal';
-import { GoogleGenAI, Type } from "@google/genai";
 import { jobService } from './services/jobService';
+import { aggregateJobs } from './services/jobAggregator';
 
 const PAGE_SIZE = 12;
 const SYNC_INTERVAL = 20000;
@@ -21,11 +21,20 @@ const App: React.FC = () => {
   const [displayedCount, setDisplayedCount] = useState(PAGE_SIZE);
   const [activeSidebar, setActiveSidebar] = useState<SidebarKey>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [appliedJobs, setAppliedJobs] = useState<Set<number>>(new Set());
+  const [appliedJobs, setAppliedJobs] = useState<Set<number>>(() => {
+    // Load applied jobs from localStorage on mount
+    const saved = localStorage.getItem('appliedJobs');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
   const [isScanning, setIsScanning] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   
   const suggestionRef = useRef<HTMLDivElement>(null);
+
+  // Save applied jobs to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('appliedJobs', JSON.stringify([...appliedJobs]));
+  }, [appliedJobs]);
 
   // Load jobs from database on mount
   useEffect(() => {
@@ -73,40 +82,9 @@ const App: React.FC = () => {
   const syncLiveJobs = async () => {
     if (allJobs.length === 0) setIsScanning(true);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: "Extract 12 recent job offers from Morocco posted within the last 7 days (1 week) across these platforms: ANAPEC, ReKrute, Emploi.ma, JobLike.ma, Dreamjob.ma, Recrutement24.com, Postule.ma, JobPortal.ma, Emploi-public.ma, Alwadifa-Maroc.com, Emploidiali.ma, MarocEmploi.net, Mitula.ma, Jooble.org, OptionCarriere.ma, Glassdoor Maroc, Bayt.com, Talent.com, Indeed Maroc, LinkedIn, and Facebook Groups. Categories: IT, Sales, Finance, Graphic Design, Logistics. Include specific contact email/phone and salary if present. Return valid JSON.",
-        config: {
-          tools: [{ googleSearch: {} }],
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                id: { type: Type.INTEGER },
-                title: { type: Type.STRING },
-                company: { type: Type.STRING },
-                city: { type: Type.STRING },
-                contract: { type: Type.STRING },
-                time: { type: Type.STRING },
-                isNew: { type: Type.BOOLEAN },
-                description: { type: Type.STRING },
-                tasks: { type: Type.ARRAY, items: { type: Type.STRING } },
-                requirements: { type: Type.ARRAY, items: { type: Type.STRING } },
-                salary: { type: Type.STRING },
-                email: { type: Type.STRING },
-                contactPhone: { type: Type.STRING },
-                url: { type: Type.STRING }
-              },
-              required: ["id", "title", "company", "city", "contract", "time", "description", "url"]
-            }
-          }
-        },
-      });
-
-      const liveJobs = JSON.parse(response.text || "[]") as Job[];
+      // Use job aggregator (Adzuna + Gemini)
+      const liveJobs = await aggregateJobs();
+      
       if (liveJobs.length > 0) {
         // Save new jobs to database
         await jobService.saveJobs(liveJobs);
@@ -138,9 +116,20 @@ const App: React.FC = () => {
 
   const suggestions = useMemo(() => {
     if (!keyword.trim()) return [];
-    return Array.from(new Set(allJobs.map(j => j.title)))
-      .filter(t => t.toLowerCase().includes(keyword.toLowerCase()))
-      .slice(0, 5);
+    
+    // First check profession matches
+    const professionMatches = PROFESSIONS.filter(p => 
+      p.toLowerCase().includes(keyword.toLowerCase())
+    );
+    
+    // Then check job title matches from current jobs
+    const titleMatches = Array.from(new Set(allJobs.map(j => j.title)))
+      .filter(t => t.toLowerCase().includes(keyword.toLowerCase()));
+    
+    // Combine both, prioritize professions, then titles, limit to 8 suggestions
+    return [...professionMatches, ...titleMatches]
+      .filter((item, index, self) => self.indexOf(item) === index)
+      .slice(0, 8);
   }, [keyword, allJobs]);
 
   // Fix: Added handleApply function to manage job applications state

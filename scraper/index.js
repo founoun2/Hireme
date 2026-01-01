@@ -1,0 +1,56 @@
+import { scrapeEmploiMa } from './scrape_emploi_ma.js';
+import { scrapeRekrute } from './scrape_rekrute.js';
+import { scrapeAnapec } from './scrape_anapec.js';
+import { scrapeJobLike } from './scrape_joblike.js';
+import { scrapeBayt } from './scrape_bayt.js';
+import { scrapeAlwadifa } from './scrape_alwadifa.js';
+import { scrapeMitula } from './scrape_mitula.js';
+import { scrapeJooble } from './scrape_jooble.js';
+import { scrapeTalent } from './scrape_talent.js';
+import { scrapeMarocEmploi } from './scrape_marocemploi.js';
+
+console.log('🚀 HireMe Maroc Job Scraper Started');
+console.log('📍 Scraping 10 major Moroccan job sites...');
+console.log('==================================');
+
+async function runAllScrapers() {
+  const startTime = Date.now();
+  let totalJobs = 0;
+  
+  const scrapers = [
+    { name: 'Emploi.ma', fn: scrapeEmploiMa },
+    { name: 'ReKrute', fn: scrapeRekrute },
+    { name: 'ANAPEC', fn: scrapeAnapec },
+    { name: 'JobLike', fn: scrapeJobLike },
+    { name: 'Bayt', fn: scrapeBayt },
+    { name: 'Alwadifa', fn: scrapeAlwadifa },
+    { name: 'Mitula', fn: scrapeMitula },
+    { name: 'Jooble', fn: scrapeJooble },
+    { name: 'Talent.com', fn: scrapeTalent },
+    { name: 'MarocEmploi', fn: scrapeMarocEmploi }
+  ];
+  
+  try {
+    // Run scrapers sequentially to avoid overwhelming resources
+    for (const scraper of scrapers) {
+      try {
+        await scraper.fn();
+      } catch (error) {
+        console.error(`⚠️  ${scraper.name} failed:`, error.message);
+        // Continue with next scraper even if one fails
+      }
+    }
+    
+    const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+    console.log('==================================');
+    console.log(`✅ All scrapers completed in ${duration}s`);
+    console.log(`📊 Check your Supabase database for new jobs!`);
+    
+  } catch (error) {
+    console.error('❌ Fatal error:', error.message);
+    process.exit(1);
+  }
+}
+
+// Run scrapers
+runAllScrapers();

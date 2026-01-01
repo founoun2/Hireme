@@ -13,6 +13,63 @@ export const CITIES = [
 
 export const CONTRACTS = ["CDI", "CDD", "Stage", "Freelance", "Intérim"];
 
+// Most demanded professions in Morocco for search detection
+export const PROFESSIONS = [
+  // Informatique, Digital & Technologie
+  "Développeur Web", "Développeur Front-end", "Développeur Back-end", "Développeur Full-Stack",
+  "Développeur Mobile", "Développeur Android", "Développeur iOS",
+  "Ingénieur Logiciel", "Administrateur Systèmes & Réseaux", "Technicien Informatique",
+  "Support IT", "Data Analyst", "Data Scientist", "Ingénieur Intelligence Artificielle",
+  "Ingénieur IA", "Spécialiste Cybersécurité", "Ingénieur Cloud", "UX/UI Designer",
+  "Product Designer",
+  
+  // Design, Création & Marketing Digital
+  "Graphiste", "Infographiste", "Designer Web", "Motion Designer",
+  "Vidéaste", "Monteur Vidéo", "Community Manager", "Spécialiste Marketing Digital",
+  "Expert SEO", "Expert SEA", "Rédacteur Web", "Content Manager",
+  "Responsable E-commerce",
+  
+  // Service Client & Commercial
+  "Agent Service Client", "Téléconseiller", "Call Center", "Support Client Technique",
+  "Chargé de Clientèle", "Commercial Terrain", "Commercial Sédentaire",
+  "Business Developer", "Responsable Ventes", "Customer Success Manager",
+  
+  // Ingénierie & Métiers Techniques
+  "Ingénieur Génie Civil", "Ingénieur Électrique", "Ingénieur Électromécanique",
+  "Ingénieur Industriel", "Ingénieur Énergies Renouvelables", "Conducteur de Travaux",
+  "Technicien de Maintenance", "Technicien Électrique", "Technicien Mécanique",
+  "Technicien BTP",
+  
+  // Logistique, Transport & Livraison
+  "Responsable Logistique", "Gestionnaire Supply Chain", "Magasinier",
+  "Gestionnaire de Stock", "Chauffeur Poids Lourd", "Chauffeur Livreur",
+  "Conducteur de Transport", "Agent d'Exploitation Logistique",
+  
+  // Finance, Gestion & Administration
+  "Comptable", "Aide-Comptable", "Expert-Comptable", "Analyste Financier",
+  "Contrôleur de Gestion", "Gestionnaire Administratif", "Assistant Administratif",
+  "Assistant de Direction", "Responsable Ressources Humaines", "Chargé de Recrutement",
+  
+  // Santé & Paramédical
+  "Médecin Généraliste", "Médecin Spécialiste", "Infirmier", "Infirmière",
+  "Aide-soignant", "Pharmacien", "Technicien de Laboratoire",
+  "Gestionnaire de Clinique", "Assistant Médical",
+  
+  // Éducation & Formation
+  "Enseignant", "Professeur", "Professeur de Langues", "Professeur de Français",
+  "Professeur d'Anglais", "Professeur d'Espagnol", "Formateur Professionnel",
+  "Formateur Informatique", "Coach",
+  
+  // Tourisme, Hôtellerie & Restauration
+  "Réceptionniste", "Agent d'Accueil", "Guide Touristique", "Responsable Hôtelier",
+  "Serveur", "Serveuse", "Cuisinier", "Chef de Cuisine", "Manager Restaurant",
+  
+  // Métiers Manuels & Services
+  "Électricien", "Plombier", "Menuisier", "Soudeur", "Peintre",
+  "Agent de Sécurité", "Agent de Nettoyage", "Technicien Climatisation",
+  "Agent de Maintenance"
+];
+
 export const SIDEBAR_DATA: Record<string, SidebarContent> = {
   legal: {
     title: "À Propos & Légal",
