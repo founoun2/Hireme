@@ -5,13 +5,15 @@ interface AdBannerProps {
   format?: 'auto' | 'fluid' | 'rectangle' | 'vertical';
   className?: string;
   style?: React.CSSProperties;
+  isDesktopSidebar?: boolean;
 }
 
 export const AdBanner: React.FC<AdBannerProps> = ({ 
   slot, 
   format = 'auto',
   className = '',
-  style = {}
+  style = {},
+  isDesktopSidebar = false
 }) => {
   useEffect(() => {
     try {
@@ -22,15 +24,20 @@ export const AdBanner: React.FC<AdBannerProps> = ({
     }
   }, []);
 
+  // Desktop sidebar uses fixed 160x600 size
+  const adStyle = isDesktopSidebar 
+    ? { display: 'inline-block', width: '160px', height: '600px' }
+    : { display: 'block', ...style };
+
   return (
-    <div className={className} style={style}>
+    <div className={className}>
       <ins
         className="adsbygoogle"
-        style={{ display: 'block', ...style }}
+        style={adStyle}
         data-ad-client="ca-pub-2474444884447314"
         data-ad-slot={slot}
-        data-ad-format={format}
-        data-full-width-responsive="true"
+        data-ad-format={isDesktopSidebar ? undefined : format}
+        data-full-width-responsive={isDesktopSidebar ? undefined : "true"}
       />
     </div>
   );
@@ -39,15 +46,14 @@ export const AdBanner: React.FC<AdBannerProps> = ({
 // Sidebar Ad Component (Desktop Left Side)
 export const SidebarAd: React.FC = () => {
   return (
-    <div className="hidden lg:block fixed left-4 top-1/2 -translate-y-1/2 w-[160px] z-10">
+    <div className="hidden lg:block fixed left-4 top-1/2 -translate-y-1/2 z-10">
       <div className="bg-white rounded-2xl border border-zinc-100 p-3 shadow-sm">
         <p className="text-[7px] uppercase tracking-wider text-zinc-400 font-bold mb-2 text-center">
           Publicité
         </p>
         <AdBanner 
           slot="6802637448"
-          format="vertical"
-          style={{ minHeight: '600px' }}
+          isDesktopSidebar={true}
         />
       </div>
     </div>
