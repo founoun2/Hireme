@@ -425,50 +425,51 @@ Candidature envoyée via HireMe Maroc
   return (
     <div className="fixed inset-0 bg-zinc-900/90 backdrop-blur-xl z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
       <div 
-        className="bg-white w-full sm:max-w-xl lg:max-w-2xl h-[95vh] sm:h-auto sm:max-h-[92vh] rounded-t-[2rem] sm:rounded-[2rem] flex flex-col overflow-hidden shadow-3xl animate-in slide-in-from-bottom-10 sm:fade-in duration-300"
+        className="bg-white w-full sm:max-w-md lg:max-w-lg h-[95vh] sm:h-auto sm:max-h-[92vh] rounded-t-xl sm:rounded-xl flex flex-col overflow-hidden shadow-3xl animate-in slide-in-from-bottom-10 sm:fade-in duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile drag handle */}
-        <div className="w-12 h-1.5 bg-zinc-300 rounded-full mx-auto mt-3 mb-1 sm:hidden shrink-0"></div>
+        <div className="w-10 h-1 bg-zinc-300 rounded-full mx-auto mt-2 mb-1 sm:hidden shrink-0"></div>
 
         {/* Header */}
-        <div className="h-16 sm:h-20 flex items-center justify-between px-5 sm:px-8 border-b border-zinc-100 shrink-0">
+        <div className="h-12 sm:h-14 flex items-center justify-between px-4 sm:px-5 border-b border-zinc-100 shrink-0">
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg sm:text-2xl font-black text-zinc-900 truncate">Postuler en ligne</h3>
-            <p className="text-[10px] sm:text-xs text-zinc-400 font-bold truncate">{job.title} • {job.company}</p>
+            <h3 className="text-sm sm:text-base font-black text-zinc-900 truncate">Postuler en ligne</h3>
+            <p className="text-[9px] sm:text-[10px] text-zinc-400 font-bold truncate">{job.title} • {job.company}</p>
           </div>
-          <button onClick={onClose} className="w-9 h-9 sm:w-10 sm:h-10 bg-zinc-100 rounded-xl sm:rounded-xl flex items-center justify-center hover:bg-zinc-200 transition-colors active:scale-90 shrink-0 ml-3">
-            <i className="fa fa-times text-zinc-400 text-sm"></i>
+          <button onClick={onClose} className="w-7 h-7 sm:w-8 sm:h-8 bg-zinc-100 rounded-lg flex items-center justify-center hover:bg-zinc-200 transition-colors active:scale-90 shrink-0 ml-2">
+            <i className="fa fa-times text-zinc-400 text-xs"></i>
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex-grow overflow-y-auto px-5 sm:px-8 py-4 sm:py-5 overscroll-contain">
+        <div className="flex-grow overflow-y-auto px-4 sm:px-5 py-2 sm:py-2.5 overscroll-contain">
+
           {renderStepIndicator()}
 
           {/* Step 1: Upload CV */}
           {step === 'upload' && (
-            <div className="space-y-5 sm:space-y-6">
+            <div className="space-y-2 sm:space-y-2.5">
               <div className="text-center">
-                <i className="fa fa-file-pdf text-5xl sm:text-6xl text-indigo-600 mb-3 sm:mb-4"></i>
-                <h4 className="text-lg sm:text-xl font-black text-zinc-900 mb-1 sm:mb-2">Téléchargez votre CV</h4>
-                <p className="text-xs sm:text-sm text-zinc-500">PDF ou Word • Max 5MB</p>
+                <i className="fa fa-file-pdf text-3xl sm:text-4xl text-indigo-600 mb-2"></i>
+                <h4 className="text-sm sm:text-base font-black text-zinc-900 mb-1">Téléchargez votre CV</h4>
+                <p className="text-[10px] sm:text-xs text-zinc-500">PDF ou Word • Max 5MB</p>
               </div>
 
               <label className="block cursor-pointer">
-                <div className={`border-2 border-dashed rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center transition-all active:scale-[0.98] ${
+                <div className={`border-2 border-dashed rounded-lg sm:rounded-xl p-5 sm:p-6 text-center transition-all active:scale-[0.98] ${
                   cvFile ? 'border-green-500 bg-green-50' : 'border-zinc-200 hover:border-indigo-400 hover:bg-indigo-50/30 active:bg-indigo-50/50'
                 }`}>
                   {cvFile ? (
-                    <div className="space-y-2 sm:space-y-3">
-                      <i className="fa fa-check-circle text-3xl sm:text-4xl text-green-600"></i>
-                      <p className="font-black text-zinc-900 text-sm sm:text-base break-all px-2">{cvFile.name}</p>
-                      <p className="text-xs text-zinc-500">{(cvFile.size / 1024).toFixed(0)} KB</p>
+                    <div className="space-y-1.5">
+                      <i className="fa fa-check-circle text-2xl sm:text-3xl text-green-600"></i>
+                      <p className="font-black text-zinc-900 text-xs sm:text-sm break-all px-1">{cvFile.name}</p>
+                      <p className="text-[10px] text-zinc-500">{(cvFile.size / 1024).toFixed(0)} KB</p>
                     </div>
                   ) : (
-                    <div className="space-y-2 sm:space-y-3">
-                      <i className="fa fa-cloud-upload text-3xl sm:text-4xl text-zinc-300"></i>
-                      <p className="font-bold text-zinc-600 text-sm sm:text-base px-2">Cliquez pour sélectionner votre CV</p>
+                    <div className="space-y-1.5">
+                      <i className="fa fa-cloud-upload text-2xl sm:text-3xl text-zinc-300"></i>
+                      <p className="font-bold text-zinc-600 text-xs sm:text-sm px-1">Cliquez pour sélectionner votre CV</p>
                     </div>
                   )}
                 </div>
@@ -483,41 +484,41 @@ Candidature envoyée via HireMe Maroc
               <button
                 onClick={() => setStep('generate')}
                 disabled={!cvFile}
-                className={`w-full py-4 sm:py-5 rounded-xl sm:rounded-2xl font-black text-base sm:text-lg transition-all active:scale-95 ${
+                className={`w-full py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-black text-sm transition-all active:scale-95 ${
                   cvFile 
                     ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg' 
                     : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
                 }`}
               >
-                Continuer <i className="fa fa-arrow-right ml-2 text-sm"></i>
+                Continuer <i className="fa fa-arrow-right ml-1 text-xs"></i>
               </button>
             </div>
           )}
 
           {/* Step 2: Generate Cover Letter */}
           {step === 'generate' && (
-            <div className="space-y-5 sm:space-y-6">
+            <div className="space-y-2 sm:space-y-2.5">
               <div className="text-center">
-                <i className="fa fa-robot text-5xl sm:text-6xl text-indigo-600 mb-3 sm:mb-4"></i>
-                <h4 className="text-lg sm:text-xl font-black text-zinc-900 mb-1 sm:mb-2">Lettre de motivation IA</h4>
-                <p className="text-xs sm:text-sm text-zinc-500">Choisissez la langue et générez votre lettre</p>
+                <i className="fa fa-robot text-3xl sm:text-4xl text-indigo-600 mb-2"></i>
+                <h4 className="text-sm sm:text-base font-black text-zinc-900 mb-1">Lettre de motivation IA</h4>
+                <p className="text-[10px] sm:text-xs text-zinc-500">Choisissez la langue et générez votre lettre</p>
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-black text-zinc-700 mb-3">Langue</label>
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
+                <label className="block text-[10px] sm:text-xs font-black text-zinc-700 mb-2">Langue</label>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 sm:gap-2">
                   {LANGUAGE_OPTIONS.map(lang => (
                     <button
                       key={lang.code}
                       onClick={() => setLanguage(lang.code)}
-                      className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 transition-all active:scale-95 ${
+                      className={`p-2 sm:p-2.5 rounded-md sm:rounded-lg border-2 transition-all active:scale-95 ${
                         language === lang.code 
                           ? 'border-indigo-600 bg-indigo-50 shadow-md' 
                           : 'border-zinc-200 hover:border-indigo-300 active:border-indigo-400'
                       }`}
                     >
-                      <div className="text-2xl sm:text-3xl mb-1">{lang.flag}</div>
-                      <div className="text-[10px] sm:text-xs font-bold text-zinc-700 leading-tight">{lang.name}</div>
+                      <div className="text-xl sm:text-2xl mb-0.5">{lang.flag}</div>
+                      <div className="text-[9px] sm:text-[10px] font-bold text-zinc-700 leading-tight">{lang.name}</div>
                     </button>
                   ))}
                 </div>
@@ -526,16 +527,16 @@ Candidature envoyée via HireMe Maroc
               <button
                 onClick={generateCoverLetter}
                 disabled={isGenerating}
-                className="w-full py-4 sm:py-5 rounded-xl sm:rounded-2xl font-black text-base sm:text-lg bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all disabled:opacity-50 shadow-lg"
+                className="w-full py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-black text-sm bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all disabled:opacity-50 shadow-lg"
               >
                 {isGenerating ? (
                   <>
-                    <i className="fa fa-spinner fa-spin mr-2"></i>
+                    <i className="fa fa-spinner fa-spin mr-1.5"></i>
                     Génération...
                   </>
                 ) : (
                   <>
-                    <i className="fa fa-magic mr-2"></i>
+                    <i className="fa fa-magic mr-1.5"></i>
                     Générer la lettre
                   </>
                 )}
@@ -547,7 +548,7 @@ Candidature envoyée via HireMe Maroc
                   setCoverLetter('');
                   setStep('review');
                 }}
-                className="w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm border-2 border-zinc-200 text-zinc-600 hover:border-indigo-400 hover:text-indigo-600 transition-all active:scale-95"
+                className="w-full py-2 sm:py-2.5 rounded-lg sm:rounded-xl font-bold text-xs border-2 border-zinc-200 text-zinc-600 hover:border-indigo-400 hover:text-indigo-600 transition-all active:scale-95"
               >
                 Écrire ma propre lettre
               </button>
@@ -556,26 +557,26 @@ Candidature envoyée via HireMe Maroc
 
           {/* Step 3: Review & Edit */}
           {step === 'review' && (
-            <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-2 sm:space-y-2.5">
               <div className="text-center">
-                <i className="fa fa-edit text-5xl sm:text-6xl text-indigo-600 mb-3 sm:mb-4"></i>
-                <h4 className="text-lg sm:text-xl font-black text-zinc-900 mb-1 sm:mb-2">
+                <i className="fa fa-edit text-3xl sm:text-4xl text-indigo-600 mb-2"></i>
+                <h4 className="text-sm sm:text-base font-black text-zinc-900 mb-1">
                   {customMode ? 'Votre lettre de motivation' : 'Vérifiez et personnalisez'}
                 </h4>
-                <p className="text-xs sm:text-sm text-zinc-500">
+                <p className="text-[10px] sm:text-xs text-zinc-500">
                   {customMode ? 'Rédigez votre lettre' : `${3 - refreshCount} régénérations restantes`}
                 </p>
               </div>
 
               {/* Email Verification */}
-              <div className={`p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 transition-all ${
+              <div className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 transition-all ${
                 emailConfirmed ? 'border-green-500 bg-green-50' : 'border-yellow-400 bg-yellow-50'
               }`}>
-                <div className="flex items-center gap-2 mb-3">
-                  <i className={`fa ${emailConfirmed ? 'fa-check-circle text-green-600' : 'fa-envelope text-yellow-600'} text-base sm:text-lg`}></i>
-                  <label className="text-xs sm:text-sm font-black text-zinc-700">Votre adresse email</label>
+                <div className="flex items-center gap-1.5 mb-2">
+                  <i className={`fa ${emailConfirmed ? 'fa-check-circle text-green-600' : 'fa-envelope text-yellow-600'} text-sm`}></i>
+                  <label className="text-[10px] sm:text-xs font-black text-zinc-700">Votre adresse email</label>
                 </div>
-                <div className="flex gap-2 sm:gap-3">
+                <div className="flex gap-1.5 sm:gap-2">
                   <input
                     type="email"
                     value={userEmail}
@@ -585,7 +586,7 @@ Candidature envoyée via HireMe Maroc
                     }}
                     placeholder="votre.email@example.com"
                     disabled={emailConfirmed}
-                    className={`flex-1 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border-2 focus:outline-none text-xs sm:text-sm font-medium ${
+                    className={`flex-1 px-2.5 sm:px-3 py-2 rounded-md sm:rounded-lg border-2 focus:outline-none text-[10px] sm:text-xs font-medium ${
                       emailConfirmed 
                         ? 'border-green-500 bg-white text-green-800 cursor-not-allowed' 
                         : 'border-zinc-200 focus:border-indigo-400'
@@ -594,22 +595,22 @@ Candidature envoyée via HireMe Maroc
                   {!emailConfirmed ? (
                     <button
                       onClick={handleEmailConfirm}
-                      className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-black text-xs sm:text-sm bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all"
+                      className="px-3 sm:px-4 py-2 rounded-md sm:rounded-lg font-black text-[10px] sm:text-xs bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all"
                     >
-                      <i className="fa fa-check mr-1 sm:mr-2"></i>
+                      <i className="fa fa-check mr-1"></i>
                       <span className="hidden sm:inline">Oui</span>
                     </button>
                   ) : (
                     <button
                       onClick={() => setEmailConfirmed(false)}
-                      className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold border-2 border-green-500 text-green-700 hover:bg-green-50 active:scale-95 transition-all"
+                      className="px-3 sm:px-4 py-2 rounded-md sm:rounded-lg font-bold border-2 border-green-500 text-green-700 hover:bg-green-50 active:scale-95 transition-all"
                     >
-                      <i className="fa fa-edit"></i>
+                      <i className="fa fa-edit text-xs"></i>
                     </button>
                   )}
                 </div>
                 {emailConfirmed && (
-                  <p className="text-[10px] sm:text-xs text-green-700 font-bold mt-2 flex items-center gap-2">
+                  <p className="text-[9px] sm:text-[10px] text-green-700 font-bold mt-1.5 flex items-center gap-1.5">
                     <i className="fa fa-shield-check"></i>
                     Email confirmé et enregistré
                   </p>
@@ -619,27 +620,27 @@ Candidature envoyée via HireMe Maroc
               <textarea
                 value={coverLetter}
                 onChange={(e) => setCoverLetter(e.target.value)}
-                className="w-full h-48 sm:h-64 p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 border-zinc-200 focus:border-indigo-400 focus:outline-none text-xs sm:text-sm leading-relaxed resize-none"
+                className="w-full h-32 sm:h-40 p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 border-zinc-200 focus:border-indigo-400 focus:outline-none text-[10px] sm:text-xs leading-relaxed resize-none"
                 placeholder="Tapez votre lettre de motivation ici..."
               />
 
-              <div className="flex gap-2 sm:gap-3">
+              <div className="flex gap-1.5 sm:gap-2">
                 {!customMode && (
                   <button
                     onClick={handleRefresh}
                     disabled={refreshCount >= 3 || isGenerating}
-                    className="flex-1 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm border-2 border-indigo-200 text-indigo-600 hover:bg-indigo-50 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="flex-1 py-2 sm:py-2.5 rounded-lg sm:rounded-xl font-bold text-[10px] sm:text-xs border-2 border-indigo-200 text-indigo-600 hover:bg-indigo-50 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    <i className="fa fa-refresh mr-1 sm:mr-2"></i>
+                    <i className="fa fa-refresh mr-1"></i>
                     <span className="hidden sm:inline">Régénérer </span>({3 - refreshCount})
                   </button>
                 )}
                 <button
                   onClick={() => setStep('send')}
                   disabled={!coverLetter.trim() || !emailConfirmed}
-                  className="flex-1 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base bg-green-600 text-white hover:bg-green-700 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-lg"
+                  className="flex-1 py-2 sm:py-2.5 rounded-lg sm:rounded-xl font-black text-xs sm:text-sm bg-green-600 text-white hover:bg-green-700 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-lg"
                 >
-                  Continuer <i className="fa fa-arrow-right ml-1 sm:ml-2 text-xs"></i>
+                  Continuer <i className="fa fa-arrow-right ml-1 text-[10px]"></i>
                 </button>
               </div>
             </div>
@@ -647,56 +648,56 @@ Candidature envoyée via HireMe Maroc
 
           {/* Step 4: Send Confirmation */}
           {step === 'send' && (
-            <div className="text-center py-8 sm:py-12">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                <i className={`fa ${isSending ? 'fa-spinner fa-spin' : 'fa-paper-plane'} text-4xl sm:text-5xl text-indigo-600`}></i>
+            <div className="text-center py-2 sm:py-3">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <i className={`fa ${isSending ? 'fa-spinner fa-spin' : 'fa-paper-plane'} text-2xl sm:text-3xl text-indigo-600`}></i>
               </div>
-              <h4 className="text-xl sm:text-2xl font-black text-zinc-900 mb-3">
+              <h4 className="text-base sm:text-lg font-black text-zinc-900 mb-2">
                 {isSending ? 'Envoi en cours...' : 'Prêt à envoyer'}
               </h4>
               
-              <div className="bg-zinc-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 space-y-2 text-left max-w-md mx-auto">
-                <div className="flex items-start gap-3">
-                  <i className="fa fa-building text-indigo-600 text-lg sm:text-xl mt-0.5 shrink-0"></i>
+              <div className="bg-zinc-50 rounded-lg sm:rounded-xl p-3 sm:p-4 mb-3 space-y-1.5 text-left max-w-md mx-auto">
+                <div className="flex items-start gap-2">
+                  <i className="fa fa-building text-indigo-600 text-sm mt-0.5 shrink-0"></i>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">À</p>
-                    <p className="text-xs sm:text-sm font-black text-zinc-900 truncate">{job.company_email || job.email}</p>
+                    <p className="text-[9px] sm:text-[10px] font-bold text-zinc-500 uppercase">À</p>
+                    <p className="text-[10px] sm:text-xs font-black text-zinc-900 truncate">{job.company_email || job.email}</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <i className="fa fa-user text-green-600 text-lg sm:text-xl mt-0.5 shrink-0"></i>
+                <div className="flex items-start gap-2">
+                  <i className="fa fa-user text-green-600 text-sm mt-0.5 shrink-0"></i>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">De</p>
-                    <p className="text-xs sm:text-sm font-black text-zinc-900 truncate">{userEmail}</p>
+                    <p className="text-[9px] sm:text-[10px] font-bold text-zinc-500 uppercase">De</p>
+                    <p className="text-[10px] sm:text-xs font-black text-zinc-900 truncate">{userEmail}</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <i className="fa fa-briefcase text-purple-600 text-lg sm:text-xl mt-0.5 shrink-0"></i>
+                <div className="flex items-start gap-2">
+                  <i className="fa fa-briefcase text-purple-600 text-sm mt-0.5 shrink-0"></i>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">Poste</p>
-                    <p className="text-xs sm:text-sm font-black text-zinc-900 line-clamp-2">{job.title} - {job.company}</p>
+                    <p className="text-[9px] sm:text-[10px] font-bold text-zinc-500 uppercase">Poste</p>
+                    <p className="text-[10px] sm:text-xs font-black text-zinc-900 line-clamp-2">{job.title} - {job.company}</p>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-zinc-50 p-4 sm:p-6 rounded-xl sm:rounded-2xl mb-6 sm:mb-8 max-h-32 sm:max-h-48 overflow-y-auto text-left max-w-md mx-auto">
-                <p className="text-[10px] sm:text-xs text-zinc-500 font-bold mb-2 uppercase">Aperçu de la lettre:</p>
-                <p className="text-xs sm:text-sm text-zinc-700 whitespace-pre-line leading-relaxed">{coverLetter.substring(0, 300)}...</p>
+              <div className="bg-zinc-50 p-3 sm:p-4 rounded-lg sm:rounded-xl mb-4 max-h-24 sm:max-h-32 overflow-y-auto text-left max-w-md mx-auto">
+                <p className="text-[9px] sm:text-[10px] text-zinc-500 font-bold mb-1.5 uppercase">Aperçu de la lettre:</p>
+                <p className="text-[10px] sm:text-xs text-zinc-700 whitespace-pre-line leading-relaxed">{coverLetter.substring(0, 300)}...</p>
               </div>
 
               <button
                 onClick={handleSendApplication}
                 disabled={isSending}
-                className="w-full sm:w-auto px-8 sm:px-12 py-4 sm:py-5 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base bg-green-600 text-white hover:bg-green-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
+                className="w-full sm:w-auto px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-black text-xs sm:text-sm bg-green-600 text-white hover:bg-green-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
               >
                 {isSending ? (
                   <>
-                    <i className="fa fa-spinner fa-spin mr-2"></i>
+                    <i className="fa fa-spinner fa-spin mr-1.5"></i>
                     Envoi en cours...
                   </>
                 ) : (
                   <>
-                    <i className="fa fa-paper-plane mr-2"></i>
+                    <i className="fa fa-paper-plane mr-1.5"></i>
                     Envoyer la candidature
                   </>
                 )}
@@ -705,9 +706,9 @@ Candidature envoyée via HireMe Maroc
               {!isSending && (
                 <button
                   onClick={() => setStep('review')}
-                  className="mt-4 px-6 py-3 rounded-xl font-bold text-sm text-zinc-500 hover:text-zinc-700 transition-all active:scale-95"
+                  className="mt-3 px-4 py-2 rounded-lg font-bold text-xs text-zinc-500 hover:text-zinc-700 transition-all active:scale-95"
                 >
-                  <i className="fa fa-arrow-left mr-2"></i>
+                  <i className="fa fa-arrow-left mr-1.5"></i>
                   Retour
                 </button>
               )}
@@ -716,35 +717,35 @@ Candidature envoyée via HireMe Maroc
 
           {/* Step 5: Success Confirmation */}
           {step === 'success' && (
-            <div className="text-center py-12 sm:py-16 px-4">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 animate-bounce">
-                <i className="fa fa-check-circle text-5xl sm:text-6xl text-green-600"></i>
+            <div className="text-center py-3 sm:py-4 px-3">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 animate-bounce">
+                <i className="fa fa-check-circle text-3xl sm:text-4xl text-green-600"></i>
               </div>
-              <h4 className="text-2xl sm:text-3xl font-black text-zinc-900 mb-3 sm:mb-4">Candidature envoyée !</h4>
-              <p className="text-sm sm:text-lg text-zinc-600 mb-2 px-4">
+              <h4 className="text-lg sm:text-xl font-black text-zinc-900 mb-2">Candidature envoyée !</h4>
+              <p className="text-xs sm:text-sm text-zinc-600 mb-1.5 px-3">
                 Votre CV et lettre de motivation ont été envoyés avec succès à:
               </p>
-              <p className="text-lg sm:text-xl font-black text-indigo-600 mb-6 sm:mb-8 px-4 break-all">{job.company}</p>
+              <p className="text-sm sm:text-base font-black text-indigo-600 mb-4 px-3 break-all">{job.company}</p>
               
-              <div className="bg-green-50 border-2 border-green-200 rounded-xl sm:rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 max-w-md mx-auto">
-                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-green-200">
-                  <i className="fa fa-envelope-circle-check text-2xl sm:text-3xl text-green-600 shrink-0"></i>
+              <div className="bg-green-50 border-2 border-green-200 rounded-lg sm:rounded-xl p-3 sm:p-4 mb-4 max-w-md mx-auto">
+                <div className="flex items-center gap-2 mb-3 pb-3 border-b border-green-200">
+                  <i className="fa fa-envelope-circle-check text-xl sm:text-2xl text-green-600 shrink-0"></i>
                   <div className="text-left min-w-0 flex-1">
-                    <p className="text-[10px] sm:text-xs text-green-700 font-bold uppercase">Email envoyé de:</p>
-                    <p className="text-xs sm:text-sm font-black text-green-800 truncate">{userEmail}</p>
+                    <p className="text-[9px] sm:text-[10px] text-green-700 font-bold uppercase">Email envoyé de:</p>
+                    <p className="text-[10px] sm:text-xs font-black text-green-800 truncate">{userEmail}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <i className="fa fa-building text-2xl sm:text-3xl text-green-600 shrink-0"></i>
+                <div className="flex items-center gap-2">
+                  <i className="fa fa-building text-xl sm:text-2xl text-green-600 shrink-0"></i>
                   <div className="text-left min-w-0 flex-1">
-                    <p className="text-[10px] sm:text-xs text-green-700 font-bold uppercase">Reçu par:</p>
-                    <p className="text-xs sm:text-sm font-black text-green-800 truncate">{job.company_email || job.email}</p>
+                    <p className="text-[9px] sm:text-[10px] text-green-700 font-bold uppercase">Reçu par:</p>
+                    <p className="text-[10px] sm:text-xs font-black text-green-800 truncate">{job.company_email || job.email}</p>
                   </div>
                 </div>
               </div>
 
-              <p className="text-xs sm:text-sm text-zinc-500 mb-6 px-4">
-                <i className="fa fa-info-circle mr-2"></i>
+              <p className="text-[10px] sm:text-xs text-zinc-500 mb-4 px-3">
+                <i className="fa fa-info-circle mr-1.5"></i>
                 Vérifiez votre boîte mail pour la copie de confirmation
               </p>
 
