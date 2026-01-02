@@ -45,7 +45,7 @@ export const SidebarAd: React.FC = () => {
           Publicité
         </p>
         <AdBanner 
-          slot="1234567890" // Replace with your ad slot ID
+          slot="6802637448"
           format="vertical"
           style={{ minHeight: '600px' }}
         />
@@ -64,7 +64,7 @@ export const InFeedAd: React.FC = () => {
           Publicité
         </p>
         <AdBanner 
-          slot="0987654321" // Replace with your ad slot ID
+          slot="7273410736"
           format="fluid"
           style={{ minHeight: '250px' }}
         />
