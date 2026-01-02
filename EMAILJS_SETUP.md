@@ -7,6 +7,7 @@ EmailJS allows sending emails directly from the browser without a backend server
 - ✅ 200 emails/month free
 - ✅ No credit card required
 - ✅ No backend needed
+- ✅ Attachments up to 5MB supported
 
 ---
 
@@ -27,25 +28,35 @@ EmailJS allows sending emails directly from the browser without a backend server
 ### 3. Create Email Template
 1. Go to **"Email Templates"** tab
 2. Click **"Create New Template"**
-3. Use this template:
+3. **Enable Attachments**: Click "Settings" → Enable "Allow Attachments"
+4. Use this template:
 
 ```
-Subject: Candidature pour {{job_title}} - {{company_name}}
+Subject: {{subject}}
 
-À: {{to_email}}
-De: {{from_name}} <{{from_email}}>
+Bonjour {{to_name}},
 
-{{cover_letter}}
+Je vous contacte pour postuler au poste de {{job_title}} au sein de {{company_name}}.
 
----
-CV: {{cv_filename}} (voir pièce jointe)
+{{message}}
+
+Vous trouverez mon CV en pièce jointe.
 
 Cordialement,
 {{from_name}}
 {{from_email}}
+
+---
+Ce message a été envoyé via HireMe Maroc
 ```
 
-4. Copy the **Template ID** (e.g., `template_xyz789`)
+**Important Template Settings:**
+- ✅ Enable "Allow Attachments" in template settings
+- ✅ Set "From Name" to: `{{from_name}}`
+- ✅ Set "From Email" to: Your verified sender email (e.g., `noreply@yourdomain.com`)
+- ✅ Set "Reply To" to: `{{reply_to}}`
+
+5. Copy the **Template ID** (e.g., `template_xyz789`)
 
 ### 4. Get Public Key
 1. Go to **"Account"** tab
@@ -78,14 +89,17 @@ These are automatically filled by the application:
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `{{to_email}}` | Company email | `hr@company.com` |
+| `{{to_name}}` | Company name | `TechCorp` |
 | `{{from_name}}` | User name (from email) | `John Doe` |
 | `{{from_email}}` | User email | `john@gmail.com` |
 | `{{reply_to}}` | Reply-to address | `john@gmail.com` |
 | `{{job_title}}` | Job position | `Développeur Full Stack` |
 | `{{company_name}}` | Company name | `TechCorp` |
-| `{{subject}}` | Email subject | Auto-generated |
-| `{{cover_letter}}` | AI-generated letter | Full letter text |
-| `{{cv_filename}}` | CV file name | `CV_John_Doe.pdf` |
+| `{{subject}}` | Email subject | `Candidature pour [Job] - [Company]` |
+| `{{message}}` | AI cover letter | Full letter text |
+| **Attachment** | CV file | PDF/Word file automatically attached |
+
+**Note:** The CV is sent as a file attachment, not embedded in the email body.
 
 ---
 
@@ -110,6 +124,8 @@ These are automatically filled by the application:
 - Verify Service ID and Template ID are correct
 - Check spam folder
 - Ensure Gmail service is connected properly
+- **Verify "Allow Attachments" is enabled in template**
+- Check if CV file size is under 5MB
 
 ### Rate Limit (200 emails/month)
 - Upgrade to EmailJS paid plan ($15/month for 1000 emails)

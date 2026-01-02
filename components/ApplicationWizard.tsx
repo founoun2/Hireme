@@ -112,19 +112,31 @@ export const ApplicationWizard: React.FC<ApplicationWizardProps> = ({ job, onClo
       // Extract text from CV (simplified - in production use proper PDF parser)
       const cvText = `CV for ${job.title} position`;
 
-      const prompt = `You are a professional career advisor. Based on this CV and job posting, write a compelling cover letter in ${LANGUAGE_OPTIONS.find(l => l.code === language)?.name}.
+      // Different prompt styles for variety on refresh
+      const promptStyles = [
+        `You are a professional career advisor. Write a compelling cover letter in ${LANGUAGE_OPTIONS.find(l => l.code === language)?.name} for this job application.`,
+        `You are an expert HR consultant. Create a persuasive cover letter in ${LANGUAGE_OPTIONS.find(l => l.code === language)?.name} that stands out.`,
+        `You are a senior recruiter. Draft an impressive cover letter in ${LANGUAGE_OPTIONS.find(l => l.code === language)?.name} for this candidate.`,
+      ];
+
+      const styleIndex = refreshCount % promptStyles.length;
+      const promptIntro = promptStyles[styleIndex];
+
+      const prompt = `${promptIntro}
 
 Job Title: ${job.title}
 Company: ${job.company}
 Job Description: ${job.description}
 
 Write a professional, concise cover letter (max 200 words) that:
-- Introduces the candidate
+- Opens with a ${refreshCount === 0 ? 'strong introduction' : refreshCount === 1 ? 'compelling hook' : 'unique opening'}
 - Highlights relevant skills matching the job
-- Shows enthusiasm for the role
-- Requests an interview
+- Shows enthusiasm and cultural fit
+- ${refreshCount === 0 ? 'Emphasizes technical competencies' : refreshCount === 1 ? 'Focuses on achievements and impact' : 'Demonstrates passion and motivation'}
+- Ends with a call to action
 
-Write ONLY the letter content, no subject line or extra formatting.`;
+IMPORTANT: Generate version ${refreshCount + 1} - make it unique and different from previous attempts.
+Write ONLY the letter content in ${LANGUAGE_OPTIONS.find(l => l.code === language)?.name}, no subject line or extra formatting.`;
 
       // Try AI providers in order: OpenAI → Gemini → Z.AI → Flowith
       let generatedText = '';
@@ -144,7 +156,7 @@ Write ONLY the letter content, no subject line or extra formatting.`;
             model: 'gpt-3.5-turbo',
             messages: [{ role: 'user', content: prompt }],
             max_tokens: 400,
-            temperature: 0.7
+            temperature: 0.8 + (refreshCount * 0.1) // Increase randomness on each refresh
           })
         });
 
@@ -166,7 +178,11 @@ Write ONLY the letter content, no subject line or extra formatting.`;
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }]
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: {
+                temperature: 0.9 + (refreshCount * 0.05), // More variety on refresh
+                maxOutputTokens: 400
+              }
             })
           });
 
@@ -308,21 +324,27 @@ Cordiali saluti.`
       console.log('📧 Initializing EmailJS...');
       emailjs.init(publicKey);
 
-      // Prepare email template parameters
+      // Prepare email template parameters with CV attachment
       const templateParams = {
         to_email: targetEmail,
-        from_name: userEmail.split('@')[0], // Extract name from email
+        to_name: job.company,
+        from_name: userEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), // Format name from email
         from_email: userEmail,
         reply_to: userEmail,
         job_title: job.title,
         company_name: job.company,
-        subject: `Candidature pour ${job.title}`,
-        cover_letter: coverLetter,
-        cv_attachment: cvBase64, // Base64 encoded CV
-        cv_filename: cvFile?.name || 'CV.pdf'
+        subject: `Candidature pour ${job.title} - ${job.company}`,
+        message: coverLetter,
+        // CV Attachment - EmailJS supports attachments
+        attachments: [{
+          name: cvFile?.name || 'CV.pdf',
+          data: cvBase64.split(',')[1], // Remove data:application/pdf;base64, prefix
+          contentType: cvFile?.type || 'application/pdf'
+        }]
       };
 
-      console.log('📤 Sending email to:', targetEmail);
+      console.log('📤 Sending email with CV attachment to:', targetEmail);
+      console.log('📎 CV file:', cvFile?.name, `(${(cvFile?.size || 0 / 1024).toFixed(0)} KB)`);
       
       // Send email using EmailJS
       const response = await emailjs.send(
@@ -376,65 +398,68 @@ Cordiali saluti.`
   };
 
   const renderStepIndicator = () => (
-    <div className="flex items-center justify-center gap-2 mb-8">
+    <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-6 sm:mb-8">
       {(['upload', 'generate', 'review', 'send'] as Step[]).map((s, i) => (
         <div key={s} className="flex items-center">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black transition-all ${
-            step === s ? 'bg-indigo-600 text-white scale-110' : 
+          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-black transition-all ${
+            step === s ? 'bg-indigo-600 text-white scale-110 shadow-lg' : 
             ['upload', 'generate', 'review'].indexOf(step) > i ? 'bg-green-500 text-white' : 'bg-zinc-200 text-zinc-400'
           }`}>
             {['upload', 'generate', 'review'].indexOf(step) > i ? '✓' : i + 1}
           </div>
-          {i < 3 && <div className={`w-12 h-0.5 ${['upload', 'generate', 'review'].indexOf(step) > i ? 'bg-green-500' : 'bg-zinc-200'}`}></div>}
+          {i < 3 && <div className={`w-8 sm:w-12 h-0.5 ${['upload', 'generate', 'review'].indexOf(step) > i ? 'bg-green-500' : 'bg-zinc-200'}`}></div>}
         </div>
       ))}
     </div>
   );
 
   return (
-    <div className="fixed inset-0 bg-zinc-900/80 backdrop-blur-xl z-[200] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-zinc-900/90 backdrop-blur-xl z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
       <div 
-        className="bg-white w-full max-w-3xl max-h-[90vh] rounded-3xl flex flex-col overflow-hidden shadow-3xl"
+        className="bg-white w-full sm:max-w-2xl lg:max-w-3xl h-[95vh] sm:h-auto sm:max-h-[92vh] rounded-t-[2rem] sm:rounded-[2rem] flex flex-col overflow-hidden shadow-3xl animate-in slide-in-from-bottom-10 sm:fade-in duration-300"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Mobile drag handle */}
+        <div className="w-12 h-1.5 bg-zinc-300 rounded-full mx-auto mt-3 mb-1 sm:hidden shrink-0"></div>
+
         {/* Header */}
-        <div className="h-20 flex items-center justify-between px-8 border-b border-zinc-100 shrink-0">
-          <div>
-            <h3 className="text-2xl font-black text-zinc-900">Postuler en ligne</h3>
-            <p className="text-xs text-zinc-400 font-bold">{job.title} • {job.company}</p>
+        <div className="h-16 sm:h-20 flex items-center justify-between px-5 sm:px-8 border-b border-zinc-100 shrink-0">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg sm:text-2xl font-black text-zinc-900 truncate">Postuler en ligne</h3>
+            <p className="text-[10px] sm:text-xs text-zinc-400 font-bold truncate">{job.title} • {job.company}</p>
           </div>
-          <button onClick={onClose} className="w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center hover:bg-zinc-200 transition-colors">
-            <i className="fa fa-times text-zinc-400"></i>
+          <button onClick={onClose} className="w-9 h-9 sm:w-10 sm:h-10 bg-zinc-100 rounded-xl sm:rounded-xl flex items-center justify-center hover:bg-zinc-200 transition-colors active:scale-90 shrink-0 ml-3">
+            <i className="fa fa-times text-zinc-400 text-sm"></i>
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex-grow overflow-y-auto px-8 py-8">
+        <div className="flex-grow overflow-y-auto px-5 sm:px-8 py-6 sm:py-8 overscroll-contain">
           {renderStepIndicator()}
 
           {/* Step 1: Upload CV */}
           {step === 'upload' && (
-            <div className="space-y-6">
+            <div className="space-y-5 sm:space-y-6">
               <div className="text-center">
-                <i className="fa fa-file-pdf text-6xl text-indigo-600 mb-4"></i>
-                <h4 className="text-xl font-black text-zinc-900 mb-2">Téléchargez votre CV</h4>
-                <p className="text-sm text-zinc-500">PDF ou Word • Max 5MB</p>
+                <i className="fa fa-file-pdf text-5xl sm:text-6xl text-indigo-600 mb-3 sm:mb-4"></i>
+                <h4 className="text-lg sm:text-xl font-black text-zinc-900 mb-1 sm:mb-2">Téléchargez votre CV</h4>
+                <p className="text-xs sm:text-sm text-zinc-500">PDF ou Word • Max 5MB</p>
               </div>
 
               <label className="block cursor-pointer">
-                <div className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all ${
-                  cvFile ? 'border-green-500 bg-green-50' : 'border-zinc-200 hover:border-indigo-400 hover:bg-indigo-50/30'
+                <div className={`border-2 border-dashed rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center transition-all active:scale-[0.98] ${
+                  cvFile ? 'border-green-500 bg-green-50' : 'border-zinc-200 hover:border-indigo-400 hover:bg-indigo-50/30 active:bg-indigo-50/50'
                 }`}>
                   {cvFile ? (
-                    <div className="space-y-3">
-                      <i className="fa fa-check-circle text-4xl text-green-600"></i>
-                      <p className="font-black text-zinc-900">{cvFile.name}</p>
+                    <div className="space-y-2 sm:space-y-3">
+                      <i className="fa fa-check-circle text-3xl sm:text-4xl text-green-600"></i>
+                      <p className="font-black text-zinc-900 text-sm sm:text-base break-all px-2">{cvFile.name}</p>
                       <p className="text-xs text-zinc-500">{(cvFile.size / 1024).toFixed(0)} KB</p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      <i className="fa fa-cloud-upload text-4xl text-zinc-300"></i>
-                      <p className="font-bold text-zinc-600">Cliquez pour sélectionner votre CV</p>
+                    <div className="space-y-2 sm:space-y-3">
+                      <i className="fa fa-cloud-upload text-3xl sm:text-4xl text-zinc-300"></i>
+                      <p className="font-bold text-zinc-600 text-sm sm:text-base px-2">Cliquez pour sélectionner votre CV</p>
                     </div>
                   )}
                 </div>
@@ -449,41 +474,41 @@ Cordiali saluti.`
               <button
                 onClick={() => setStep('generate')}
                 disabled={!cvFile}
-                className={`w-full py-5 rounded-2xl font-black text-lg transition-all ${
+                className={`w-full py-4 sm:py-5 rounded-xl sm:rounded-2xl font-black text-base sm:text-lg transition-all active:scale-95 ${
                   cvFile 
-                    ? 'bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95' 
+                    ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg' 
                     : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
                 }`}
               >
-                Continuer <i className="fa fa-arrow-right ml-2"></i>
+                Continuer <i className="fa fa-arrow-right ml-2 text-sm"></i>
               </button>
             </div>
           )}
 
           {/* Step 2: Generate Cover Letter */}
           {step === 'generate' && (
-            <div className="space-y-6">
+            <div className="space-y-5 sm:space-y-6">
               <div className="text-center">
-                <i className="fa fa-robot text-6xl text-indigo-600 mb-4"></i>
-                <h4 className="text-xl font-black text-zinc-900 mb-2">Lettre de motivation IA</h4>
-                <p className="text-sm text-zinc-500">Choisissez la langue et générez votre lettre</p>
+                <i className="fa fa-robot text-5xl sm:text-6xl text-indigo-600 mb-3 sm:mb-4"></i>
+                <h4 className="text-lg sm:text-xl font-black text-zinc-900 mb-1 sm:mb-2">Lettre de motivation IA</h4>
+                <p className="text-xs sm:text-sm text-zinc-500">Choisissez la langue et générez votre lettre</p>
               </div>
 
               <div>
-                <label className="block text-sm font-black text-zinc-700 mb-3">Langue</label>
-                <div className="grid grid-cols-5 gap-3">
+                <label className="block text-xs sm:text-sm font-black text-zinc-700 mb-3">Langue</label>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
                   {LANGUAGE_OPTIONS.map(lang => (
                     <button
                       key={lang.code}
                       onClick={() => setLanguage(lang.code)}
-                      className={`p-4 rounded-xl border-2 transition-all ${
+                      className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 transition-all active:scale-95 ${
                         language === lang.code 
-                          ? 'border-indigo-600 bg-indigo-50' 
-                          : 'border-zinc-200 hover:border-indigo-300'
+                          ? 'border-indigo-600 bg-indigo-50 shadow-md' 
+                          : 'border-zinc-200 hover:border-indigo-300 active:border-indigo-400'
                       }`}
                     >
-                      <div className="text-3xl mb-1">{lang.flag}</div>
-                      <div className="text-xs font-bold text-zinc-700">{lang.name}</div>
+                      <div className="text-2xl sm:text-3xl mb-1">{lang.flag}</div>
+                      <div className="text-[10px] sm:text-xs font-bold text-zinc-700 leading-tight">{lang.name}</div>
                     </button>
                   ))}
                 </div>
@@ -492,12 +517,12 @@ Cordiali saluti.`
               <button
                 onClick={generateCoverLetter}
                 disabled={isGenerating}
-                className="w-full py-5 rounded-2xl font-black text-lg bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all disabled:opacity-50"
+                className="w-full py-4 sm:py-5 rounded-xl sm:rounded-2xl font-black text-base sm:text-lg bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all disabled:opacity-50 shadow-lg"
               >
                 {isGenerating ? (
                   <>
                     <i className="fa fa-spinner fa-spin mr-2"></i>
-                    Génération en cours...
+                    Génération...
                   </>
                 ) : (
                   <>
@@ -513,7 +538,7 @@ Cordiali saluti.`
                   setCoverLetter('');
                   setStep('review');
                 }}
-                className="w-full py-4 rounded-2xl font-bold text-sm border-2 border-zinc-200 text-zinc-600 hover:border-indigo-400 hover:text-indigo-600 transition-all"
+                className="w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm border-2 border-zinc-200 text-zinc-600 hover:border-indigo-400 hover:text-indigo-600 transition-all active:scale-95"
               >
                 Écrire ma propre lettre
               </button>
@@ -522,26 +547,26 @@ Cordiali saluti.`
 
           {/* Step 3: Review & Edit */}
           {step === 'review' && (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div className="text-center">
-                <i className="fa fa-edit text-6xl text-indigo-600 mb-4"></i>
-                <h4 className="text-xl font-black text-zinc-900 mb-2">
+                <i className="fa fa-edit text-5xl sm:text-6xl text-indigo-600 mb-3 sm:mb-4"></i>
+                <h4 className="text-lg sm:text-xl font-black text-zinc-900 mb-1 sm:mb-2">
                   {customMode ? 'Votre lettre de motivation' : 'Vérifiez et personnalisez'}
                 </h4>
-                <p className="text-sm text-zinc-500">
+                <p className="text-xs sm:text-sm text-zinc-500">
                   {customMode ? 'Rédigez votre lettre' : `${3 - refreshCount} régénérations restantes`}
                 </p>
               </div>
 
               {/* Email Verification */}
-              <div className={`p-6 rounded-2xl border-2 transition-all ${
+              <div className={`p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 transition-all ${
                 emailConfirmed ? 'border-green-500 bg-green-50' : 'border-yellow-400 bg-yellow-50'
               }`}>
                 <div className="flex items-center gap-2 mb-3">
-                  <i className={`fa ${emailConfirmed ? 'fa-check-circle text-green-600' : 'fa-envelope text-yellow-600'} text-lg`}></i>
-                  <label className="text-sm font-black text-zinc-700">Votre adresse email</label>
+                  <i className={`fa ${emailConfirmed ? 'fa-check-circle text-green-600' : 'fa-envelope text-yellow-600'} text-base sm:text-lg`}></i>
+                  <label className="text-xs sm:text-sm font-black text-zinc-700">Votre adresse email</label>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-2 sm:gap-3">
                   <input
                     type="email"
                     value={userEmail}
@@ -551,7 +576,7 @@ Cordiali saluti.`
                     }}
                     placeholder="votre.email@example.com"
                     disabled={emailConfirmed}
-                    className={`flex-1 px-4 py-3 rounded-xl border-2 focus:outline-none text-sm font-medium ${
+                    className={`flex-1 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border-2 focus:outline-none text-xs sm:text-sm font-medium ${
                       emailConfirmed 
                         ? 'border-green-500 bg-white text-green-800 cursor-not-allowed' 
                         : 'border-zinc-200 focus:border-indigo-400'
@@ -560,22 +585,22 @@ Cordiali saluti.`
                   {!emailConfirmed ? (
                     <button
                       onClick={handleEmailConfirm}
-                      className="px-6 py-3 rounded-xl font-black bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all"
+                      className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-black text-xs sm:text-sm bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all"
                     >
-                      <i className="fa fa-check mr-2"></i>
-                      Oui
+                      <i className="fa fa-check mr-1 sm:mr-2"></i>
+                      <span className="hidden sm:inline">Oui</span>
                     </button>
                   ) : (
                     <button
                       onClick={() => setEmailConfirmed(false)}
-                      className="px-6 py-3 rounded-xl font-bold border-2 border-green-500 text-green-700 hover:bg-green-50 active:scale-95 transition-all"
+                      className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold border-2 border-green-500 text-green-700 hover:bg-green-50 active:scale-95 transition-all"
                     >
                       <i className="fa fa-edit"></i>
                     </button>
                   )}
                 </div>
                 {emailConfirmed && (
-                  <p className="text-xs text-green-700 font-bold mt-2 flex items-center gap-2">
+                  <p className="text-[10px] sm:text-xs text-green-700 font-bold mt-2 flex items-center gap-2">
                     <i className="fa fa-shield-check"></i>
                     Email confirmé et enregistré
                   </p>
@@ -585,27 +610,27 @@ Cordiali saluti.`
               <textarea
                 value={coverLetter}
                 onChange={(e) => setCoverLetter(e.target.value)}
-                className="w-full h-64 p-6 rounded-2xl border-2 border-zinc-200 focus:border-indigo-400 focus:outline-none text-sm leading-relaxed resize-none"
+                className="w-full h-48 sm:h-64 p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 border-zinc-200 focus:border-indigo-400 focus:outline-none text-xs sm:text-sm leading-relaxed resize-none"
                 placeholder="Tapez votre lettre de motivation ici..."
               />
 
-              <div className="flex gap-3">
+              <div className="flex gap-2 sm:gap-3">
                 {!customMode && (
                   <button
                     onClick={handleRefresh}
                     disabled={refreshCount >= 3 || isGenerating}
-                    className="flex-1 py-4 rounded-2xl font-bold border-2 border-indigo-200 text-indigo-600 hover:bg-indigo-50 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="flex-1 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm border-2 border-indigo-200 text-indigo-600 hover:bg-indigo-50 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    <i className="fa fa-refresh mr-2"></i>
-                    Régénérer ({3 - refreshCount})
+                    <i className="fa fa-refresh mr-1 sm:mr-2"></i>
+                    <span className="hidden sm:inline">Régénérer </span>({3 - refreshCount})
                   </button>
                 )}
                 <button
                   onClick={() => setStep('send')}
                   disabled={!coverLetter.trim() || !emailConfirmed}
-                  className="flex-1 py-4 rounded-2xl font-black bg-green-600 text-white hover:bg-green-700 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="flex-1 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base bg-green-600 text-white hover:bg-green-700 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-lg"
                 >
-                  Continuer <i className="fa fa-arrow-right ml-2"></i>
+                  Continuer <i className="fa fa-arrow-right ml-1 sm:ml-2 text-xs"></i>
                 </button>
               </div>
             </div>
@@ -613,32 +638,47 @@ Cordiali saluti.`
 
           {/* Step 4: Send Confirmation */}
           {step === 'send' && (
-            <div className="text-center py-12">
-              <div className="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i className={`fa ${isSending ? 'fa-spinner fa-spin' : 'fa-paper-plane'} text-5xl text-indigo-600`}></i>
+            <div className="text-center py-8 sm:py-12">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <i className={`fa ${isSending ? 'fa-spinner fa-spin' : 'fa-paper-plane'} text-4xl sm:text-5xl text-indigo-600`}></i>
               </div>
-              <h4 className="text-2xl font-black text-zinc-900 mb-3">
+              <h4 className="text-xl sm:text-2xl font-black text-zinc-900 mb-3">
                 {isSending ? 'Envoi en cours...' : 'Prêt à envoyer'}
               </h4>
-              <p className="text-zinc-600 mb-2">
-                <strong>À:</strong> {job.company_email || job.email}
-              </p>
-              <p className="text-zinc-600 mb-2">
-                <strong>De:</strong> {userEmail}
-              </p>
-              <p className="text-zinc-600 mb-8">
-                <strong>Poste:</strong> {job.title} - {job.company}
-              </p>
               
-              <div className="bg-zinc-50 p-6 rounded-2xl mb-8 max-h-48 overflow-y-auto text-left">
-                <p className="text-xs text-zinc-500 font-bold mb-2">Aperçu de la lettre:</p>
-                <p className="text-sm text-zinc-700 whitespace-pre-line">{coverLetter.substring(0, 300)}...</p>
+              <div className="bg-zinc-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 space-y-2 text-left max-w-md mx-auto">
+                <div className="flex items-start gap-3">
+                  <i className="fa fa-building text-indigo-600 text-lg sm:text-xl mt-0.5 shrink-0"></i>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">À</p>
+                    <p className="text-xs sm:text-sm font-black text-zinc-900 truncate">{job.company_email || job.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <i className="fa fa-user text-green-600 text-lg sm:text-xl mt-0.5 shrink-0"></i>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">De</p>
+                    <p className="text-xs sm:text-sm font-black text-zinc-900 truncate">{userEmail}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <i className="fa fa-briefcase text-purple-600 text-lg sm:text-xl mt-0.5 shrink-0"></i>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">Poste</p>
+                    <p className="text-xs sm:text-sm font-black text-zinc-900 line-clamp-2">{job.title} - {job.company}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-zinc-50 p-4 sm:p-6 rounded-xl sm:rounded-2xl mb-6 sm:mb-8 max-h-32 sm:max-h-48 overflow-y-auto text-left max-w-md mx-auto">
+                <p className="text-[10px] sm:text-xs text-zinc-500 font-bold mb-2 uppercase">Aperçu de la lettre:</p>
+                <p className="text-xs sm:text-sm text-zinc-700 whitespace-pre-line leading-relaxed">{coverLetter.substring(0, 300)}...</p>
               </div>
 
               <button
                 onClick={handleSendApplication}
                 disabled={isSending}
-                className="px-12 py-5 rounded-2xl font-black bg-green-600 text-white hover:bg-green-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
+                className="w-full sm:w-auto px-8 sm:px-12 py-4 sm:py-5 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base bg-green-600 text-white hover:bg-green-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
               >
                 {isSending ? (
                   <>
@@ -656,7 +696,7 @@ Cordiali saluti.`
               {!isSending && (
                 <button
                   onClick={() => setStep('review')}
-                  className="mt-4 px-6 py-3 rounded-xl font-bold text-zinc-500 hover:text-zinc-700 transition-all"
+                  className="mt-4 px-6 py-3 rounded-xl font-bold text-sm text-zinc-500 hover:text-zinc-700 transition-all active:scale-95"
                 >
                   <i className="fa fa-arrow-left mr-2"></i>
                   Retour
@@ -667,41 +707,41 @@ Cordiali saluti.`
 
           {/* Step 5: Success Confirmation */}
           {step === 'success' && (
-            <div className="text-center py-16">
-              <div className="w-28 h-28 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
-                <i className="fa fa-check-circle text-6xl text-green-600"></i>
+            <div className="text-center py-12 sm:py-16 px-4">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 animate-bounce">
+                <i className="fa fa-check-circle text-5xl sm:text-6xl text-green-600"></i>
               </div>
-              <h4 className="text-3xl font-black text-zinc-900 mb-4">Candidature envoyée !</h4>
-              <p className="text-lg text-zinc-600 mb-2">
+              <h4 className="text-2xl sm:text-3xl font-black text-zinc-900 mb-3 sm:mb-4">Candidature envoyée !</h4>
+              <p className="text-sm sm:text-lg text-zinc-600 mb-2 px-4">
                 Votre CV et lettre de motivation ont été envoyés avec succès à:
               </p>
-              <p className="text-xl font-black text-indigo-600 mb-8">{job.company}</p>
+              <p className="text-lg sm:text-xl font-black text-indigo-600 mb-6 sm:mb-8 px-4 break-all">{job.company}</p>
               
-              <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-6 mb-8 max-w-md mx-auto">
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <i className="fa fa-envelope-circle-check text-3xl text-green-600"></i>
-                  <div className="text-left">
-                    <p className="text-xs text-green-700 font-bold">Email envoyé de:</p>
-                    <p className="text-sm font-black text-green-800">{userEmail}</p>
+              <div className="bg-green-50 border-2 border-green-200 rounded-xl sm:rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 max-w-md mx-auto">
+                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-green-200">
+                  <i className="fa fa-envelope-circle-check text-2xl sm:text-3xl text-green-600 shrink-0"></i>
+                  <div className="text-left min-w-0 flex-1">
+                    <p className="text-[10px] sm:text-xs text-green-700 font-bold uppercase">Email envoyé de:</p>
+                    <p className="text-xs sm:text-sm font-black text-green-800 truncate">{userEmail}</p>
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-3">
-                  <i className="fa fa-building text-3xl text-green-600"></i>
-                  <div className="text-left">
-                    <p className="text-xs text-green-700 font-bold">Reçu par:</p>
-                    <p className="text-sm font-black text-green-800">{job.company_email || job.email}</p>
+                <div className="flex items-center gap-3">
+                  <i className="fa fa-building text-2xl sm:text-3xl text-green-600 shrink-0"></i>
+                  <div className="text-left min-w-0 flex-1">
+                    <p className="text-[10px] sm:text-xs text-green-700 font-bold uppercase">Reçu par:</p>
+                    <p className="text-xs sm:text-sm font-black text-green-800 truncate">{job.company_email || job.email}</p>
                   </div>
                 </div>
               </div>
 
-              <p className="text-sm text-zinc-500 mb-6">
+              <p className="text-xs sm:text-sm text-zinc-500 mb-6 px-4">
                 <i className="fa fa-info-circle mr-2"></i>
                 Vérifiez votre boîte mail pour la copie de confirmation
               </p>
 
               <button
                 onClick={onClose}
-                className="px-10 py-4 rounded-2xl font-black bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all"
+                className="w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all shadow-lg"
               >
                 Fermer
               </button>
