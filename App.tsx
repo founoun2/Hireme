@@ -7,7 +7,7 @@ import { Sidebar } from './components/Sidebar';
 import { JobCard } from './components/JobCard';
 import { JobModal } from './components/JobModal';
 import { CookieConsent } from './components/CookieConsent';
-import { SidebarAd, InFeedAd } from './components/AdBanner';
+import { InFeedAd } from './components/AdBanner';
 import { jobService } from './services/jobService';
 import { aggregateJobs } from './services/jobAggregator';
 
@@ -214,9 +214,6 @@ const App: React.FC = () => {
       />
 
       <Sidebar activeKey={activeSidebar} onClose={() => setActiveSidebar(null)} />
-      
-      {/* Google AdSense - Desktop Left Sidebar */}
-      <SidebarAd />
       
       {/* Scanning Splash Screen (Mobile/Desktop Optimized) */}
       {isScanning && allJobs.length === 0 && (

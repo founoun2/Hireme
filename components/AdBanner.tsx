@@ -60,10 +60,10 @@ export const SidebarAd: React.FC = () => {
   );
 };
 
-// Mobile In-Feed Ad Component (Between Jobs)
+// In-Feed Ad Component (Desktop & Mobile - Between Jobs)
 export const InFeedAd: React.FC = () => {
   return (
-    <div className="lg:hidden w-full my-4">
+    <div className="w-full my-4">
       <div className="bg-gradient-to-br from-zinc-50 to-white rounded-2xl border border-zinc-100 p-4 shadow-sm">
         <p className="text-[8px] uppercase tracking-wider text-zinc-400 font-bold mb-3 text-center flex items-center justify-center gap-1.5">
           <i className="fa fa-info-circle text-[7px]"></i>
