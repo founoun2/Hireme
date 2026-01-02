@@ -275,7 +275,7 @@ Cordiali saluti.`
 
   const handleSendApplication = async () => {
     if (!emailConfirmed) {
-      alert('Veuillez confirmer votre adresse email');
+      alert('⚠️ Veuillez confirmer votre adresse email');
       return;
     }
 
@@ -284,7 +284,8 @@ Cordiali saluti.`
       const targetEmail = job.company_email || job.email;
       
       if (!targetEmail) {
-        alert('Aucune adresse email disponible pour cette offre');
+        alert('❌ Aucune adresse email disponible pour cette offre');
+        setIsSending(false);
         return;
       }
 
@@ -294,9 +295,17 @@ Cordiali saluti.`
       const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
 
       if (!publicKey || !serviceId || !templateId) {
-        throw new Error('EmailJS not configured');
+        alert(`❌ Configuration EmailJS manquante!\n\n` +
+          `Veuillez configurer EmailJS:\n` +
+          `${!publicKey ? '- VITE_EMAILJS_PUBLIC_KEY manquant\n' : ''}` +
+          `${!serviceId ? '- VITE_EMAILJS_SERVICE_ID manquant\n' : ''}` +
+          `${!templateId ? '- VITE_EMAILJS_TEMPLATE_ID manquant\n' : ''}` +
+          `\nConsultez EMAILJS_SETUP.md pour les instructions`);
+        setIsSending(false);
+        return;
       }
 
+      console.log('📧 Initializing EmailJS...');
       emailjs.init(publicKey);
 
       // Prepare email template parameters
@@ -313,12 +322,16 @@ Cordiali saluti.`
         cv_filename: cvFile?.name || 'CV.pdf'
       };
 
+      console.log('📤 Sending email to:', targetEmail);
+      
       // Send email using EmailJS
       const response = await emailjs.send(
         serviceId,
         templateId,
         templateParams
       );
+
+      console.log('✅ Email sent successfully:', response);
 
       if (response.status === 200) {
         // Success - move to confirmation step
@@ -327,11 +340,36 @@ Cordiali saluti.`
           onClose();
         }, 5000);
       } else {
-        throw new Error('Email sending failed');
+        throw new Error(`Email sending failed with status: ${response.status}`);
       }
-    } catch (error) {
-      console.error('Error sending application:', error);
-      alert('Erreur lors de l\'envoi. Veuillez réessayer.');
+    } catch (error: any) {
+      console.error('❌ Error sending application:', error);
+      
+      // Detailed error messages
+      let errorMessage = '❌ Erreur lors de l\'envoi:\n\n';
+      
+      if (error.text) {
+        errorMessage += `Détails: ${error.text}\n`;
+      } else if (error.message) {
+        errorMessage += `Détails: ${error.message}\n`;
+      }
+      
+      // Common error scenarios
+      if (error.message?.includes('network') || error.message?.includes('fetch')) {
+        errorMessage += '\n🌐 Problème de connexion internet';
+      } else if (error.message?.includes('429') || error.text?.includes('limit')) {
+        errorMessage += '\n⏱️ Limite d\'envoi atteinte (200 emails/mois gratuit)';
+      } else if (error.message?.includes('401') || error.message?.includes('403')) {
+        errorMessage += '\n🔑 Clés EmailJS invalides - Vérifiez votre configuration';
+      } else if (error.message?.includes('400')) {
+        errorMessage += '\n📝 Données invalides - Vérifiez le template EmailJS';
+      } else {
+        errorMessage += '\n💡 Vérifiez la console (F12) pour plus de détails';
+      }
+      
+      errorMessage += '\n\n📖 Consultez EMAILJS_SETUP.md pour l\'aide';
+      
+      alert(errorMessage);
     } finally {
       setIsSending(false);
     }
