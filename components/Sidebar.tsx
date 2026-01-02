@@ -18,7 +18,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeKey, onClose }) => {
         onClick={onClose}
       />
       <aside 
-        className={`fixed top-0 right-0 h-full w-full sm:w-[450px] bg-white shadow-2xl z-[1001] flex flex-col transition-transform duration-500 ease-out ${activeKey ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 h-full w-full sm:w-[380px] bg-white shadow-2xl z-[1001] flex flex-col transition-transform duration-500 ease-out ${activeKey ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="h-20 flex items-center justify-between px-8 border-b border-slate-50">
           <span className="text-xs font-black uppercase tracking-widest text-indigo-600">{content?.title || 'Information'}</span>

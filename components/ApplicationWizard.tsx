@@ -453,7 +453,7 @@ Candidature envoyée via HireMe Maroc
   return (
     <div className="fixed inset-0 bg-zinc-900/90 backdrop-blur-xl z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
       <div 
-        className="bg-white w-full sm:max-w-2xl lg:max-w-3xl h-[95vh] sm:h-auto sm:max-h-[92vh] rounded-t-[2rem] sm:rounded-[2rem] flex flex-col overflow-hidden shadow-3xl animate-in slide-in-from-bottom-10 sm:fade-in duration-300"
+        className="bg-white w-full sm:max-w-xl lg:max-w-2xl h-[95vh] sm:h-auto sm:max-h-[92vh] rounded-t-[2rem] sm:rounded-[2rem] flex flex-col overflow-hidden shadow-3xl animate-in slide-in-from-bottom-10 sm:fade-in duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile drag handle */}
@@ -471,7 +471,7 @@ Candidature envoyée via HireMe Maroc
         </div>
 
         {/* Content */}
-        <div className="flex-grow overflow-y-auto px-5 sm:px-8 py-6 sm:py-8 overscroll-contain">
+        <div className="flex-grow overflow-y-auto px-5 sm:px-8 py-4 sm:py-5 overscroll-contain">
           {renderStepIndicator()}
 
           {/* Step 1: Upload CV */}

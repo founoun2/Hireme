@@ -37,7 +37,7 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
   return (
     <div className="fixed inset-0 bg-zinc-900/60 backdrop-blur-md z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6 transition-all animate-in fade-in duration-300" onClick={onClose}>
       <div 
-        className="bg-white w-full max-w-4xl h-[95vh] sm:h-auto sm:max-h-[90vh] sm:rounded-[3rem] rounded-t-[2.5rem] flex flex-col overflow-hidden shadow-3xl animate-in slide-in-from-bottom-10 duration-500"
+        className="bg-white w-full max-w-3xl h-[95vh] sm:h-auto sm:max-h-[90vh] sm:rounded-[3rem] rounded-t-[2.5rem] flex flex-col overflow-hidden shadow-3xl animate-in slide-in-from-bottom-10 duration-500"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Handle for mobile */}
@@ -50,7 +50,7 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
           </button>
         </div>
         
-        <div className="flex-grow overflow-y-auto px-6 sm:px-14 py-8 sm:py-12 scroll-smooth">
+        <div className="flex-grow overflow-y-auto px-6 sm:px-14 py-5 sm:py-7 scroll-smooth">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8 mb-10">
             <div className="w-20 h-20 sm:w-24 sm:h-24 bg-zinc-900 rounded-3xl sm:rounded-[2.5rem] flex items-center justify-center text-white text-3xl sm:text-4xl font-black shadow-2xl shadow-zinc-900/10 rotate-[-5deg] shrink-0 mx-auto sm:mx-0">
