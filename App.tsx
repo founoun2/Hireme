@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { Analytics } from "@vercel/analytics/react"
 import { Job, SidebarKey } from './types';
 import { generateMockJobs, CITIES, CONTRACTS, PROFESSIONS } from './constants';
 import { Header } from './components/Header';
@@ -372,6 +373,9 @@ const App: React.FC = () => {
 
       {/* Cookie Consent Popup */}
       <CookieConsent />
+
+      {/* Vercel Analytics */}
+      <Analytics />
     </div>
   );
 };
