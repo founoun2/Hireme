@@ -1,6 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Job } from '../types';
+import { ApplicationWizard } from './ApplicationWizard';
 
 interface JobModalProps {
   job: Job | null;
@@ -10,17 +11,27 @@ interface JobModalProps {
 }
 
 export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApplied }) => {
+  const [showApplicationWizard, setShowApplicationWizard] = useState(false);
+
   if (!job) return null;
 
   const handleExternalApply = () => {
-    // Mark as applied first (saves to localStorage)
-    onApply(job.id);
-    // Redirect to job URL in new tab
-    window.open(job.url, '_blank', 'noopener,noreferrer');
-    // Close modal after short delay
-    setTimeout(() => {
-      onClose();
-    }, 500);
+    // Check if job has email for application wizard
+    const hasEmail = job.company_email || job.email;
+    
+    if (hasEmail) {
+      // Open AI Application Wizard
+      setShowApplicationWizard(true);
+      // Mark as applied
+      onApply(job.id);
+    } else {
+      // Fallback to external URL
+      onApply(job.id);
+      window.open(job.url, '_blank', 'noopener,noreferrer');
+      setTimeout(() => {
+        onClose();
+      }, 500);
+    }
   };
 
   return (
@@ -192,6 +203,17 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
           </div>
         </div>
       </div>
+
+      {/* Application Wizard Modal */}
+      {showApplicationWizard && (
+        <ApplicationWizard 
+          job={job}
+          onClose={() => {
+            setShowApplicationWizard(false);
+            onClose();
+          }}
+        />
+      )}
     </div>
   );
 };

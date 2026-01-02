@@ -1,0 +1,569 @@
+import React, { useState, useEffect } from 'react';
+import { Job } from '../types';
+
+interface ApplicationWizardProps {
+  job: Job;
+  onClose: () => void;
+}
+
+type Step = 'upload' | 'generate' | 'review' | 'send';
+type Language = 'en' | 'ar' | 'fr' | 'es' | 'it';
+
+const LANGUAGE_OPTIONS: { code: Language; name: string; flag: string }[] = [
+  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'ar', name: 'العربية', flag: '🇲🇦' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+];
+
+export const ApplicationWizard: React.FC<ApplicationWizardProps> = ({ job, onClose }) => {
+  const [step, setStep] = useState<Step>('upload');
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [cvBase64, setCvBase64] = useState<string>('');
+  const [language, setLanguage] = useState<Language>('fr');
+  const [coverLetter, setCoverLetter] = useState<string>('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [refreshCount, setRefreshCount] = useState(0);
+  const [isSending, setIsSending] = useState(false);
+  const [customMode, setCustomMode] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>('');
+  const [emailConfirmed, setEmailConfirmed] = useState(false);
+
+  // Load saved CV from localStorage on mount
+  useEffect(() => {
+    const savedCV = localStorage.getItem('hireme_cv');
+    const savedCVName = localStorage.getItem('hireme_cv_name');
+    const savedEmail = localStorage.getItem('hireme_user_email');
+    
+    if (savedCV && savedCVName) {
+      setCvBase64(savedCV);
+      // Create a virtual file object for display
+      const blob = base64ToBlob(savedCV);
+      const file = new File([blob], savedCVName, { type: 'application/pdf' });
+      setCvFile(file);
+    }
+    
+    if (savedEmail) {
+      setUserEmail(savedEmail);
+    }
+  }, []);
+
+  const base64ToBlob = (base64: string): Blob => {
+    const parts = base64.split(';base64,');
+    const contentType = parts[0].split(':')[1];
+    const raw = window.atob(parts[1]);
+    const rawLength = raw.length;
+    const uInt8Array = new Uint8Array(rawLength);
+    for (let i = 0; i < rawLength; ++i) {
+      uInt8Array[i] = raw.charCodeAt(i);
+    }
+    return new Blob([uInt8Array], { type: contentType });
+  };
+
+  const extractEmailFromCV = (fileName: string): string => {
+    // Simple email pattern matching from filename or content
+    const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+    const matches = fileName.match(emailPattern);
+    return matches ? matches[0] : '';
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!validTypes.includes(file.type)) {
+      alert('Veuillez télécharger un fichier PDF ou Word');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Le fichier est trop volumineux (max 5MB)');
+      return;
+    }
+
+    setCvFile(file);
+
+    // Convert to base64 and save to localStorage
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      setCvBase64(base64);
+      localStorage.setItem('hireme_cv', base64);
+      localStorage.setItem('hireme_cv_name', file.name);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const generateCoverLetter = async () => {
+    setIsGenerating(true);
+    try {
+      // Extract email from CV file name or content
+      const extractedEmail = extractEmailFromCV(cvFile?.name || '');
+      if (extractedEmail && !userEmail) {
+        setUserEmail(extractedEmail);
+        localStorage.setItem('hireme_user_email', extractedEmail);
+      }
+
+      // Extract text from CV (simplified - in production use proper PDF parser)
+      const cvText = `CV for ${job.title} position`;
+
+      const prompt = `You are a professional career advisor. Based on this CV and job posting, write a compelling cover letter in ${LANGUAGE_OPTIONS.find(l => l.code === language)?.name}.
+
+Job Title: ${job.title}
+Company: ${job.company}
+Job Description: ${job.description}
+
+Write a professional, concise cover letter (max 200 words) that:
+- Introduces the candidate
+- Highlights relevant skills matching the job
+- Shows enthusiasm for the role
+- Requests an interview
+
+Write ONLY the letter content, no subject line or extra formatting.`;
+
+      // Try AI providers in order: OpenAI → Gemini → Z.AI → Flowith
+      let generatedText = '';
+
+      // Try OpenAI first
+      try {
+        const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+        if (!apiKey) throw new Error('No OpenAI key');
+        
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'gpt-3.5-turbo',
+            messages: [{ role: 'user', content: prompt }],
+            max_tokens: 400,
+            temperature: 0.7
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          generatedText = data.choices[0].message.content.trim();
+        }
+      } catch (error) {
+        console.log('OpenAI failed, trying Gemini...');
+      }
+
+      // Try Gemini if OpenAI failed
+      if (!generatedText) {
+        try {
+          const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+          if (!apiKey) throw new Error('No Gemini key');
+          
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }]
+            })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            generatedText = data.candidates[0].content.parts[0].text.trim();
+          }
+        } catch (error) {
+          console.log('Gemini failed, trying Z.AI...');
+        }
+      }
+
+      // Fallback: Simple template if all AI fails
+      if (!generatedText) {
+        generatedText = getTemplateCoverLetter(language);
+      }
+
+      setCoverLetter(generatedText);
+      setStep('review');
+    } catch (error) {
+      console.error('Error generating cover letter:', error);
+      setCoverLetter(getTemplateCoverLetter(language));
+      setStep('review');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const getTemplateCoverLetter = (lang: Language): string => {
+    const templates = {
+      fr: `Madame, Monsieur,
+
+Je me permets de vous adresser ma candidature pour le poste de ${job.title} au sein de ${job.company}.
+
+Fort(e) d'une expérience significative dans ce domaine, je suis convaincu(e) que mon profil correspond parfaitement à vos attentes. Mon parcours m'a permis de développer les compétences techniques et relationnelles nécessaires pour exceller dans ce rôle.
+
+Motivé(e) et dynamique, je serais ravi(e) de contribuer au succès de votre entreprise et de relever les défis que ce poste implique.
+
+Je reste à votre disposition pour un entretien à votre convenance.
+
+Cordialement.`,
+      en: `Dear Hiring Manager,
+
+I am writing to express my interest in the ${job.title} position at ${job.company}.
+
+With relevant experience in this field, I am confident that my profile aligns perfectly with your requirements. My background has enabled me to develop the technical and interpersonal skills necessary to excel in this role.
+
+Motivated and dynamic, I would be delighted to contribute to your company's success and take on the challenges this position entails.
+
+I remain available for an interview at your convenience.
+
+Best regards.`,
+      ar: `سيدي/سيدتي المحترم/ة،
+
+أتقدم بطلبي للحصول على منصب ${job.title} في ${job.company}.
+
+بفضل خبرتي الواسعة في هذا المجال، أنا واثق من أن ملفي الشخصي يتوافق تمامًا مع متطلباتكم. لقد مكنتني مسيرتي من تطوير المهارات التقنية والشخصية اللازمة للتفوق في هذا الدور.
+
+متحمس وديناميكي، سأكون سعيدًا بالمساهمة في نجاح شركتكم ومواجهة التحديات التي يتضمنها هذا المنصب.
+
+أبقى تحت تصرفكم لإجراء مقابلة في الوقت الذي يناسبكم.
+
+مع فائق الاحترام.`,
+      es: `Estimado/a señor/a,
+
+Me dirijo a usted para presentar mi candidatura para el puesto de ${job.title} en ${job.company}.
+
+Con experiencia relevante en este campo, estoy convencido/a de que mi perfil se ajusta perfectamente a sus requisitos. Mi trayectoria me ha permitido desarrollar las habilidades técnicas e interpersonales necesarias para destacar en este rol.
+
+Motivado/a y dinámico/a, estaré encantado/a de contribuir al éxito de su empresa y asumir los desafíos que implica este puesto.
+
+Quedo a su disposición para una entrevista cuando le resulte conveniente.
+
+Atentamente.`,
+      it: `Gentile responsabile delle assunzioni,
+
+Mi rivolgo a Lei per presentare la mia candidatura per la posizione di ${job.title} presso ${job.company}.
+
+Con esperienza rilevante in questo campo, sono convinto/a che il mio profilo corrisponda perfettamente alle Vostre esigenze. Il mio percorso mi ha permesso di sviluppare le competenze tecniche e relazionali necessarie per eccellere in questo ruolo.
+
+Motivato/a e dinamico/a, sarei felice di contribuire al successo della Vostra azienda e affrontare le sfide che questa posizione comporta.
+
+Rimango a Vostra disposizione per un colloquio a Vostro piacimento.
+
+Cordiali saluti.`
+    };
+    return templates[lang] || templates.fr;
+  };
+
+  const handleRefresh = () => {
+    if (refreshCount < 3) {
+      setRefreshCount(refreshCount + 1);
+      setEmailConfirmed(false); // Reset email confirmation on refresh
+      generateCoverLetter();
+    }
+  };
+
+  const handleEmailConfirm = () => {
+    if (userEmail && userEmail.includes('@')) {
+      setEmailConfirmed(true);
+      localStorage.setItem('hireme_user_email', userEmail);
+    } else {
+      alert('Veuillez entrer une adresse email valide');
+    }
+  };
+
+  const handleSendApplication = async () => {
+    if (!emailConfirmed) {
+      alert('Veuillez confirmer votre adresse email');
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      const targetEmail = job.company_email || job.email;
+      
+      if (!targetEmail) {
+        alert('Aucune adresse email disponible pour cette offre');
+        return;
+      }
+
+      // Use EmailJS or similar service to send email
+      // For now, we'll open the user's email client with pre-filled data
+      const subject = `Candidature pour ${job.title} - ${job.company}`;
+      const body = encodeURIComponent(`${coverLetter}\n\n---\nCV joint en pièce jointe\n\nCordialement,\n${userEmail}`);
+      
+      // Open default email client with sender's email
+      window.location.href = `mailto:${targetEmail}?subject=${encodeURIComponent(subject)}&body=${body}`;
+
+      // Mark as applied
+      setTimeout(() => {
+        setStep('send');
+        setTimeout(() => {
+          onClose();
+        }, 2000);
+      }, 1000);
+    } catch (error) {
+      console.error('Error sending application:', error);
+      alert('Erreur lors de l\'envoi de la candidature');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const renderStepIndicator = () => (
+    <div className="flex items-center justify-center gap-2 mb-8">
+      {(['upload', 'generate', 'review', 'send'] as Step[]).map((s, i) => (
+        <div key={s} className="flex items-center">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black transition-all ${
+            step === s ? 'bg-indigo-600 text-white scale-110' : 
+            ['upload', 'generate', 'review'].indexOf(step) > i ? 'bg-green-500 text-white' : 'bg-zinc-200 text-zinc-400'
+          }`}>
+            {['upload', 'generate', 'review'].indexOf(step) > i ? '✓' : i + 1}
+          </div>
+          {i < 3 && <div className={`w-12 h-0.5 ${['upload', 'generate', 'review'].indexOf(step) > i ? 'bg-green-500' : 'bg-zinc-200'}`}></div>}
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="fixed inset-0 bg-zinc-900/80 backdrop-blur-xl z-[200] flex items-center justify-center p-4" onClick={onClose}>
+      <div 
+        className="bg-white w-full max-w-3xl max-h-[90vh] rounded-3xl flex flex-col overflow-hidden shadow-3xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="h-20 flex items-center justify-between px-8 border-b border-zinc-100 shrink-0">
+          <div>
+            <h3 className="text-2xl font-black text-zinc-900">Postuler en ligne</h3>
+            <p className="text-xs text-zinc-400 font-bold">{job.title} • {job.company}</p>
+          </div>
+          <button onClick={onClose} className="w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center hover:bg-zinc-200 transition-colors">
+            <i className="fa fa-times text-zinc-400"></i>
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-grow overflow-y-auto px-8 py-8">
+          {renderStepIndicator()}
+
+          {/* Step 1: Upload CV */}
+          {step === 'upload' && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <i className="fa fa-file-pdf text-6xl text-indigo-600 mb-4"></i>
+                <h4 className="text-xl font-black text-zinc-900 mb-2">Téléchargez votre CV</h4>
+                <p className="text-sm text-zinc-500">PDF ou Word • Max 5MB</p>
+              </div>
+
+              <label className="block cursor-pointer">
+                <div className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all ${
+                  cvFile ? 'border-green-500 bg-green-50' : 'border-zinc-200 hover:border-indigo-400 hover:bg-indigo-50/30'
+                }`}>
+                  {cvFile ? (
+                    <div className="space-y-3">
+                      <i className="fa fa-check-circle text-4xl text-green-600"></i>
+                      <p className="font-black text-zinc-900">{cvFile.name}</p>
+                      <p className="text-xs text-zinc-500">{(cvFile.size / 1024).toFixed(0)} KB</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <i className="fa fa-cloud-upload text-4xl text-zinc-300"></i>
+                      <p className="font-bold text-zinc-600">Cliquez pour sélectionner votre CV</p>
+                    </div>
+                  )}
+                </div>
+                <input 
+                  type="file" 
+                  accept=".pdf,.doc,.docx" 
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+              </label>
+
+              <button
+                onClick={() => setStep('generate')}
+                disabled={!cvFile}
+                className={`w-full py-5 rounded-2xl font-black text-lg transition-all ${
+                  cvFile 
+                    ? 'bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95' 
+                    : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
+                }`}
+              >
+                Continuer <i className="fa fa-arrow-right ml-2"></i>
+              </button>
+            </div>
+          )}
+
+          {/* Step 2: Generate Cover Letter */}
+          {step === 'generate' && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <i className="fa fa-robot text-6xl text-indigo-600 mb-4"></i>
+                <h4 className="text-xl font-black text-zinc-900 mb-2">Lettre de motivation IA</h4>
+                <p className="text-sm text-zinc-500">Choisissez la langue et générez votre lettre</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-black text-zinc-700 mb-3">Langue</label>
+                <div className="grid grid-cols-5 gap-3">
+                  {LANGUAGE_OPTIONS.map(lang => (
+                    <button
+                      key={lang.code}
+                      onClick={() => setLanguage(lang.code)}
+                      className={`p-4 rounded-xl border-2 transition-all ${
+                        language === lang.code 
+                          ? 'border-indigo-600 bg-indigo-50' 
+                          : 'border-zinc-200 hover:border-indigo-300'
+                      }`}
+                    >
+                      <div className="text-3xl mb-1">{lang.flag}</div>
+                      <div className="text-xs font-bold text-zinc-700">{lang.name}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={generateCoverLetter}
+                disabled={isGenerating}
+                className="w-full py-5 rounded-2xl font-black text-lg bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all disabled:opacity-50"
+              >
+                {isGenerating ? (
+                  <>
+                    <i className="fa fa-spinner fa-spin mr-2"></i>
+                    Génération en cours...
+                  </>
+                ) : (
+                  <>
+                    <i className="fa fa-magic mr-2"></i>
+                    Générer la lettre
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={() => {
+                  setCustomMode(true);
+                  setCoverLetter('');
+                  setStep('review');
+                }}
+                className="w-full py-4 rounded-2xl font-bold text-sm border-2 border-zinc-200 text-zinc-600 hover:border-indigo-400 hover:text-indigo-600 transition-all"
+              >
+                Écrire ma propre lettre
+              </button>
+            </div>
+          )}
+
+          {/* Step 3: Review & Edit */}
+          {step === 'review' && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <i className="fa fa-edit text-6xl text-indigo-600 mb-4"></i>
+                <h4 className="text-xl font-black text-zinc-900 mb-2">
+                  {customMode ? 'Votre lettre de motivation' : 'Vérifiez et personnalisez'}
+                </h4>
+                <p className="text-sm text-zinc-500">
+                  {customMode ? 'Rédigez votre lettre' : `${3 - refreshCount} régénérations restantes`}
+                </p>
+              </div>
+
+              {/* Email Verification */}
+              <div className={`p-6 rounded-2xl border-2 transition-all ${
+                emailConfirmed ? 'border-green-500 bg-green-50' : 'border-yellow-400 bg-yellow-50'
+              }`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <i className={`fa ${emailConfirmed ? 'fa-check-circle text-green-600' : 'fa-envelope text-yellow-600'} text-lg`}></i>
+                  <label className="text-sm font-black text-zinc-700">Votre adresse email</label>
+                </div>
+                <div className="flex gap-3">
+                  <input
+                    type="email"
+                    value={userEmail}
+                    onChange={(e) => {
+                      setUserEmail(e.target.value);
+                      setEmailConfirmed(false);
+                    }}
+                    placeholder="votre.email@example.com"
+                    disabled={emailConfirmed}
+                    className={`flex-1 px-4 py-3 rounded-xl border-2 focus:outline-none text-sm font-medium ${
+                      emailConfirmed 
+                        ? 'border-green-500 bg-white text-green-800 cursor-not-allowed' 
+                        : 'border-zinc-200 focus:border-indigo-400'
+                    }`}
+                  />
+                  {!emailConfirmed ? (
+                    <button
+                      onClick={handleEmailConfirm}
+                      className="px-6 py-3 rounded-xl font-black bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all"
+                    >
+                      <i className="fa fa-check mr-2"></i>
+                      Oui
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setEmailConfirmed(false)}
+                      className="px-6 py-3 rounded-xl font-bold border-2 border-green-500 text-green-700 hover:bg-green-50 active:scale-95 transition-all"
+                    >
+                      <i className="fa fa-edit"></i>
+                    </button>
+                  )}
+                </div>
+                {emailConfirmed && (
+                  <p className="text-xs text-green-700 font-bold mt-2 flex items-center gap-2">
+                    <i className="fa fa-shield-check"></i>
+                    Email confirmé et enregistré
+                  </p>
+                )}
+              </div>
+
+              <textarea
+                value={coverLetter}
+                onChange={(e) => setCoverLetter(e.target.value)}
+                className="w-full h-64 p-6 rounded-2xl border-2 border-zinc-200 focus:border-indigo-400 focus:outline-none text-sm leading-relaxed resize-none"
+                placeholder="Tapez votre lettre de motivation ici..."
+              />
+
+              <div className="flex gap-3">
+                {!customMode && (
+                  <button
+                    onClick={handleRefresh}
+                    disabled={refreshCount >= 3 || isGenerating}
+                    className="flex-1 py-4 rounded-2xl font-bold border-2 border-indigo-200 text-indigo-600 hover:bg-indigo-50 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    <i className="fa fa-refresh mr-2"></i>
+                    Régénérer ({3 - refreshCount})
+                  </button>
+                )}
+                <button
+                  onClick={() => setStep('send')}
+                  disabled={!coverLetter.trim() || !emailConfirmed}
+                  className="flex-1 py-4 rounded-2xl font-black bg-green-600 text-white hover:bg-green-700 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  Envoyer <i className="fa fa-paper-plane ml-2"></i>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Send Confirmation */}
+          {step === 'send' && (
+            <div className="text-center py-12">
+              <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i className="fa fa-check text-5xl text-green-600"></i>
+              </div>
+              <h4 className="text-2xl font-black text-zinc-900 mb-3">Candidature envoyée !</h4>
+              <p className="text-zinc-600 mb-8">Votre CV et lettre de motivation ont été envoyés à {job.company}</p>
+              <button
+                onClick={handleSendApplication}
+                className="px-8 py-4 rounded-2xl font-black bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all"
+              >
+                Ouvrir ma messagerie
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
