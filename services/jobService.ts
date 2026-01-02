@@ -2,15 +2,15 @@ import { supabase } from './supabaseClient';
 import { Job } from '../types';
 
 export const jobService = {
-  // Fetch all jobs from database (not older than 1 week)
+  // Fetch all jobs from database (not older than 10 days)
   async getAllJobs(): Promise<Job[]> {
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const tenDaysAgo = new Date();
+    tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
 
     const { data, error } = await supabase
       .from('jobs')
       .select('*')
-      .gte('created_at', oneWeekAgo.toISOString())
+      .gte('created_at', tenDaysAgo.toISOString())
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -40,15 +40,15 @@ export const jobService = {
     }
   },
 
-  // Delete jobs older than 1 week
+  // Delete jobs older than 10 days
   async deleteOldJobs(): Promise<void> {
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const tenDaysAgo = new Date();
+    tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
 
     const { error } = await supabase
       .from('jobs')
       .delete()
-      .lt('created_at', oneWeekAgo.toISOString());
+      .lt('created_at', tenDaysAgo.toISOString());
 
     if (error) {
       console.error('Error deleting old jobs:', error);

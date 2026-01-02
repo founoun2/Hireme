@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Job, SidebarContent } from './types';
+import { generateJobId } from './utils/jobUtils';
 
 export const CITIES = [
   "Casablanca", "Rabat", "Salé", "Tanger", "Fès", "Marrakech", "Agadir", "Meknès", 
@@ -178,13 +179,14 @@ export const generateMockJobs = (): Job[] => {
   for(let i=0; i<250; i++) {
     const prof = professions[Math.floor(Math.random() * professions.length)];
     const company = companies[Math.floor(Math.random() * companies.length)];
+    const city = CITIES[Math.floor(Math.random()*CITIES.length)];
     const descIdx = Math.floor(Math.random() * descriptions.length);
     
     list.push({
-      id: 2000 + i,
+      id: generateJobId(prof.title, company, city), // Unique ID based on content
       title: prof.title,
       company: company,
-      city: CITIES[Math.floor(Math.random()*CITIES.length)],
+      city: city,
       contract: CONTRACTS[Math.floor(Math.random()*CONTRACTS.length)],
       time: i === 0 ? "Maintenant" : `Il y a ${Math.floor(i/4) + 1}h`,
       isNew: i < 20,

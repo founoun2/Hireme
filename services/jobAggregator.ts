@@ -1,5 +1,6 @@
 import { Job } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
+import { generateJobId } from '../utils/jobUtils';
 
 // Adzuna API for real job data (Morocco)
 const ADZUNA_APP_ID = import.meta.env.VITE_ADZUNA_APP_ID || '';
@@ -24,24 +25,30 @@ async function fetchAdzunaJobs(): Promise<Job[]> {
 
     const data = await response.json();
     
-    return data.results.map((job: any, index: number) => ({
-      id: parseInt(job.id) || Date.now() + index,
-      title: job.title || 'Sans titre',
-      company: job.company.display_name || 'Entreprise',
-      city: job.location.display_name?.split(',')[0] || 'Maroc',
-      contract: job.contract_time || 'CDI',
-      time: new Date(job.created).toLocaleDateString('fr-FR'),
-      isNew: true,
-      description: job.description || 'Aucune description disponible',
-      tasks: [],
-      requirements: [],
-      salary: job.salary_min && job.salary_max 
-        ? `${job.salary_min} - ${job.salary_max} MAD/an` 
-        : 'Non spécifié',
-      email: '',
-      contactPhone: '',
-      url: job.redirect_url || '#'
-    }));
+    return data.results.map((job: any) => {
+      const title = job.title || 'Sans titre';
+      const company = job.company.display_name || 'Entreprise';
+      const city = job.location.display_name?.split(',')[0] || 'Maroc';
+      
+      return {
+        id: generateJobId(title, company, city), // Unique ID based on content
+        title,
+        company,
+        city,
+        contract: job.contract_time || 'CDI',
+        time: new Date(job.created).toLocaleDateString('fr-FR'),
+        isNew: true,
+        description: job.description || 'Aucune description disponible',
+        tasks: [],
+        requirements: [],
+        salary: job.salary_min && job.salary_max 
+          ? `${job.salary_min} - ${job.salary_max} MAD/an` 
+          : 'Non spécifié',
+        email: '',
+        contactPhone: '',
+        url: job.redirect_url || '#'
+      };
+    });
   } catch (error) {
     console.error('Adzuna fetch error:', error);
     return [];

@@ -33,24 +33,12 @@ const App: React.FC = () => {
   });
   const [isScanning, setIsScanning] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [shakeRefresh, setShakeRefresh] = useState(false);
-  
   const suggestionRef = useRef<HTMLDivElement>(null);
 
   // Save applied jobs to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('appliedJobs', JSON.stringify([...appliedJobs]));
   }, [appliedJobs]);
-
-  // Shake refresh button every 20 seconds
-  useEffect(() => {
-    const shakeInterval = setInterval(() => {
-      setShakeRefresh(true);
-      setTimeout(() => setShakeRefresh(false), 1000); // Animation duration
-    }, 20000); // Every 20 seconds
-    
-    return () => clearInterval(shakeInterval);
-  }, []);
 
   // Load jobs from database on mount
   useEffect(() => {
@@ -71,19 +59,11 @@ const App: React.FC = () => {
     setIsScanning(true);
     try {
       const jobs = await jobService.getAllJobs();
-      console.log(`📊 Loaded ${jobs.length} jobs from database`);
-      
-      if (jobs.length > 0) {
-        setAllJobs(jobs);
-      } else {
-        // Show mock data if database is empty (scrapers haven't run yet)
-        console.log('⚠️ Database empty - showing demo jobs until scrapers populate data');
-        setAllJobs(generateMockJobs());
-      }
+      console.log(`📊 Loaded ${jobs.length} real jobs from database`);
+      setAllJobs(jobs);
     } catch (error) {
       console.error('❌ Error loading jobs:', error);
-      // Show mock data on error
-      setAllJobs(generateMockJobs());
+      setAllJobs([]);
     } finally {
       setIsScanning(false);
     }
@@ -133,25 +113,32 @@ const App: React.FC = () => {
   };
 
   const filteredJobs = useMemo(() => {
-    return allJobs.filter(j => {
-      // Enhanced keyword search - searches across multiple fields
+    const filtered = allJobs.filter(j => {
+      // Enhanced keyword search - searches across multiple fields (NULL-SAFE)
       const searchTerm = keyword.toLowerCase().trim();
       const matchesKeyword = !searchTerm || 
-        j.title.toLowerCase().includes(searchTerm) ||
-        j.company.toLowerCase().includes(searchTerm) ||
-        j.city.toLowerCase().includes(searchTerm) ||
-        j.contract.toLowerCase().includes(searchTerm) ||
+        j.title?.toLowerCase().includes(searchTerm) ||
+        j.company?.toLowerCase().includes(searchTerm) ||
+        j.city?.toLowerCase().includes(searchTerm) ||
+        j.contract?.toLowerCase().includes(searchTerm) ||
         (j.description && j.description.toLowerCase().includes(searchTerm)) ||
         (j.salary && j.salary.toLowerCase().includes(searchTerm));
       
-      // City filter - exact match
-      const matchesCity = !selectedCity || j.city === selectedCity;
+      // City filter - case-insensitive match (NULL-SAFE)
+      const matchesCity = !selectedCity || 
+        (j.city?.toLowerCase().trim() === selectedCity.toLowerCase().trim());
       
-      // Contract filter - exact match
-      const matchesContract = !selectedContract || j.contract === selectedContract;
+      // Contract filter - case-insensitive match (NULL-SAFE)
+      const matchesContract = !selectedContract || 
+        (j.contract?.toLowerCase().trim() === selectedContract.toLowerCase().trim());
       
       return matchesKeyword && matchesCity && matchesContract;
     });
+    
+    console.log(`🔍 Filters: keyword="${keyword}", city="${selectedCity}", contract="${selectedContract}"`);
+    console.log(`📊 Results: ${filtered.length} jobs matched (from ${allJobs.length} total)`);
+    
+    return filtered;
   }, [allJobs, keyword, selectedCity, selectedContract]);
 
   const currentJobs = useMemo(() => filteredJobs.slice(0, displayedCount), [filteredJobs, displayedCount]);
@@ -249,22 +236,17 @@ const App: React.FC = () => {
       <main className="max-w-5xl mx-auto w-full px-3 sm:px-6 flex-grow pb-16 sm:pb-24 pt-[13.5rem] sm:pt-[14.875rem]">
         {/* Active Filters & Stats */}
         <div className="mb-4 sm:mb-6">
-          {/* Mobile/Desktop Header with Count and Refresh */}
+          {/* Mobile/Desktop Header with Count and Live Indicator */}
           <div className="flex items-center justify-between gap-2 mb-3 sm:mb-4 px-1 sm:px-2">
             <h2 className="text-[9px] sm:text-[11px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-zinc-400 flex-shrink-0">
               {filteredJobs.length} Opportunités {keyword || selectedCity || selectedContract ? 'Trouvées' : 'Détectées'}
             </h2>
             
-            {/* Refresh Live Button */}
-            <button 
-              onClick={() => loadJobsFromDatabase()}
-              disabled={isScanning}
-              className={`flex gap-1.5 sm:gap-2 items-center bg-zinc-900 hover:bg-green-600 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg shadow-zinc-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group ${shakeRefresh ? 'animate-shake' : ''}`}
-            >
+            {/* Live Search Indicator */}
+            <div className="flex gap-1.5 sm:gap-2 items-center bg-zinc-900 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg shadow-zinc-900/20">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_6px_rgba(34,197,94,0.6)]"></span>
-              <i className={`fa fa-rotate text-[7px] sm:text-[9px] text-green-400 group-hover:text-white transition-all ${isScanning ? 'animate-spin' : ''}`}></i>
-              <span className="text-[8px] sm:text-[9px] font-black text-white uppercase tracking-widest">Refresh Live</span>
-            </button>
+              <span className="text-[8px] sm:text-[9px] font-black text-green-400 uppercase tracking-widest">Live Search</span>
+            </div>
           </div>
 
           {/* Active Filter Badges */}
@@ -349,15 +331,6 @@ const App: React.FC = () => {
                     Réinitialiser Filtres
                   </button>
                 )}
-                {allJobs.length === 0 && (
-                  <button 
-                    onClick={loadJobsFromDatabase}
-                    disabled={isScanning}
-                    className="mt-4 px-8 py-3 bg-green-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-green-700 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
-                  >
-                    {isScanning ? 'Chargement...' : 'Recharger'}
-                  </button>
-                )}
               </div>
             )}
           </div>
@@ -390,19 +363,11 @@ const App: React.FC = () => {
         @keyframes slideInFromBottom { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes slideInFromTop { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-          20%, 40%, 60%, 80% { transform: translateX(2px); }
-        }
         .fade-in { animation-name: fadeIn; }
         .slide-in-from-bottom-4 { animation-name: slideInFromBottom; }
         .slide-in-from-bottom-8 { animation-name: slideInFromBottom; }
         .slide-in-from-top-2 { animation-name: slideInFromTop; }
         .zoom-in-95 { animation-name: zoomIn; }
-        .animate-shake {
-          animation: shake 0.6s ease-in-out;
-        }
       `}</style>
 
       {/* Cookie Consent Popup */}
