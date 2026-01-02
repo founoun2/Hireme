@@ -304,45 +304,14 @@ Cordiali saluti.`
         return;
       }
 
-      // Get SendGrid configuration from environment
-      const sendGridApiKey = import.meta.env.VITE_SENDGRID_API_KEY;
-      const sendGridFromEmail = import.meta.env.VITE_SENDGRID_FROM_EMAIL;
-      const sendGridFromName = import.meta.env.VITE_SENDGRID_FROM_NAME || 'HireMe Maroc';
-
-      if (!sendGridApiKey || !sendGridFromEmail) {
-        alert(`❌ Configuration SendGrid manquante!\n\n` +
-          `Veuillez configurer SendGrid:\n` +
-          `${!sendGridApiKey ? '- VITE_SENDGRID_API_KEY manquant\n' : ''}` +
-          `${!sendGridFromEmail ? '- VITE_SENDGRID_FROM_EMAIL manquant\n' : ''}` +
-          `\nConsultez SENDGRID_SETUP.md pour les instructions`);
-        setIsSending(false);
-        return;
-      }
-
-      console.log('📧 Preparing email with SendGrid...');
-      console.log('📤 From (verified):', sendGridFromEmail);
+      console.log('📧 Preparing email...');
       console.log('↩️ Reply-To (user):', userEmail);
 
       // Format user name from email
       const userName = userEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
-      // Prepare email data for SendGrid API
-      const emailData = {
-        personalizations: [{
-          to: [{ email: targetEmail, name: job.company }],
-          subject: `Candidature: ${job.title} - ${userName}`
-        }],
-        from: {
-          email: sendGridFromEmail,
-          name: sendGridFromName
-        },
-        reply_to: {
-          email: userEmail,
-          name: userName
-        },
-        content: [{
-          type: 'text/plain',
-          value: `Bonjour ${job.company},
+      // Prepare email content
+      const emailContent = `Bonjour ${job.company},
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 CANDIDATURE POUR: ${job.title}
@@ -366,42 +335,45 @@ ${userEmail}
 
 ---
 Candidature envoyée via HireMe Maroc
-🌐 hirememaroc.online - Plateforme #1 d'emploi au Maroc`
-        }],
-        attachments: [{
-          content: cvBase64.split(',')[1], // Remove data:application/pdf;base64, prefix
-          filename: cvFile?.name || 'CV.pdf',
-          type: cvFile?.type || 'application/pdf',
-          disposition: 'attachment'
-        }]
-      };
+🌐 hirememaroc.online - Plateforme #1 d'emploi au Maroc`;
 
       console.log('📤 Sending email with CV attachment to:', targetEmail);
       console.log('📎 CV file:', cvFile?.name, `(${((cvFile?.size || 0) / 1024).toFixed(0)} KB)`);
 
-      // Send via SendGrid API
-      const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+      // Call serverless function instead of SendGrid directly
+      const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${sendGridApiKey}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(emailData)
+        body: JSON.stringify({
+          to: targetEmail,
+          toName: job.company,
+          subject: `Candidature: ${job.title} - ${userName}`,
+          content: emailContent,
+          replyToEmail: userEmail,
+          replyToName: userName,
+          attachment: {
+            content: cvBase64.split(',')[1], // Remove data:application/pdf;base64, prefix
+            filename: cvFile?.name || 'CV.pdf',
+            type: cvFile?.type || 'application/pdf'
+          }
+        })
       });
 
-      console.log('SendGrid Response Status:', response.status);
+      console.log('API Response Status:', response.status);
 
-      if (response.status === 202) {
-        // SendGrid success (returns 202 Accepted)
-        console.log('✅ Email sent successfully via SendGrid!');
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Email sent successfully!', result);
         setStep('success');
         setTimeout(() => {
           onClose();
         }, 5000);
       } else {
         const errorData = await response.json();
-        console.error('SendGrid Error:', errorData);
-        throw new Error(`SendGrid error: ${JSON.stringify(errorData)}`);
+        console.error('API Error:', errorData);
+        throw new Error(`API error: ${JSON.stringify(errorData)}`);
       }
     } catch (error: any) {
       console.error('❌ Error sending application:', error);
