@@ -2,6 +2,7 @@ import { chromium } from 'playwright';
 import { supabase } from './supabase.js';
 import { normalizeJobData, wait } from './utils.js';
 import { enrichJobWithAI } from './aiService.js';
+import { getRotatingKeyword } from './searchKeywords.js';
 
 export async function scrapeLinkedIn() {
   const browser = await chromium.launch({ headless: true });
@@ -13,10 +14,13 @@ export async function scrapeLinkedIn() {
   let jobs = [];
   
   try {
-    console.log('🔵 Scraping LinkedIn Morocco...');
+    // 🔥 Use targeted high-demand sector keyword
+    const keyword = getRotatingKeyword();
+    console.log(`🔵 Scraping LinkedIn Morocco for: "${keyword}"`);
     
-    // LinkedIn job search for Morocco
-    const url = 'https://www.linkedin.com/jobs/search/?location=Morocco&geoId=104199705';
+    // LinkedIn job search with targeted keyword
+    const encodedKeyword = encodeURIComponent(keyword);
+    const url = `https://www.linkedin.com/jobs/search/?keywords=${encodedKeyword}&location=Morocco&geoId=104199705`;
     await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
     await wait(2000);
     

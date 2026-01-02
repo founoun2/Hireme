@@ -2,16 +2,20 @@ import { chromium } from 'playwright';
 import slugify from 'slugify';
 import { supabase } from './supabase.js';
 import { aiService } from './aiService.js';
+import { getRotatingKeyword } from './searchKeywords.js';
 
 export async function scrapeRekrute() {
-  console.log('🔍 Scraping ReKrute.com...');
+  // 🔥 Use targeted high-demand sector keyword
+  const keyword = getRotatingKeyword();
+  console.log(`🔍 Scraping ReKrute.com for: "${keyword}"`);
   
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
 
   try {
-    // Navigate to ReKrute job listings
-    await page.goto('https://www.rekrute.com/offres.html', {
+    // Navigate to ReKrute job listings with keyword search
+    const encodedKeyword = encodeURIComponent(keyword);
+    await page.goto(`https://www.rekrute.com/offres.html?s=${encodedKeyword}`, {
       waitUntil: 'networkidle',
       timeout: 30000
     });

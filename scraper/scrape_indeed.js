@@ -2,6 +2,7 @@ import { chromium } from 'playwright';
 import { supabase } from './supabase.js';
 import { normalizeJobData, wait } from './utils.js';
 import { enrichJobWithAI } from './aiService.js';
+import { getRotatingKeyword } from './searchKeywords.js';
 
 export async function scrapeIndeed() {
   const browser = await chromium.launch({ headless: true });
@@ -13,10 +14,13 @@ export async function scrapeIndeed() {
   let jobs = [];
   
   try {
-    console.log('🔴 Scraping Indeed Morocco...');
+    // 🔥 Use targeted high-demand sector keyword
+    const keyword = getRotatingKeyword();
+    console.log(`🔴 Scraping Indeed Morocco for: "${keyword}"`);
     
-    // Indeed Morocco job search
-    const url = 'https://ma.indeed.com/jobs?q=&l=Morocco';
+    // Indeed Morocco job search with targeted keyword
+    const encodedKeyword = encodeURIComponent(keyword);
+    const url = `https://ma.indeed.com/jobs?q=${encodedKeyword}&l=Morocco`;
     await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
     await wait(2000);
     

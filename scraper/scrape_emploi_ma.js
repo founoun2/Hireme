@@ -2,16 +2,20 @@ import { chromium } from 'playwright';
 import slugify from 'slugify';
 import { supabase } from './supabase.js';
 import { categorizeJob, extractSkills } from './utils.js';
+import { getRotatingKeyword } from './searchKeywords.js';
 
 export async function scrapeEmploiMa() {
-  console.log('🔍 Scraping Emploi.ma...');
+  // 🔥 Use targeted high-demand sector keyword
+  const keyword = getRotatingKeyword();
+  console.log(`🔍 Scraping Emploi.ma for: "${keyword}"`);
   
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
 
   try {
-    // Navigate to Emploi.ma job listings
-    await page.goto('https://www.emploi.ma/recherche-jobs-maroc', {
+    // Navigate to Emploi.ma job listings with keyword search
+    const encodedKeyword = encodeURIComponent(keyword);
+    await page.goto(`https://www.emploi.ma/recherche-jobs-maroc?keywords=${encodedKeyword}`, {
       waitUntil: 'networkidle',
       timeout: 30000
     });
