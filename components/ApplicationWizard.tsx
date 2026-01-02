@@ -304,53 +304,69 @@ Cordiali saluti.`
         return;
       }
 
-      // Get SendGrid API key from environment
+      // Get SendGrid configuration from environment
       const sendGridApiKey = import.meta.env.VITE_SENDGRID_API_KEY;
+      const sendGridFromEmail = import.meta.env.VITE_SENDGRID_FROM_EMAIL;
+      const sendGridFromName = import.meta.env.VITE_SENDGRID_FROM_NAME || 'HireMe Maroc';
 
-      if (!sendGridApiKey) {
+      if (!sendGridApiKey || !sendGridFromEmail) {
         alert(`❌ Configuration SendGrid manquante!\n\n` +
           `Veuillez configurer SendGrid:\n` +
-          `- VITE_SENDGRID_API_KEY manquant\n\n` +
-          `Consultez SENDGRID_SETUP.md pour les instructions`);
+          `${!sendGridApiKey ? '- VITE_SENDGRID_API_KEY manquant\n' : ''}` +
+          `${!sendGridFromEmail ? '- VITE_SENDGRID_FROM_EMAIL manquant\n' : ''}` +
+          `\nConsultez SENDGRID_SETUP.md pour les instructions`);
         setIsSending(false);
         return;
       }
 
       console.log('📧 Preparing email with SendGrid...');
+      console.log('📤 From (verified):', sendGridFromEmail);
+      console.log('↩️ Reply-To (user):', userEmail);
 
-      // Format sender name from email
-      const senderName = userEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      // Format user name from email
+      const userName = userEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
       // Prepare email data for SendGrid API
       const emailData = {
         personalizations: [{
           to: [{ email: targetEmail, name: job.company }],
-          subject: `Candidature pour ${job.title} - ${job.company}`
+          subject: `Candidature: ${job.title} - ${userName}`
         }],
         from: {
-          email: userEmail,
-          name: senderName
+          email: sendGridFromEmail,
+          name: sendGridFromName
         },
         reply_to: {
           email: userEmail,
-          name: senderName
+          name: userName
         },
         content: [{
           type: 'text/plain',
           value: `Bonjour ${job.company},
 
-Je vous contacte pour postuler au poste de ${job.title}.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CANDIDATURE POUR: ${job.title}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Candidat: ${userName}
+📧 Email: ${userEmail}
+📱 Contact: (voir CV joint)
 
 ${coverLetter}
 
-Vous trouverez mon CV en pièce jointe.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📎 PIÈCE JOINTE: CV complet
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Vous pouvez me contacter directement en répondant à cet email.
 
 Cordialement,
-${senderName}
+${userName}
 ${userEmail}
 
 ---
-Envoyé via HireMe Maroc (hirememaroc.online)`
+Candidature envoyée via HireMe Maroc
+🌐 hirememaroc.online - Plateforme #1 d'emploi au Maroc`
         }],
         attachments: [{
           content: cvBase64.split(',')[1], // Remove data:application/pdf;base64, prefix

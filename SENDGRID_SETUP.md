@@ -61,15 +61,34 @@ This guide will help you configure SendGrid for sending job application emails w
 ```env
 # SendGrid Configuration
 VITE_SENDGRID_API_KEY=SG.xxxxxxxxxxxxxxxxxx.yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+
+# Verified Sender (MUST match verified email in SendGrid)
+VITE_SENDGRID_FROM_EMAIL=contact@hirememaroc.online
+VITE_SENDGRID_FROM_NAME=HireMe Maroc
 ```
+
+**⚠️ IMPORTANT**: `VITE_SENDGRID_FROM_EMAIL` must be the email you verified in Step 2 (Sender Verification)!
 
 ### Production (Vercel)
 1. Go to your Vercel project dashboard
 2. Navigate to **Settings** → **Environment Variables**
-3. Add new variable:
+3. Add these variables:
+   
+   **Variable 1:**
    - **Name**: `VITE_SENDGRID_API_KEY`
    - **Value**: `SG.xxxxxxxxxxxxxxxxxx.yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy`
    - **Environments**: Production, Preview, Development
+   
+   **Variable 2:**
+   - **Name**: `VITE_SENDGRID_FROM_EMAIL`
+   - **Value**: Your verified email (e.g., `contact@hirememaroc.online`)
+   - **Environments**: Production, Preview, Development
+   
+   **Variable 3:**
+   - **Name**: `VITE_SENDGRID_FROM_NAME`
+   - **Value**: `HireMe Maroc`
+   - **Environments**: Production, Preview, Development
+
 4. Click **Save**
 5. Redeploy your application
 
@@ -126,7 +145,58 @@ VITE_SENDGRID_API_KEY=SG.xxxxxxxxxxxxxxxxxx.yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
 4. Check spam folder
 5. Ensure sender is verified
 
-## Code Implementation
+## How Email Sending Works
+
+### **Email Flow:**
+```
+User (john@gmail.com) → HireMe Platform → SendGrid → Company (recruiter@company.ma)
+```
+
+### **What Company Sees:**
+```
+From: HireMe Maroc <contact@hirememaroc.online>
+Reply-To: John Doe <john@gmail.com>
+Subject: Candidature: Developer - John Doe
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CANDIDATURE POUR: Developer
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Candidat: John Doe
+📧 Email: john@gmail.com
+📱 Contact: (voir CV joint)
+
+[Cover letter content...]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📎 PIÈCE JOINTE: CV complet
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Vous pouvez me contacter directement en répondant à cet email.
+
+Cordialement,
+John Doe
+john@gmail.com
+
+Attachment: CV.pdf
+```
+
+### **When Company Clicks "Reply":**
+- ✅ Email goes directly to: `john@gmail.com`
+- ✅ Company contacts user, NOT the platform
+- ✅ User receives email directly in their inbox
+- ✅ Professional, seamless experience
+
+### **Why This Approach?**
+- ✅ SendGrid requires verified sender (can't send from random emails)
+- ✅ Reply-To ensures companies contact users directly
+- ✅ User's email prominently displayed in body
+- ✅ Professional platform branding
+- ✅ No confusion about who to contact
+
+---
+
+
 
 The application uses SendGrid Web API v3 directly:
 

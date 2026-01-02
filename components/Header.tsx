@@ -67,9 +67,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
           </div>
         </div>
         
-        <nav className="hidden lg:flex items-center gap-8 text-[11px] font-black uppercase tracking-widest text-zinc-400">
+        <nav className="hidden lg:flex items-center gap-8 text-[11px] font-black tracking-widest text-zinc-400">
           <button onClick={() => handleLinkClick('legal')} className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Légal</button>
           <button onClick={() => handleLinkClick('privacy')} className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Confidentialité</button>
+          <a href="https://www.mfopub.online/hirememaroc" target="_blank" rel="noopener noreferrer" className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Documentation</a>
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -93,7 +94,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
         {isMenuOpen && (
           <div 
             ref={menuRef}
-            className="absolute top-full right-4 left-4 mt-3 lg:hidden bg-white rounded-3xl border border-zinc-100 shadow-2xl p-4 animate-in slide-in-from-top-4 duration-300 z-50 overflow-hidden"
+            className="absolute top-full right-4 left-4 mt-3 lg:hidden bg-white rounded-3xl border border-zinc-100 shadow-2xl p-4 animate-in slide-in-from-top-4 fade-in duration-200 z-50 overflow-hidden"
           >
             <div className="flex flex-col gap-1">
               <button 
@@ -122,12 +123,25 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
                 </div>
               </button>
 
+              <a 
+                href="https://www.mfopub.online/hirememaroc"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-zinc-50 transition-colors group active:bg-zinc-100"
+              >
+                <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-500 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                  <i className="fa fa-book text-sm"></i>
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Documentation</span>
+                  <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Guide & Support</span>
+                </div>
+              </a>
+
               <div className="mt-4 pt-4 border-t border-zinc-50 flex items-center justify-between px-2">
                 <span className="text-[9px] font-black text-zinc-300 uppercase tracking-[0.2em]">Hireme Maroc Hub</span>
-                <div className="flex gap-4">
-                  <i className="fa-brands fa-linkedin text-zinc-300 text-sm hover:text-indigo-600 cursor-pointer transition-colors"></i>
-                  <i className="fa-brands fa-x-twitter text-zinc-300 text-sm hover:text-indigo-600 cursor-pointer transition-colors"></i>
-                </div>
+                <span className="text-[9px] font-black text-indigo-600 uppercase tracking-wider">V 0.4.4</span>
               </div>
             </div>
           </div>
