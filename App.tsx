@@ -71,15 +71,11 @@ const App: React.FC = () => {
     setIsScanning(true);
     try {
       const jobs = await jobService.getAllJobs();
-      if (jobs.length > 0) {
-        setAllJobs(jobs);
-      } else {
-        // If no jobs in database, use mock data
-        setAllJobs(generateMockJobs());
-      }
+      setAllJobs(jobs); // Always set whatever we get, even if empty
+      console.log(`📊 Loaded ${jobs.length} jobs from database`);
     } catch (error) {
-      console.error('Error loading jobs:', error);
-      setAllJobs(generateMockJobs());
+      console.error('❌ Error loading jobs:', error);
+      // Don't set mock data - keep current state
     } finally {
       setIsScanning(false);
     }
@@ -96,7 +92,10 @@ const App: React.FC = () => {
   };
 
   const syncLiveJobs = async () => {
-    if (allJobs.length === 0) setIsScanning(true);
+    // Don't show loading if we already have jobs (silent background refresh)
+    const shouldShowLoading = allJobs.length === 0;
+    if (shouldShowLoading) setIsScanning(true);
+    
     try {
       // Use job aggregator (Adzuna + Gemini)
       const liveJobs = await aggregateJobs();
@@ -104,24 +103,29 @@ const App: React.FC = () => {
       if (liveJobs.length > 0) {
         // Save new jobs to database
         await jobService.saveJobs(liveJobs);
+        console.log(`✅ Synced ${liveJobs.length} new jobs`);
         
         // Update state with unique jobs
         setAllJobs(prev => {
           const uniqueNew = liveJobs.filter(lj => 
             !prev.some(pj => pj.title === lj.title && pj.company === lj.company)
           );
+          if (uniqueNew.length > 0) {
+            console.log(`➕ Adding ${uniqueNew.length} unique new jobs`);
+          }
           return [...uniqueNew.map(j => ({ ...j, isNew: true })), ...prev];
         });
       }
     } catch (error) {
-      console.error("Sync failed:", error);
+      console.error("⚠️ Sync failed:", error);
+      // Don't update state on error - keep existing jobs
     } finally {
-      setIsScanning(false);
+      if (shouldShowLoading) setIsScanning(false);
     }
   };
 
   const filteredJobs = useMemo(() => {
-    return allJobs.filter(j => {
+    const filtered = allJobs.filter(j => {
       // Enhanced keyword search - searches across multiple fields
       const searchTerm = keyword.toLowerCase().trim();
       const matchesKeyword = !searchTerm || 
@@ -140,7 +144,14 @@ const App: React.FC = () => {
       
       return matchesKeyword && matchesCity && matchesContract;
     });
-  }, [allJobs, keyword, selectedCity, selectedContract]);
+    
+    // Reset displayedCount when filter results change
+    if (filtered.length < displayedCount) {
+      setDisplayedCount(PAGE_SIZE);
+    }
+    
+    return filtered;
+  }, [allJobs, keyword, selectedCity, selectedContract, displayedCount]);
 
   const currentJobs = useMemo(() => filteredJobs.slice(0, displayedCount), [filteredJobs, displayedCount]);
 
@@ -316,14 +327,31 @@ const App: React.FC = () => {
                 <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-zinc-50 rounded-full mb-6 text-zinc-200">
                   <i className="fa fa-ghost text-2xl sm:text-3xl"></i>
                 </div>
-                <h3 className="text-lg sm:text-xl font-black text-zinc-900 mb-2">Aucun résultat trouvé</h3>
-                <p className="text-zinc-400 font-bold text-xs sm:text-sm px-10">L'IA est en train de recalculer les opportunités pour vous...</p>
-                <button 
-                  onClick={() => { setKeyword(''); setSelectedCity(''); setSelectedContract(''); }}
-                  className="mt-8 px-8 py-3 bg-zinc-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all hover:scale-105 active:scale-95"
-                >
-                  Réinitialiser
-                </button>
+                <h3 className="text-lg sm:text-xl font-black text-zinc-900 mb-2">
+                  {allJobs.length === 0 ? 'Aucune offre disponible' : 'Aucun résultat trouvé'}
+                </h3>
+                <p className="text-zinc-400 font-bold text-xs sm:text-sm px-10">
+                  {allJobs.length === 0 
+                    ? 'Les scrapers sont en cours d\'exécution. Revenez dans quelques minutes.'
+                    : 'Essayez de modifier vos filtres ou lancez une nouvelle recherche.'}
+                </p>
+                {(keyword || selectedCity || selectedContract) && (
+                  <button 
+                    onClick={() => { setKeyword(''); setSelectedCity(''); setSelectedContract(''); setDisplayedCount(PAGE_SIZE); }}
+                    className="mt-8 px-8 py-3 bg-zinc-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all hover:scale-105 active:scale-95"
+                  >
+                    Réinitialiser Filtres
+                  </button>
+                )}
+                {allJobs.length === 0 && (
+                  <button 
+                    onClick={loadJobsFromDatabase}
+                    disabled={isScanning}
+                    className="mt-4 px-8 py-3 bg-green-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-green-700 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                  >
+                    {isScanning ? 'Chargement...' : 'Recharger'}
+                  </button>
+                )}
               </div>
             )}
           </div>

@@ -423,16 +423,17 @@ Candidature envoyée via HireMe Maroc
   );
 
   return (
-    <div className="fixed inset-0 bg-zinc-900/90 backdrop-blur-xl z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-zinc-900/90 backdrop-blur-xl z-[200] flex items-end sm:items-center justify-center py-3 px-0 sm:p-4" onClick={onClose}>
       <div 
-        className="bg-white w-full sm:max-w-md lg:max-w-lg h-[95vh] sm:h-auto sm:max-h-[92vh] rounded-t-xl sm:rounded-xl flex flex-col overflow-hidden shadow-3xl animate-in slide-in-from-bottom-10 sm:fade-in duration-300"
+        className="bg-white w-full sm:max-w-md lg:max-w-lg h-[88vh] sm:h-auto sm:max-h-[92vh] rounded-t-2xl sm:rounded-xl flex flex-col overflow-hidden shadow-3xl animate-in slide-in-from-bottom-10 sm:fade-in duration-300"
+        style={{ maxHeight: 'calc(100vh - env(safe-area-inset-top, 12px) - env(safe-area-inset-bottom, 12px))' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile drag handle */}
-        <div className="w-10 h-1 bg-zinc-300 rounded-full mx-auto mt-2 mb-1 sm:hidden shrink-0"></div>
+        <div className="w-10 h-1 bg-zinc-300 rounded-full mx-auto mt-3 mb-2 sm:hidden shrink-0"></div>
 
         {/* Header */}
-        <div className="h-12 sm:h-14 flex items-center justify-between px-4 sm:px-5 border-b border-zinc-100 shrink-0">
+        <div className="h-10 sm:h-14 flex items-center justify-between px-4 sm:px-5 border-b border-zinc-100 shrink-0">
           <div className="flex-1 min-w-0">
             <h3 className="text-sm sm:text-base font-black text-zinc-900 truncate">Postuler en ligne</h3>
             <p className="text-[9px] sm:text-[10px] text-zinc-400 font-bold truncate">{job.title} • {job.company}</p>
