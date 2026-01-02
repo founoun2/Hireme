@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Job } from '../types';
+import emailjs from '@emailjs/browser';
 
 interface ApplicationWizardProps {
   job: Job;
   onClose: () => void;
 }
 
-type Step = 'upload' | 'generate' | 'review' | 'send';
+type Step = 'upload' | 'generate' | 'review' | 'send' | 'success';
 type Language = 'en' | 'ar' | 'fr' | 'es' | 'it';
 
 const LANGUAGE_OPTIONS: { code: Language; name: string; flag: string }[] = [
@@ -287,24 +288,50 @@ Cordiali saluti.`
         return;
       }
 
-      // Use EmailJS or similar service to send email
-      // For now, we'll open the user's email client with pre-filled data
-      const subject = `Candidature pour ${job.title} - ${job.company}`;
-      const body = encodeURIComponent(`${coverLetter}\n\n---\nCV joint en pièce jointe\n\nCordialement,\n${userEmail}`);
-      
-      // Open default email client with sender's email
-      window.location.href = `mailto:${targetEmail}?subject=${encodeURIComponent(subject)}&body=${body}`;
+      // Initialize EmailJS (use your own public key from emailjs.com)
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
 
-      // Mark as applied
-      setTimeout(() => {
-        setStep('send');
+      if (!publicKey || !serviceId || !templateId) {
+        throw new Error('EmailJS not configured');
+      }
+
+      emailjs.init(publicKey);
+
+      // Prepare email template parameters
+      const templateParams = {
+        to_email: targetEmail,
+        from_name: userEmail.split('@')[0], // Extract name from email
+        from_email: userEmail,
+        reply_to: userEmail,
+        job_title: job.title,
+        company_name: job.company,
+        subject: `Candidature pour ${job.title}`,
+        cover_letter: coverLetter,
+        cv_attachment: cvBase64, // Base64 encoded CV
+        cv_filename: cvFile?.name || 'CV.pdf'
+      };
+
+      // Send email using EmailJS
+      const response = await emailjs.send(
+        serviceId,
+        templateId,
+        templateParams
+      );
+
+      if (response.status === 200) {
+        // Success - move to confirmation step
+        setStep('success');
         setTimeout(() => {
           onClose();
-        }, 2000);
-      }, 1000);
+        }, 5000);
+      } else {
+        throw new Error('Email sending failed');
+      }
     } catch (error) {
       console.error('Error sending application:', error);
-      alert('Erreur lors de l\'envoi de la candidature');
+      alert('Erreur lors de l\'envoi. Veuillez réessayer.');
     } finally {
       setIsSending(false);
     }
@@ -540,7 +567,7 @@ Cordiali saluti.`
                   disabled={!coverLetter.trim() || !emailConfirmed}
                   className="flex-1 py-4 rounded-2xl font-black bg-green-600 text-white hover:bg-green-700 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  Envoyer <i className="fa fa-paper-plane ml-2"></i>
+                  Continuer <i className="fa fa-arrow-right ml-2"></i>
                 </button>
               </div>
             </div>
@@ -549,16 +576,96 @@ Cordiali saluti.`
           {/* Step 4: Send Confirmation */}
           {step === 'send' && (
             <div className="text-center py-12">
-              <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i className="fa fa-check text-5xl text-green-600"></i>
+              <div className="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i className={`fa ${isSending ? 'fa-spinner fa-spin' : 'fa-paper-plane'} text-5xl text-indigo-600`}></i>
               </div>
-              <h4 className="text-2xl font-black text-zinc-900 mb-3">Candidature envoyée !</h4>
-              <p className="text-zinc-600 mb-8">Votre CV et lettre de motivation ont été envoyés à {job.company}</p>
+              <h4 className="text-2xl font-black text-zinc-900 mb-3">
+                {isSending ? 'Envoi en cours...' : 'Prêt à envoyer'}
+              </h4>
+              <p className="text-zinc-600 mb-2">
+                <strong>À:</strong> {job.company_email || job.email}
+              </p>
+              <p className="text-zinc-600 mb-2">
+                <strong>De:</strong> {userEmail}
+              </p>
+              <p className="text-zinc-600 mb-8">
+                <strong>Poste:</strong> {job.title} - {job.company}
+              </p>
+              
+              <div className="bg-zinc-50 p-6 rounded-2xl mb-8 max-h-48 overflow-y-auto text-left">
+                <p className="text-xs text-zinc-500 font-bold mb-2">Aperçu de la lettre:</p>
+                <p className="text-sm text-zinc-700 whitespace-pre-line">{coverLetter.substring(0, 300)}...</p>
+              </div>
+
               <button
                 onClick={handleSendApplication}
-                className="px-8 py-4 rounded-2xl font-black bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all"
+                disabled={isSending}
+                className="px-12 py-5 rounded-2xl font-black bg-green-600 text-white hover:bg-green-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
               >
-                Ouvrir ma messagerie
+                {isSending ? (
+                  <>
+                    <i className="fa fa-spinner fa-spin mr-2"></i>
+                    Envoi en cours...
+                  </>
+                ) : (
+                  <>
+                    <i className="fa fa-paper-plane mr-2"></i>
+                    Envoyer la candidature
+                  </>
+                )}
+              </button>
+
+              {!isSending && (
+                <button
+                  onClick={() => setStep('review')}
+                  className="mt-4 px-6 py-3 rounded-xl font-bold text-zinc-500 hover:text-zinc-700 transition-all"
+                >
+                  <i className="fa fa-arrow-left mr-2"></i>
+                  Retour
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Step 5: Success Confirmation */}
+          {step === 'success' && (
+            <div className="text-center py-16">
+              <div className="w-28 h-28 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+                <i className="fa fa-check-circle text-6xl text-green-600"></i>
+              </div>
+              <h4 className="text-3xl font-black text-zinc-900 mb-4">Candidature envoyée !</h4>
+              <p className="text-lg text-zinc-600 mb-2">
+                Votre CV et lettre de motivation ont été envoyés avec succès à:
+              </p>
+              <p className="text-xl font-black text-indigo-600 mb-8">{job.company}</p>
+              
+              <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-6 mb-8 max-w-md mx-auto">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <i className="fa fa-envelope-circle-check text-3xl text-green-600"></i>
+                  <div className="text-left">
+                    <p className="text-xs text-green-700 font-bold">Email envoyé de:</p>
+                    <p className="text-sm font-black text-green-800">{userEmail}</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center gap-3">
+                  <i className="fa fa-building text-3xl text-green-600"></i>
+                  <div className="text-left">
+                    <p className="text-xs text-green-700 font-bold">Reçu par:</p>
+                    <p className="text-sm font-black text-green-800">{job.company_email || job.email}</p>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-sm text-zinc-500 mb-6">
+                <i className="fa fa-info-circle mr-2"></i>
+                Vérifiez votre boîte mail pour la copie de confirmation
+              </p>
+
+              <button
+                onClick={onClose}
+                className="px-10 py-4 rounded-2xl font-black bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all"
+              >
+                Fermer
               </button>
             </div>
           )}
