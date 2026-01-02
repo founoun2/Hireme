@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Job } from '../types';
-import emailjs from '@emailjs/browser';
 
 interface ApplicationWizardProps {
   job: Job;
@@ -305,64 +304,88 @@ Cordiali saluti.`
         return;
       }
 
-      // Initialize EmailJS (use your own public key from emailjs.com)
-      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+      // Get SendGrid API key from environment
+      const sendGridApiKey = import.meta.env.VITE_SENDGRID_API_KEY;
 
-      if (!publicKey || !serviceId || !templateId) {
-        alert(`❌ Configuration EmailJS manquante!\n\n` +
-          `Veuillez configurer EmailJS:\n` +
-          `${!publicKey ? '- VITE_EMAILJS_PUBLIC_KEY manquant\n' : ''}` +
-          `${!serviceId ? '- VITE_EMAILJS_SERVICE_ID manquant\n' : ''}` +
-          `${!templateId ? '- VITE_EMAILJS_TEMPLATE_ID manquant\n' : ''}` +
-          `\nConsultez EMAILJS_SETUP.md pour les instructions`);
+      if (!sendGridApiKey) {
+        alert(`❌ Configuration SendGrid manquante!\n\n` +
+          `Veuillez configurer SendGrid:\n` +
+          `- VITE_SENDGRID_API_KEY manquant\n\n` +
+          `Consultez SENDGRID_SETUP.md pour les instructions`);
         setIsSending(false);
         return;
       }
 
-      console.log('📧 Initializing EmailJS...');
-      emailjs.init(publicKey);
+      console.log('📧 Preparing email with SendGrid...');
 
-      // Prepare email template parameters with CV attachment
-      const templateParams = {
-        to_email: targetEmail,
-        to_name: job.company,
-        from_name: userEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), // Format name from email
-        from_email: userEmail,
-        reply_to: userEmail,
-        job_title: job.title,
-        company_name: job.company,
-        subject: `Candidature pour ${job.title} - ${job.company}`,
-        message: coverLetter,
-        // CV Attachment - EmailJS supports attachments
+      // Format sender name from email
+      const senderName = userEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+      // Prepare email data for SendGrid API
+      const emailData = {
+        personalizations: [{
+          to: [{ email: targetEmail, name: job.company }],
+          subject: `Candidature pour ${job.title} - ${job.company}`
+        }],
+        from: {
+          email: userEmail,
+          name: senderName
+        },
+        reply_to: {
+          email: userEmail,
+          name: senderName
+        },
+        content: [{
+          type: 'text/plain',
+          value: `Bonjour ${job.company},
+
+Je vous contacte pour postuler au poste de ${job.title}.
+
+${coverLetter}
+
+Vous trouverez mon CV en pièce jointe.
+
+Cordialement,
+${senderName}
+${userEmail}
+
+---
+Envoyé via HireMe Maroc (hirememaroc.online)`
+        }],
         attachments: [{
-          name: cvFile?.name || 'CV.pdf',
-          data: cvBase64.split(',')[1], // Remove data:application/pdf;base64, prefix
-          contentType: cvFile?.type || 'application/pdf'
+          content: cvBase64.split(',')[1], // Remove data:application/pdf;base64, prefix
+          filename: cvFile?.name || 'CV.pdf',
+          type: cvFile?.type || 'application/pdf',
+          disposition: 'attachment'
         }]
       };
 
       console.log('📤 Sending email with CV attachment to:', targetEmail);
-      console.log('📎 CV file:', cvFile?.name, `(${(cvFile?.size || 0 / 1024).toFixed(0)} KB)`);
-      
-      // Send email using EmailJS
-      const response = await emailjs.send(
-        serviceId,
-        templateId,
-        templateParams
-      );
+      console.log('📎 CV file:', cvFile?.name, `(${((cvFile?.size || 0) / 1024).toFixed(0)} KB)`);
 
-      console.log('✅ Email sent successfully:', response);
+      // Send via SendGrid API
+      const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${sendGridApiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(emailData)
+      });
 
-      if (response.status === 200) {
-        // Success - move to confirmation step
+      console.log('SendGrid Response Status:', response.status);
+
+      if (response.status === 202) {
+        // SendGrid success (returns 202 Accepted)
+        console.log('✅ Email sent successfully via SendGrid!');
         setStep('success');
         setTimeout(() => {
           onClose();
         }, 5000);
       } else {
-        throw new Error(`Email sending failed with status: ${response.status}`);
+        const errorData = await response.json();
+        console.error('SendGrid Error:', errorData);
+        throw new Error(`SendGrid error: ${JSON.stringify(errorData)}`);
       }
     } catch (error: any) {
       console.error('❌ Error sending application:', error);
@@ -370,26 +393,24 @@ Cordiali saluti.`
       // Detailed error messages
       let errorMessage = '❌ Erreur lors de l\'envoi:\n\n';
       
-      if (error.text) {
-        errorMessage += `Détails: ${error.text}\n`;
-      } else if (error.message) {
+      if (error.message) {
         errorMessage += `Détails: ${error.message}\n`;
       }
       
       // Common error scenarios
       if (error.message?.includes('network') || error.message?.includes('fetch')) {
         errorMessage += '\n🌐 Problème de connexion internet';
-      } else if (error.message?.includes('429') || error.text?.includes('limit')) {
-        errorMessage += '\n⏱️ Limite d\'envoi atteinte (200 emails/mois gratuit)';
+      } else if (error.message?.includes('429') || error.message?.includes('limit')) {
+        errorMessage += '\n⏱️ Limite d\'envoi atteinte (100 emails/jour)';
       } else if (error.message?.includes('401') || error.message?.includes('403')) {
-        errorMessage += '\n🔑 Clés EmailJS invalides - Vérifiez votre configuration';
+        errorMessage += '\n🔑 Clé SendGrid invalide - Vérifiez votre configuration';
       } else if (error.message?.includes('400')) {
-        errorMessage += '\n📝 Données invalides - Vérifiez le template EmailJS';
+        errorMessage += '\n📝 Données invalides - Vérifiez les informations';
       } else {
         errorMessage += '\n💡 Vérifiez la console (F12) pour plus de détails';
       }
       
-      errorMessage += '\n\n📖 Consultez EMAILJS_SETUP.md pour l\'aide';
+      errorMessage += '\n\n📖 Consultez SENDGRID_SETUP.md pour l\'aide';
       
       alert(errorMessage);
     } finally {
