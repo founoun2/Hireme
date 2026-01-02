@@ -71,11 +71,19 @@ const App: React.FC = () => {
     setIsScanning(true);
     try {
       const jobs = await jobService.getAllJobs();
-      setAllJobs(jobs); // Always set whatever we get, even if empty
       console.log(`📊 Loaded ${jobs.length} jobs from database`);
+      
+      if (jobs.length > 0) {
+        setAllJobs(jobs);
+      } else {
+        // Show mock data if database is empty (scrapers haven't run yet)
+        console.log('⚠️ Database empty - showing demo jobs until scrapers populate data');
+        setAllJobs(generateMockJobs());
+      }
     } catch (error) {
       console.error('❌ Error loading jobs:', error);
-      // Don't set mock data - keep current state
+      // Show mock data on error
+      setAllJobs(generateMockJobs());
     } finally {
       setIsScanning(false);
     }
@@ -125,7 +133,7 @@ const App: React.FC = () => {
   };
 
   const filteredJobs = useMemo(() => {
-    const filtered = allJobs.filter(j => {
+    return allJobs.filter(j => {
       // Enhanced keyword search - searches across multiple fields
       const searchTerm = keyword.toLowerCase().trim();
       const matchesKeyword = !searchTerm || 
@@ -144,16 +152,14 @@ const App: React.FC = () => {
       
       return matchesKeyword && matchesCity && matchesContract;
     });
-    
-    // Reset displayedCount when filter results change
-    if (filtered.length < displayedCount) {
-      setDisplayedCount(PAGE_SIZE);
-    }
-    
-    return filtered;
-  }, [allJobs, keyword, selectedCity, selectedContract, displayedCount]);
+  }, [allJobs, keyword, selectedCity, selectedContract]);
 
   const currentJobs = useMemo(() => filteredJobs.slice(0, displayedCount), [filteredJobs, displayedCount]);
+
+  // Reset displayedCount when filters change
+  useEffect(() => {
+    setDisplayedCount(PAGE_SIZE);
+  }, [keyword, selectedCity, selectedContract]);
 
   const suggestions = useMemo(() => {
     if (!keyword.trim()) return [];

@@ -13,61 +13,77 @@ export const CITIES = [
 
 export const CONTRACTS = ["CDI", "CDD", "Stage", "Freelance", "Intérim"];
 
-// Most demanded professions in Morocco for search detection
+// 🔥 TOP 7 HIGH-DEMAND SECTORS IN MOROCCO (2026) - Ordered by Priority
 export const PROFESSIONS = [
-  // Informatique, Digital & Technologie
+  // 🔥 1. TECH & DIGITAL - Très Fort Besoin (Priorité #1)
   "Développeur Web", "Développeur Front-end", "Développeur Back-end", "Développeur Full-Stack",
-  "Développeur Mobile", "Développeur Android", "Développeur iOS",
-  "Ingénieur Logiciel", "Administrateur Systèmes & Réseaux", "Technicien Informatique",
-  "Support IT", "Data Analyst", "Data Scientist", "Ingénieur Intelligence Artificielle",
-  "Ingénieur IA", "Spécialiste Cybersécurité", "Ingénieur Cloud", "UX/UI Designer",
-  "Product Designer",
+  "Développeur Mobile", "Développeur Android", "Développeur iOS", "Développeur React",
+  "Développeur Angular", "Développeur Vue.js", "Développeur Node.js", "Développeur PHP",
+  "Développeur Java", "Développeur Python", "Développeur .NET",
+  "Support Technique", "Helpdesk", "Technicien Informatique", "Support IT",
+  "Spécialiste Cybersécurité", "Expert Cybersécurité", "Analyste Sécurité",
+  "Data Analyst", "Data Scientist", "Spécialiste IA", "Ingénieur Intelligence Artificielle",
+  "Ingénieur Machine Learning", "Ingénieur Cloud", "DevOps Engineer",
+  "Administrateur Systèmes", "Administrateur Réseaux", "Ingénieur Logiciel",
+  "UX Designer", "UI Designer", "UX/UI Designer", "Product Designer", "Web Designer",
   
-  // Design, Création & Marketing Digital
-  "Graphiste", "Infographiste", "Designer Web", "Motion Designer",
-  "Vidéaste", "Monteur Vidéo", "Community Manager", "Spécialiste Marketing Digital",
-  "Expert SEO", "Expert SEA", "Rédacteur Web", "Content Manager",
-  "Responsable E-commerce",
+  // 📞 2. CENTRES D'APPELS & RELATION CLIENT - Volume Massif (Priorité #2)
+  "Téléconseiller", "Agent Centre d'Appel", "Call Center", "Agent Call Center",
+  "Téléconseiller Francophone", "Téléconseiller Arabophone", "Téléconseiller Anglophone",
+  "Agent Service Client", "Support Client", "Customer Service", "Conseiller Clientèle",
+  "Agent Support Client", "Chargé de Clientèle", "Responsable Service Client",
+  "Superviseur Centre d'Appel", "Team Leader Call Center", "Chef d'Équipe",
+  "Quality Analyst", "Customer Success Manager", "Gestionnaire Relation Client",
   
-  // Service Client & Commercial
-  "Agent Service Client", "Téléconseiller", "Call Center", "Support Client Technique",
-  "Chargé de Clientèle", "Commercial Terrain", "Commercial Sédentaire",
-  "Business Developer", "Responsable Ventes", "Customer Success Manager",
+  // 🏦 3. BANQUE, FINANCE & ASSURANCE - Secteur Stable (Priorité #3)
+  "Conseiller Clientèle Bancaire", "Chargé de Compte", "Chargé de Clientèle Banque",
+  "Analyste Financier", "Analyst Crédit", "Gestionnaire Crédit",
+  "Comptable", "Aide-Comptable", "Expert-Comptable", "Contrôleur de Gestion",
+  "Auditeur Financier", "Conseiller Assurance", "Agent Assurance",
+  "Gestionnaire Sinistres", "Chargé d'Indemnisation", "Risk Manager",
+  "Conseiller Patrimoine", "Gestionnaire de Portefeuille",
   
-  // Ingénierie & Métiers Techniques
-  "Ingénieur Génie Civil", "Ingénieur Électrique", "Ingénieur Électromécanique",
-  "Ingénieur Industriel", "Ingénieur Énergies Renouvelables", "Conducteur de Travaux",
-  "Technicien de Maintenance", "Technicien Électrique", "Technicien Mécanique",
-  "Technicien BTP",
+  // 🛎️ 4. TOURISME & HÔTELLERIE - Forte Reprise (Priorité #4)
+  "Réceptionniste", "Réceptionniste Hôtel", "Agent d'Accueil",
+  "Guide Touristique", "Guide Accompagnateur", "Guide Conférencier",
+  "Manager Hôtelier", "Responsable Hôtel", "Directeur Hôtel",
+  "Gouvernante Hôtel", "Chef de Réception", "Night Auditor",
+  "Serveur", "Serveuse", "Chef de Rang", "Maître d'Hôtel",
+  "Cuisinier", "Chef de Cuisine", "Sous-Chef", "Pâtissier",
+  "Concierge", "Bagagiste", "Voiturier",
   
-  // Logistique, Transport & Livraison
-  "Responsable Logistique", "Gestionnaire Supply Chain", "Magasinier",
-  "Gestionnaire de Stock", "Chauffeur Poids Lourd", "Chauffeur Livreur",
-  "Conducteur de Transport", "Agent d'Exploitation Logistique",
+  // 📦 5. VENTE, COMMERCIAL & LOGISTIQUE - Toujours Actif (Priorité #5)
+  "Commercial", "Commercial Terrain", "Commercial Sédentaire", "Attaché Commercial",
+  "Business Developer", "Responsable Ventes", "Directeur Commercial",
+  "Chef de Produit", "Category Manager", "Key Account Manager",
+  "Responsable Marketing Digital", "Community Manager", "Social Media Manager",
+  "Expert SEO", "Expert SEA", "Traffic Manager", "Growth Hacker",
+  "Content Manager", "Rédacteur Web", "Responsable E-commerce",
+  "Responsable Logistique", "Gestionnaire Supply Chain", "Chef d'Équipe Logistique",
+  "Magasinier", "Gestionnaire Stock", "Préparateur de Commandes",
+  "Agent d'Exploitation", "Dispatcher", "Planificateur",
   
-  // Finance, Gestion & Administration
-  "Comptable", "Aide-Comptable", "Expert-Comptable", "Analyste Financier",
-  "Contrôleur de Gestion", "Gestionnaire Administratif", "Assistant Administratif",
-  "Assistant de Direction", "Responsable Ressources Humaines", "Chargé de Recrutement",
+  // 🚗 6. MÉTIERS MOINS SPÉCIALISÉS - Forte Demande (Priorité #6)
+  "Chauffeur", "Chauffeur Livreur", "Chauffeur Poids Lourd", "Chauffeur VL",
+  "Livreur", "Coursier", "Livreur Moto", "Chauffeur Taxi",
+  "Agent de Sécurité", "Vigile", "Gardien", "Agent de Surveillance",
+  "Assistant Administratif", "Secrétaire", "Assistant de Direction",
+  "Employé Administratif", "Agent Administratif", "Gestionnaire Administratif",
+  "Réceptionniste Entreprise", "Standardiste", "Hôtesse d'Accueil",
+  "Assistant Polyvalent", "Employé Polyvalent", "Agent d'Entretien",
   
-  // Santé & Paramédical
-  "Médecin Généraliste", "Médecin Spécialiste", "Infirmier", "Infirmière",
-  "Aide-soignant", "Pharmacien", "Technicien de Laboratoire",
-  "Gestionnaire de Clinique", "Assistant Médical",
+  // 📊 7. MANAGERS & SUPERVISION - Bien Rémunéré (Priorité #7)
+  "Chef de Projet", "Project Manager", "Scrum Master", "Product Owner",
+  "Manager d'Équipe", "Team Leader", "Responsable d'Équipe",
+  "Responsable Ressources Humaines", "DRH", "Chargé RH", "Chargé de Recrutement",
+  "Responsable Formation", "Gestionnaire Paie", "HR Business Partner",
+  "Directeur Général", "Directeur Opérationnel", "Directeur Technique",
+  "Responsable Qualité", "Quality Manager", "Responsable Production",
   
-  // Éducation & Formation
-  "Enseignant", "Professeur", "Professeur de Langues", "Professeur de Français",
-  "Professeur d'Anglais", "Professeur d'Espagnol", "Formateur Professionnel",
-  "Formateur Informatique", "Coach",
-  
-  // Tourisme, Hôtellerie & Restauration
-  "Réceptionniste", "Agent d'Accueil", "Guide Touristique", "Responsable Hôtelier",
-  "Serveur", "Serveuse", "Cuisinier", "Chef de Cuisine", "Manager Restaurant",
-  
-  // Métiers Manuels & Services
-  "Électricien", "Plombier", "Menuisier", "Soudeur", "Peintre",
-  "Agent de Sécurité", "Agent de Nettoyage", "Technicien Climatisation",
-  "Agent de Maintenance"
+  // 🎨 CRÉATIFS & DIGITAL CONTENT (Bonus - En Croissance)
+  "Graphiste", "Infographiste", "Designer Graphique", "Motion Designer",
+  "Vidéaste", "Monteur Vidéo", "Créateur de Contenu", "Content Creator",
+  "Photographe", "Illustrateur", "Directeur Artistique"
 ];
 
 export const SIDEBAR_DATA: Record<string, SidebarContent> = {
