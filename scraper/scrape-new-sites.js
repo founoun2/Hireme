@@ -7,11 +7,6 @@ console.log('🎯 Alwadifa-Maroc, Jadid-Alwadifa, Marocemploi\n');
 
 const SITES = [
   { 
-    name: 'Alwadifa-Maroc.com', 
-    url: 'https://www.alwadifa-maroc.com/',
-    source: 'alwadifa-maroc.com'
-  },
-  { 
     name: 'Jadid-Alwadifa.com', 
     url: 'https://www.jadid-alwadifa.com/',
     source: 'jadid-alwadifa.com'
@@ -22,6 +17,13 @@ const SITES = [
     source: 'marocemploi.cc'
   }
 ];
+
+// Function to check if text contains Arabic characters
+function hasArabic(text) {
+  if (!text) return false;
+  const arabicRegex = /[؀-ۿ]/;
+  return arabicRegex.test(text);
+}
 
 async function scrapeSite(site) {
   const browser = await chromium.launch({ 
@@ -110,6 +112,11 @@ async function scrapeSite(site) {
         if (phoneMatch) phone = phoneMatch[0];
         
         if (title && fullUrl) {
+          // Skip jobs with Arabic text
+          if (hasArabic(title) || hasArabic(description)) {
+            continue;
+          }
+          
           const jobId = fullUrl
             .replace(/https?:\/\/(www\.)?/, '')
             .replace(/[^a-z0-9]/g, '-')

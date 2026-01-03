@@ -17,12 +17,6 @@ const SITES = [
     pages: 5 // Scrape 5 pages = ~50 jobs per run
   },
   { 
-    name: 'Alwadifa-Maroc.com', 
-    url: 'https://www.alwadifa-maroc.com/',
-    source: 'alwadifa-maroc.com',
-    pages: 1
-  },
-  { 
     name: 'Dreamjob.ma', 
     url: 'https://www.dreamjob.ma/',
     source: 'dreamjob.ma',
@@ -35,6 +29,13 @@ const SITES = [
     pages: 1
   }
 ];
+
+// Function to check if text contains Arabic characters
+function hasArabic(text) {
+  if (!text) return false;
+  const arabicRegex = /[؀-ۿ]/;
+  return arabicRegex.test(text);
+}
 
 async function scrapeSite(site) {
   const browser = await chromium.launch({ 
@@ -120,6 +121,11 @@ async function scrapeSite(site) {
             if (phoneMatch) phone = phoneMatch[0];
             
             if (title && fullUrl) {
+              // Skip jobs with Arabic text
+              if (hasArabic(title) || hasArabic(description)) {
+                continue;
+              }
+              
               const jobId = fullUrl
                 .replace(/https?:\/\/(www\.)?/, '')
                 .replace(/[^a-z0-9]/g, '-')
