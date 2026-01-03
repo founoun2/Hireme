@@ -4,6 +4,7 @@ on:
   # Run every 30 minutes
   schedule:
     - cron: '*/30 * * * *'  # Every 30 minutes
+    - cron: '0 2 * * *'     # Daily at 2 AM UTC for cleanup
   
   # Allow manual trigger from GitHub UI
   workflow_dispatch:
@@ -35,6 +36,15 @@ jobs:
         run: |
           cd scraper
           node github-scraper.js
+      
+      - name: 🗑️ Cleanup old user-posted jobs (daily)
+        if: github.event.schedule == '0 2 * * *'
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          cd scraper
+          node cleanup-user-posts.js
       
       - name: ✅ Scraping completed
         run: echo "Job scraping completed successfully!"

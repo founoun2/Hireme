@@ -26,7 +26,7 @@ export interface Job {
   summary?: string; // AI-generated summary
 }
 
-export type SidebarKey = 'legal' | 'privacy' | null;
+export type SidebarKey = 'legal' | 'privacy' | 'postJob' | null;
 
 export interface SidebarContent {
   title: string;

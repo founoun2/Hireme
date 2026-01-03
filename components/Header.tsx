@@ -74,6 +74,15 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
         </nav>
 
         <div className="flex items-center gap-2">
+          {/* Post Job Button */}
+          <button
+            onClick={() => onOpenSidebar('postJob')}
+            className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-xl font-bold text-xs hover:shadow-lg hover:shadow-red-200 transition-all hover:scale-105 active:scale-95"
+          >
+            <i className="fa fa-plus-circle"></i>
+            <span>Publier une Offre</span>
+          </button>
+          
           <div className="flex items-center gap-1.5 sm:gap-2 bg-zinc-900 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border border-zinc-800 shadow-lg shadow-zinc-900/10">
             <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_6px_rgba(34,197,94,0.8)]"></div>
             <span className="text-[9px] sm:text-[10px] font-black text-white tabular-nums tracking-wider">
@@ -97,6 +106,20 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
             className="absolute top-full right-4 left-4 mt-3 lg:hidden bg-white rounded-3xl border border-zinc-100 shadow-2xl p-4 animate-in slide-in-from-top-4 fade-in duration-200 z-50 overflow-hidden"
           >
             <div className="flex flex-col gap-1">
+              {/* Post Job Button - Mobile */}
+              <button 
+                onClick={() => handleLinkClick('postJob')}
+                className="flex items-center gap-4 px-5 py-4 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 text-white transition-all group active:opacity-90 mb-2"
+              >
+                <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                  <i className="fa fa-plus-circle text-sm"></i>
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-black uppercase tracking-tighter">Publier une Offre</span>
+                  <span className="text-[10px] font-bold text-white/80 uppercase tracking-widest">Gratuit · Simple · Rapide</span>
+                </div>
+              </button>
+              
               <button 
                 onClick={() => handleLinkClick('legal')}
                 className="flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-zinc-50 transition-colors group active:bg-zinc-100"

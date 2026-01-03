@@ -10,10 +10,23 @@ interface JobCardProps {
 }
 
 export const JobCard: React.FC<JobCardProps> = ({ job, isApplied, onClick, style }) => {
-  const isLive = job.url.includes('linkedin') || job.url.includes('emploi') || job.url.includes('rekrute') || job.url.includes('wadifa') || job.url.includes('anapec');
-  
   // Detect if text contains Arabic characters
   const hasArabic = /[\u0600-\u06FF]/.test(job.title + job.company + job.city);
+
+  // Calculate relative time
+  const getTimeAgo = (dateString?: string) => {
+    if (!dateString) return job.time || 'Récent';
+    
+    const now = new Date();
+    const posted = new Date(dateString);
+    const diffMs = now.getTime() - posted.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    
+    if (diffMins < 1) return 'À l\'instant';
+    if (diffMins < 60) return `${diffMins}min`;
+    return `${diffHours}h`;
+  };
 
   return (
     <div 
@@ -37,12 +50,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, isApplied, onClick, style
                 </span>
               ) : (
                 <>
-                  {isLive && (
-                    <span className="bg-emerald-50 text-emerald-600 text-[9px] font-bold uppercase px-2 py-1 rounded-md flex items-center gap-1 border border-emerald-200">
-                      <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Live
-                    </span>
-                  )}
-                  {job.isNew && !isLive && (
+                  {job.isNew && (
                     <span className="bg-indigo-600 text-white text-[9px] font-bold uppercase px-2 py-1 rounded-md">New</span>
                   )}
                 </>
@@ -67,23 +75,26 @@ export const JobCard: React.FC<JobCardProps> = ({ job, isApplied, onClick, style
         <div className="flex flex-wrap items-center gap-3 text-sm">
           <div className="flex items-center gap-2 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-100">
             <i className="fa fa-file-contract text-indigo-600 text-xs"></i>
-            <span className="font-semibold text-zinc-700">{job.contract || 'CDI'}</span>
+            <span className="font-semibold text-zinc-700">
+              {job.contract || 'CDI'}
+              {job.salary && (
+                <>
+                  <span className="text-zinc-400 mx-2">·</span>
+                  <span className="text-emerald-600 font-bold">{job.salary}</span>
+                </>
+              )}
+            </span>
           </div>
-          
-          {job.salary && (
-            <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
-              <i className="fa fa-money-bill-wave text-emerald-600 text-xs"></i>
-              <span className="font-bold text-emerald-700">{job.salary}</span>
-            </div>
-          )}
         </div>
       </div>
 
       {/* Right section: Time and action */}
       <div className="flex flex-col items-end justify-between shrink-0 min-w-[120px]">
-        <div className="flex items-center gap-2 text-xs text-zinc-400 font-medium">
-          <i className="fa fa-clock text-[10px]"></i>
-          <span>{job.time}</span>
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-2 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-100">
+            <i className="fa fa-clock text-indigo-600 text-[10px]"></i>
+            <span className="font-bold text-zinc-700 text-xs">{getTimeAgo(job.created_at)}</span>
+          </div>
         </div>
         <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md flex items-center gap-2 group/btn">
           <span>Détails</span>

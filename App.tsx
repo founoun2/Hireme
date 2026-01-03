@@ -7,6 +7,7 @@ import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { JobCard } from './components/JobCard';
 import { JobModal } from './components/JobModal';
+import { JobPostWizard } from './components/JobPostWizard';
 import { CookieConsent } from './components/CookieConsent';
 import { InFeedAd } from './components/AdBanner';
 import { jobService } from './services/jobService';
@@ -25,6 +26,7 @@ const App: React.FC = () => {
   const [selectedContract, setSelectedContract] = useState('');
   const [displayedCount, setDisplayedCount] = useState(PAGE_SIZE);
   const [activeSidebar, setActiveSidebar] = useState<SidebarKey>(null);
+  const [showJobPostWizard, setShowJobPostWizard] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [appliedJobs, setAppliedJobs] = useState<Set<number>>(() => {
     // Load applied jobs from localStorage on mount
@@ -202,7 +204,13 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#fcfcfc]">
       <Header 
-        onOpenSidebar={setActiveSidebar}
+        onOpenSidebar={(key) => {
+          if (key === 'postJob') {
+            setShowJobPostWizard(true);
+          } else {
+            setActiveSidebar(key);
+          }
+        }}
         keyword={keyword}
         setKeyword={setKeyword}
         selectedCity={selectedCity}
@@ -219,6 +227,15 @@ const App: React.FC = () => {
       />
 
       <Sidebar activeKey={activeSidebar} onClose={() => setActiveSidebar(null)} />
+      
+      {/* Job Post Wizard */}
+      <JobPostWizard 
+        isOpen={showJobPostWizard} 
+        onClose={() => {
+          setShowJobPostWizard(false);
+          loadJobsFromDatabase(); // Refresh jobs after posting
+        }} 
+      />
       
       {/* Scanning Splash Screen (Mobile/Desktop Optimized) */}
       {isScanning && allJobs.length === 0 && (

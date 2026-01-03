@@ -9,6 +9,9 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeKey, onClose }) => {
+  // Don't show sidebar for postJob (it has its own wizard)
+  if (activeKey === 'postJob') return null;
+  
   const content = activeKey ? SIDEBAR_DATA[activeKey] : null;
 
   return (
