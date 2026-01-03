@@ -71,18 +71,50 @@ async function scrapeSite(site) {
           try {
             const card = jobCards[i];
             
+            // Extract title
             const titleEl = await card.$('h2 a, h3 a, h1 a, .entry-title a, a[rel="bookmark"]');
             const title = titleEl ? (await titleEl.textContent()).trim() : null;
             
-            const companyEl = await card.$('.company, .author, .meta');
+            // Extract company
+            const companyEl = await card.$('.company, .author, .meta, .company-name');
             const company = companyEl ? (await companyEl.textContent()).trim() : 'Non spécifié';
             
+            // Extract URL
             const linkEl = await card.$('h2 a, h3 a, h1 a, a[rel="bookmark"]');
             const href = linkEl ? await linkEl.getAttribute('href') : null;
             const fullUrl = href ? (href.startsWith('http') ? href : `${site.url.replace(/\/+$/, '')}${href}`) : null;
             
-            const descEl = await card.$('.entry-content, .excerpt, .summary, p');
-            const description = descEl ? (await descEl.textContent()).trim() : '';
+            // Extract city - try multiple selectors
+            let city = 'Maroc';
+            const locationEl = await card.$('.location, .ville, .city, .lieu, .localisation, .job-location, [class*="location"], [class*="ville"]');
+            if (locationEl) {
+              const locationText = (await locationEl.textContent()).trim();
+              // Extract city names (common Moroccan cities)
+              const cities = ['Casablanca', 'Rabat', 'Marrakech', 'Fès', 'Tanger', 'Agadir', 'Meknès', 'Oujda', 'Kenitra', 'Tétouan', 'Salé', 'Mohammedia', 'Khouribga', 'Béni Mellal', 'El Jadida', 'Nador', 'Settat', 'Taza', 'Laâyoune'];
+              for (const cityName of cities) {
+                if (locationText.includes(cityName)) {
+                  city = cityName;
+                  break;
+                }
+              }
+              if (city === 'Maroc' && locationText.length > 0 && locationText.length < 50) {
+                city = locationText;
+              }
+            }
+            
+            // Extract full description
+            const descEl = await card.$('.entry-content, .excerpt, .summary, p, .description');
+            let description = descEl ? (await descEl.textContent()).trim() : '';
+            
+            // Extract email
+            let email = null;
+            const emailMatch = description.match(/[\w\.-]+@[\w\.-]+\.\w+/);
+            if (emailMatch) email = emailMatch[0];
+            
+            // Extract phone
+            let phone = null;
+            const phoneMatch = description.match(/(?:\+212|0)[5-7]\d{8}|(?:\+212|0)\d{9}/);
+            if (phoneMatch) phone = phoneMatch[0];
             
             if (title && fullUrl) {
               const jobId = fullUrl
@@ -94,10 +126,12 @@ async function scrapeSite(site) {
                 id: jobId,
                 title,
                 company,
-                city: 'Maroc',
-                description: description.substring(0, 500),
+                city,
+                description: description.substring(0, 2000), // Increased from 500 to 2000
                 url: fullUrl,
-                source: site.source
+                source: site.source,
+                company_email: email,
+                company_phone: phone
               });
             }
           } catch (error) {
