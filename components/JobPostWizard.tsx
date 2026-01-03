@@ -113,7 +113,7 @@ export const JobPostWizard: React.FC<JobPostWizardProps> = ({ isOpen, onClose })
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
               <p className="text-sm text-amber-800">
                 <i className="fa fa-info-circle mr-2"></i>
-                Votre offre d'emploi sera automatiquement supprimée de notre site web après <span className="font-bold">10 jours</span>.
+                Votre offre d'emploi sera automatiquement supprimée de notre site web après <span className="font-bold">7 jours</span>.
               </p>
             </div>
             <button
