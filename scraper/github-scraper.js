@@ -10,19 +10,19 @@ const SITES = [
     name: 'ReKrute.com', 
     url: 'https://www.rekrute.com/offres.html?s=1&p=',
     source: 'rekrute.com',
-    pages: 3 // 3 pages = ~30 jobs (GitHub Actions has 6h limit per month)
+    pages: 10 // 10 pages = ~100 jobs per run
   },
   { 
     name: 'Dreamjob.ma', 
     url: 'https://www.dreamjob.ma/',
     source: 'dreamjob.ma',
-    pages: 1
+    pages: 10
   },
   { 
     name: 'Jadid-Alwadifa.com', 
     url: 'https://www.jadid-alwadifa.com/',
     source: 'jadid-alwadifa.com',
-    pages: 1
+    pages: 10
   }
 ];
 
