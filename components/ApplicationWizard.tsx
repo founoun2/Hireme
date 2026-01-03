@@ -340,40 +340,60 @@ Candidature envoyée via HireMe Maroc
       console.log('📤 Sending email with CV attachment to:', targetEmail);
       console.log('📎 CV file:', cvFile?.name, `(${((cvFile?.size || 0) / 1024).toFixed(0)} KB)`);
 
-      // Call serverless function instead of SendGrid directly
-      const response = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          to: targetEmail,
-          toName: job.company,
-          subject: `Candidature: ${job.title} - ${userName}`,
-          content: emailContent,
-          replyToEmail: userEmail,
-          replyToName: userName,
-          attachment: {
-            content: cvBase64.split(',')[1], // Remove data:application/pdf;base64, prefix
-            filename: cvFile?.name || 'CV.pdf',
-            type: cvFile?.type || 'application/pdf'
-          }
-        })
-      });
-
-      console.log('API Response Status:', response.status);
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log('✅ Email sent successfully!', result);
+      // Development mode: Show success without actually sending
+      const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      
+      if (isDevelopment) {
+        console.log('🚀 DEV MODE: Email simulation');
+        console.log('📧 To:', targetEmail);
+        console.log('👤 From:', userEmail);
+        console.log('📄 Subject:', `Candidature: ${job.title} - ${userName}`);
+        console.log('📎 CV:', cvFile?.name);
+        console.log('✅ In production, this will send via SendGrid API');
+        
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
         setStep('success');
         setTimeout(() => {
           onClose();
         }, 5000);
       } else {
-        const errorData = await response.json();
-        console.error('API Error:', errorData);
-        throw new Error(`API error: ${JSON.stringify(errorData)}`);
+        // Production: Call serverless function
+        const response = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            to: targetEmail,
+            toName: job.company,
+            subject: `Candidature: ${job.title} - ${userName}`,
+            content: emailContent,
+            replyToEmail: userEmail,
+            replyToName: userName,
+            attachment: {
+              content: cvBase64.split(',')[1],
+              filename: cvFile?.name || 'CV.pdf',
+              type: cvFile?.type || 'application/pdf'
+            }
+          })
+        });
+
+        console.log('API Response Status:', response.status);
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('✅ Email sent successfully!', result);
+          setStep('success');
+          setTimeout(() => {
+            onClose();
+          }, 5000);
+        } else {
+          const errorData = await response.json();
+          console.error('API Error:', errorData);
+          throw new Error(`API error: ${JSON.stringify(errorData)}`);
+        }
       }
     } catch (error: any) {
       console.error('❌ Error sending application:', error);

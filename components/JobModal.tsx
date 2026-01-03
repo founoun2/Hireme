@@ -12,6 +12,7 @@ interface JobModalProps {
 
 export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApplied }) => {
   const [showApplicationWizard, setShowApplicationWizard] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   if (!job) return null;
 
@@ -98,77 +99,168 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
 
           {/* Main Sections */}
           <div className="space-y-4 mb-3">
-            <section>
-              <h4 className="text-[9px] font-black text-zinc-400 uppercase tracking-wide mb-2 flex items-center gap-1.5">
-                <div className="w-1 h-1 bg-indigo-500 rounded-full"></div> Présentation
+            {/* Enhanced Presentation Section */}
+            <section className="bg-zinc-50 p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-zinc-100">
+              <h4 className="text-[9px] font-black text-zinc-600 uppercase tracking-wide mb-3 flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div> Présentation de l'offre
               </h4>
-              <p className="text-sm sm:text-base text-zinc-600 leading-relaxed font-medium">
-                {job.description}
-              </p>
+              <div className="space-y-3">
+                {/* Main Description */}
+                <div className="bg-white p-3 sm:p-4 rounded-lg border border-zinc-100">
+                  <p className={`text-sm sm:text-base text-zinc-700 leading-relaxed font-medium transition-all ${
+                    isDescriptionExpanded ? '' : 'line-clamp-3'
+                  }`}>
+                    {job.description}
+                  </p>
+                  <button
+                    onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                    className="mt-2 text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1.5 transition-colors"
+                  >
+                    {isDescriptionExpanded ? (
+                      <>
+                        <span>Voir moins</span>
+                        <i className="fa fa-chevron-up text-[9px]"></i>
+                      </>
+                    ) : (
+                      <>
+                        <span>Voir plus</span>
+                        <i className="fa fa-chevron-down text-[9px]"></i>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Requirements/Profile Needed */}
+                {job.requirements && job.requirements.length > 0 && (
+                  <div className="bg-white p-3 sm:p-4 rounded-lg border border-zinc-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <i className="fa fa-user-check text-indigo-500 text-xs"></i>
+                      <span className="text-[8px] font-black text-zinc-600 uppercase tracking-wide">Profil Recherché</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {job.requirements.map((req, i) => (
+                        <span key={i} className="bg-indigo-50 border border-indigo-100 px-2.5 py-1.5 rounded-lg text-zinc-700 font-bold text-[10px] sm:text-xs">
+                          {req}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tasks/Missions */}
+                {job.tasks && job.tasks.length > 0 && (
+                  <div className="bg-white p-3 sm:p-4 rounded-lg border border-zinc-100">
+                    <div className="flex items-center gap-2 mb-2.5">
+                      <i className="fa fa-list-check text-indigo-500 text-xs"></i>
+                      <span className="text-[8px] font-black text-zinc-600 uppercase tracking-wide">Missions & Tâches</span>
+                    </div>
+                    <ul className="space-y-2">
+                      {job.tasks.map((task, i) => (
+                        <li key={i} className="flex items-start gap-2.5">
+                          <div className="w-5 h-5 rounded-md bg-indigo-100 flex items-center justify-center shrink-0 mt-0.5">
+                            <i className="fa fa-check text-indigo-600 text-[8px]"></i>
+                          </div>
+                          <span className="text-zinc-700 font-medium text-xs sm:text-sm leading-tight">{task}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Skills Required */}
+                {job.skills && job.skills.length > 0 && (
+                  <div className="bg-white p-3 sm:p-4 rounded-lg border border-zinc-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <i className="fa fa-star text-indigo-500 text-xs"></i>
+                      <span className="text-[8px] font-black text-zinc-600 uppercase tracking-wide">Compétences Requises</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {job.skills.map((skill, i) => (
+                        <span key={i} className="bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-bold">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Category & Posted Date */}
+                <div className="flex items-center justify-between">
+                  {job.category && (
+                    <div className="flex items-center gap-2">
+                      <i className="fa fa-tag text-zinc-400 text-[9px]"></i>
+                      <span className="text-[9px] font-bold text-zinc-500">{job.category}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center text-[9px] font-bold text-zinc-500">
+                    <i className="fa fa-clock text-zinc-400 mr-1.5"></i>
+                    Publié {job.time}
+                  </div>
+                </div>
+              </div>
             </section>
 
-            {job.tasks && job.tasks.length > 0 && (
-              <section className="bg-zinc-50 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-zinc-100/80">
-                <h4 className="text-[9px] font-black text-zinc-400 uppercase tracking-wide mb-2.5 flex items-center gap-1.5">
-                  <div className="w-1 h-1 bg-indigo-500 rounded-full"></div> Missions clés
-                </h4>
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-2.5">
-                  {job.tasks.map((task, i) => (
-                    <li key={i} className="flex items-start gap-2.5">
-                      <div className="w-6 h-6 rounded-lg bg-white shadow-sm flex items-center justify-center text-indigo-500 shrink-0 mt-0.5">
-                        <i className="fa fa-circle-check text-[9px]"></i>
-                      </div>
-                      <span className="text-zinc-700 font-bold text-xs sm:text-sm leading-tight">{task}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-
-            {job.requirements && job.requirements.length > 0 && (
-              <section>
-                <h4 className="text-[9px] font-black text-zinc-400 uppercase tracking-wide mb-2.5 flex items-center gap-1.5">
-                  <div className="w-1 h-1 bg-indigo-500 rounded-full"></div> Votre Profil
-                </h4>
-                <div className="flex flex-wrap gap-1.5">
-                  {job.requirements.map((req, i) => (
-                    <span key={i} className="bg-white border border-zinc-100 px-2.5 py-1.5 rounded-lg text-zinc-600 font-bold text-[10px] sm:text-xs shadow-sm">
-                      {req}
-                    </span>
-                  ))}
-                </div>
-              </section>
-            )}
-
+            {/* Enhanced Contact Section */}
             {(job.email || job.contactPhone || job.company_email || job.company_phone || job.company_website) && (
-              <section className="p-3 sm:p-4 bg-zinc-900 rounded-xl sm:rounded-2xl text-white overflow-hidden relative">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-600/10 rounded-full -mr-12 -mt-12 blur-3xl"></div>
-                <h4 className="text-[9px] font-black text-zinc-500 uppercase tracking-wide mb-2.5">Contact Direct</h4>
-                <div className="flex flex-col gap-2">
-                  {(job.email || job.company_email) && (
-                    <div className="group">
-                      <p className="text-[8px] font-black text-zinc-500 uppercase mb-1">Email</p>
-                      <a href={`mailto:${job.company_email || job.email}`} className="text-xs sm:text-sm font-black hover:text-indigo-400 transition-colors flex items-center gap-2 truncate">
-                        <i className="fa fa-envelope-open text-zinc-700 text-[10px]"></i> {job.company_email || job.email}
-                      </a>
-                    </div>
-                  )}
-                  {(job.contactPhone || job.company_phone) && (
-                    <div className="group">
-                      <p className="text-[8px] font-black text-zinc-500 uppercase mb-1">Téléphone</p>
-                      <a href={`tel:${job.company_phone || job.contactPhone}`} className="text-xs sm:text-sm font-black hover:text-indigo-400 transition-colors flex items-center gap-2">
-                        <i className="fa fa-phone-volume text-zinc-700 text-[10px]"></i> {job.company_phone || job.contactPhone}
-                      </a>
-                    </div>
-                  )}
-                  {job.company_website && (
-                    <div className="group">
-                      <p className="text-[8px] font-black text-zinc-500 uppercase mb-1">Site Web</p>
-                      <a href={job.company_website} target="_blank" rel="noopener noreferrer" className="text-xs sm:text-sm font-black hover:text-indigo-400 transition-colors flex items-center gap-2 truncate">
-                        <i className="fa fa-globe text-zinc-700 text-[10px]"></i> {job.company_website}
-                      </a>
-                    </div>
-                  )}
+              <section className="p-4 sm:p-5 bg-zinc-900 rounded-xl sm:rounded-2xl text-white overflow-hidden relative shadow-2xl">
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-xs sm:text-sm font-black text-white uppercase tracking-wide flex items-center gap-2">
+                      <i className="fa fa-address-card text-indigo-400"></i>
+                      Informations de Contact
+                    </h4>
+                    <span className="text-[8px] font-bold text-zinc-500 bg-zinc-800/50 px-2 py-1 rounded">
+                      Contact Direct
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* Email */}
+                    {(job.email || job.company_email) && (
+                      <div className="bg-white/10 p-3 rounded-lg border border-white/10 hover:bg-white/15 transition-all group">
+                        <p className="text-[8px] font-black text-indigo-300 uppercase mb-1.5 flex items-center gap-1.5">
+                          <i className="fa fa-envelope"></i> Email de candidature
+                        </p>
+                        <a href={`mailto:${job.company_email || job.email}`} className="text-xs sm:text-sm font-bold text-white hover:text-indigo-300 transition-colors flex items-center gap-2 break-all">
+                          <i className="fa fa-paper-plane text-indigo-400 text-[10px]"></i>
+                          {job.company_email || job.email}
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Phone */}
+                    {(job.contactPhone || job.company_phone) && (
+                      <div className="bg-white/10 p-3 rounded-lg border border-white/10 hover:bg-white/15 transition-all group">
+                        <p className="text-[8px] font-black text-indigo-300 uppercase mb-1.5 flex items-center gap-1.5">
+                          <i className="fa fa-phone"></i> Téléphone
+                        </p>
+                        <a href={`tel:${job.company_phone || job.contactPhone}`} className="text-xs sm:text-sm font-bold text-white hover:text-indigo-300 transition-colors flex items-center gap-2">
+                          <i className="fa fa-phone-volume text-indigo-400 text-[10px]"></i>
+                          {job.company_phone || job.contactPhone}
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Website */}
+                    {job.company_website && (
+                      <div className="bg-white/10 p-3 rounded-lg border border-white/10 hover:bg-white/15 transition-all group md:col-span-2">
+                        <p className="text-[8px] font-black text-indigo-300 uppercase mb-1.5 flex items-center gap-1.5">
+                          <i className="fa fa-globe"></i> Site Web de l'entreprise
+                        </p>
+                        <a href={job.company_website} target="_blank" rel="noopener noreferrer" className="text-xs sm:text-sm font-bold text-white hover:text-indigo-300 transition-colors flex items-center gap-2 break-all">
+                          <i className="fa fa-external-link-alt text-indigo-400 text-[10px]"></i>
+                          {job.company_website}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-3 pt-3 border-t border-white/10">
+                    <p className="text-[9px] font-bold text-zinc-400 flex items-center gap-1.5">
+                      <i className="fa fa-info-circle text-indigo-400"></i>
+                      Vous pouvez contacter directement l'entreprise ou utiliser notre assistant IA pour postuler
+                    </p>
+                  </div>
                 </div>
               </section>
             )}

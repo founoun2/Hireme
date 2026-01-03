@@ -1,16 +1,15 @@
 import OpenAI from 'openai';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: '../.env' });
+dotenv.config(); // Load from scraper/.env
 
 // Initialize AI clients
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const geminiModel = genAI.getGenerativeModel({ model: 'gemini-pro' });
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Initialize Z.AI client
 const zaiApiKey = process.env.Z_AI_API_KEY || '75df170404d94325946741076dd51913.pDSyIhqtVv5hZOG2';
@@ -27,36 +26,24 @@ const flowithBaseUrl = 'https://api.flowith.io/v1'; // Flowith.io API endpoint
 export const aiService = {
   /**
    * Enrich job with AI (categorization, skills, summary)
-   * Uses OpenAI → Gemini → Z.AI → Flowith fallback chain
+   * Uses simple fallback if AI APIs are not configured
    */
   async enrichJob(job) {
+    // Quick fallback if no API keys configured
+    if (!process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
+      return this.getFallbackEnrichment(job);
+    }
+
     try {
       const enriched = await this.enrichWithOpenAI(job);
-      console.log(`  🤖 OpenAI enriched: ${job.title}`);
       return enriched;
     } catch (error) {
-      console.log(`  ⚠️  OpenAI failed, trying Gemini...`);
       try {
         const enriched = await this.enrichWithGemini(job);
-        console.log(`  ✨ Gemini enriched: ${job.title}`);
         return enriched;
       } catch (geminiError) {
-        console.log(`  ⚠️  Gemini failed, trying Z.AI...`);
-        try {
-          const enriched = await this.enrichWithZAI(job);
-          console.log(`  🚀 Z.AI enriched: ${job.title}`);
-          return enriched;
-        } catch (zaiError) {
-          console.log(`  ⚠️  Z.AI failed, trying Flowith...`);
-          try {
-            const enriched = await this.enrichWithFlowith(job);
-            console.log(`  🌊 Flowith enriched: ${job.title}`);
-            return enriched;
-          } catch (flowithError) {
-            console.log(`  ⚠️  All AIs failed, using fallback`);
-            return this.fallbackEnrichment(job);
-          }
-        }
+        // Skip Z.AI and Flowith, use fallback immediately
+        return this.getFallbackEnrichment(job);
       }
     }
   },
@@ -136,9 +123,15 @@ Return ONLY valid JSON with:
   "company_website": "extract website URL if found, or null"
 }`;
 
-    const result = await geminiModel.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const response = await genAI.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json'
+      }
+    });
+    
+    const text = response.text;
     
     // Extract JSON from markdown code blocks if present
     const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || text.match(/\{[\s\S]*\}/);

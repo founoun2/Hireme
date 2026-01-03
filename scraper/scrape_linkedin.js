@@ -21,7 +21,7 @@ export async function scrapeLinkedIn() {
     // LinkedIn job search with targeted keyword
     const encodedKeyword = encodeURIComponent(keyword);
     const url = `https://www.linkedin.com/jobs/search/?keywords=${encodedKeyword}&location=Morocco&geoId=104199705`;
-    await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await wait(2000);
     
     // Get job listings

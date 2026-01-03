@@ -50,20 +50,20 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-500 ${scrolled ? 'py-3 bg-white/70 border-b border-zinc-100 shadow-sm' : 'py-5 bg-transparent'} backdrop-blur-2xl`}>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between relative">
-        <div className="flex items-center gap-2 sm:gap-3 cursor-pointer group" onClick={() => window.location.reload()}>
-          <div className="relative w-10 h-10 sm:w-12 sm:h-12 transition-all duration-500 group-hover:scale-110 active:scale-95">
-            <div className="absolute inset-0 bg-[#c1272d] rounded-2xl sm:rounded-full shadow-lg shadow-red-900/10 flex items-center justify-center overflow-hidden">
-              <svg viewBox="0 0 512 512" className="w-6 h-6 sm:w-8 sm:h-8 fill-none stroke-[#006233] stroke-[35]">
+    <header className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-500 ${scrolled ? 'py-2 bg-white/95 border-b border-zinc-200 shadow-md' : 'py-3 bg-white/80'} backdrop-blur-2xl border-b border-zinc-100/50`}>
+      <div className="max-w-5xl mx-auto px-3 sm:px-6 flex items-center justify-between relative">
+        <div className="flex items-center gap-2 cursor-pointer group" onClick={() => window.location.reload()}>
+          <div className="relative w-9 h-9 sm:w-11 sm:h-11 transition-all duration-500 group-hover:scale-110 active:scale-95">
+            <div className="absolute inset-0 bg-[#c1272d] rounded-xl sm:rounded-2xl shadow-lg shadow-red-900/10 flex items-center justify-center overflow-hidden">
+              <svg viewBox="0 0 512 512" className="w-5 h-5 sm:w-7 sm:h-7 fill-none stroke-[#006233] stroke-[35]">
                 <path d="M256 160l26.4 81.3h85.5l-69.1 50.2 26.4 81.3-69.2-50.2-69.2 50.2 26.4-81.3-69.1-50.2h85.5z" />
               </svg>
             </div>
           </div>
           
           <div className="flex flex-col">
-            <span className="text-sm sm:text-lg font-black tracking-tighter leading-none text-zinc-900 uppercase">HIREME MAROC</span>
-            <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest hidden sm:block">Smart Job Aggregator</span>
+            <span className="text-xs sm:text-base font-black tracking-tighter leading-none text-zinc-900 uppercase">HIREME MAROC</span>
+            <span className="text-[7px] sm:text-[8px] font-bold text-zinc-400 uppercase tracking-widest hidden sm:block">Smart Job Aggregator</span>
           </div>
         </div>
         
@@ -73,10 +73,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
           <a href="https://www.mfopub.online/hirememaroc" target="_blank" rel="noopener noreferrer" className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Documentation</a>
         </nav>
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="flex items-center gap-2 bg-zinc-900 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl border border-zinc-800 shadow-xl shadow-zinc-900/10">
-            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
-            <span className="text-[10px] sm:text-[11px] font-black text-white tabular-nums tracking-wider">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-zinc-900 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border border-zinc-800 shadow-lg shadow-zinc-900/10">
+            <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_6px_rgba(34,197,94,0.8)]"></div>
+            <span className="text-[9px] sm:text-[10px] font-black text-white tabular-nums tracking-wider">
               {time.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
@@ -84,9 +84,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
           {/* Mobile Menu Toggle */}
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)} 
-            className={`lg:hidden w-10 h-10 rounded-xl flex items-center justify-center transition-all ${isMenuOpen ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-zinc-50 text-zinc-400 active:bg-zinc-100'}`}
+            className={`lg:hidden w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center transition-all ${isMenuOpen ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-zinc-50 text-zinc-400 active:bg-zinc-100'}`}
           >
-            <i className={`fa ${isMenuOpen ? 'fa-times' : 'fa-bars'} text-sm`}></i>
+            <i className={`fa ${isMenuOpen ? 'fa-times' : 'fa-bars'} text-xs sm:text-sm`}></i>
           </button>
         </div>
 
@@ -149,32 +149,32 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
       </div>
       
       {/* Filter Bar */}
-      <div className="border-t border-zinc-100/50">
-        <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-2">
-          <div className="bg-white/70 backdrop-blur-3xl border border-zinc-100 shadow-2xl shadow-indigo-500/5 rounded-[2rem] sm:rounded-[2.5rem] p-2">
-            <div className="flex flex-col gap-2">
+      <div className="bg-gradient-to-b from-zinc-50/50 to-white/80 border-t border-zinc-200/80 shadow-sm">
+        <div className="max-w-5xl mx-auto w-full px-3 sm:px-6 py-2 sm:py-2.5">
+          <div className="bg-white/90 backdrop-blur-xl border border-zinc-200 shadow-lg shadow-zinc-900/5 rounded-2xl sm:rounded-3xl p-2">
+            <div className="flex flex-col gap-1.5 sm:gap-2">
               {/* Search Bar - Full Width */}
-              <div className="relative flex-1 flex items-center bg-zinc-50/50 rounded-2xl px-5 py-2 sm:py-3 transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/10" ref={suggestionRef}>
-                <i className="fa fa-search text-zinc-300 mr-4 text-sm sm:text-base"></i>
+              <div className="relative flex-1 flex items-center bg-zinc-50/70 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5 transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-200 border border-transparent" ref={suggestionRef}>
+                <i className="fa fa-search text-zinc-400 mr-2.5 sm:mr-3 text-xs sm:text-sm"></i>
                 <input 
                   type="text" 
                   value={keyword}
                   onFocus={() => setShowSuggestions(true)}
                   onChange={(e) => { setKeyword(e.target.value); onFilterChange(); }}
                   placeholder="Quel métier cherchez-vous ?" 
-                  className="w-full bg-transparent outline-none text-sm sm:text-base font-bold placeholder:text-zinc-300 text-zinc-800"
+                  className="w-full bg-transparent outline-none text-xs sm:text-sm font-bold placeholder:text-zinc-400 text-zinc-800"
                 />
                 
                 {showSuggestions && suggestions.length > 0 && (
-                  <div className="absolute top-[calc(100%+10px)] left-0 right-0 bg-white rounded-3xl border border-zinc-100 shadow-2xl overflow-hidden animate-in slide-in-from-top-2 z-50 p-2">
+                  <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-white rounded-2xl border border-zinc-200 shadow-xl overflow-hidden animate-in slide-in-from-top-2 z-50 p-1.5">
                     {suggestions.map((s, i) => (
                       <button
                         key={i}
                         onClick={() => { setKeyword(s); setShowSuggestions(false); }}
-                        className="w-full text-left px-5 py-3 rounded-2xl hover:bg-zinc-50 transition-colors flex items-center gap-3 group"
+                        className="w-full text-left px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl hover:bg-zinc-50 transition-colors flex items-center gap-2.5 group"
                       >
-                        <i className="fa fa-magnifying-glass text-[10px] text-zinc-300 group-hover:text-indigo-500"></i>
-                        <span className="text-sm font-bold text-zinc-700">{s}</span>
+                        <i className="fa fa-magnifying-glass text-[9px] text-zinc-400 group-hover:text-indigo-500"></i>
+                        <span className="text-xs sm:text-sm font-bold text-zinc-700">{s}</span>
                       </button>
                     ))}
                   </div>
@@ -182,31 +182,31 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
               </div>
               
               {/* City and Contract Filters - Side by Side on Mobile */}
-              <div className="flex gap-2">
-                <div className="relative group bg-zinc-50/50 rounded-2xl transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/10 flex-1">
-                  <i className="fa fa-location-dot absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-zinc-300 text-[10px] sm:text-[11px]"></i>
+              <div className="flex gap-1.5 sm:gap-2">
+                <div className="relative group bg-zinc-50/70 rounded-xl sm:rounded-2xl transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-200 border border-transparent flex-1">
+                  <i className="fa fa-location-dot absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[9px] sm:text-[10px]"></i>
                   <select 
                     value={selectedCity}
                     onChange={(e) => { setSelectedCity(e.target.value); onFilterChange(); }}
-                    className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 bg-transparent text-[11px] sm:text-[13px] font-bold text-zinc-600 outline-none cursor-pointer appearance-none"
+                    className="w-full pl-7 sm:pl-9 pr-7 sm:pr-8 py-2 sm:py-2.5 bg-transparent text-[10px] sm:text-xs font-bold text-zinc-700 outline-none cursor-pointer appearance-none"
                   >
                     <option value="">Toutes Villes</option>
                     {cities.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
-                  <i className="fa fa-chevron-down absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-[10px] text-zinc-300 pointer-events-none group-hover:text-indigo-500 transition-colors"></i>
+                  <i className="fa fa-chevron-down absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-[8px] sm:text-[9px] text-zinc-400 pointer-events-none group-hover:text-indigo-500 transition-colors"></i>
                 </div>
 
-                <div className="relative group bg-zinc-50/50 rounded-2xl transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/10 flex-1">
-                  <i className="fa fa-file-contract absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-zinc-300 text-[10px] sm:text-[11px]"></i>
+                <div className="relative group bg-zinc-50/70 rounded-xl sm:rounded-2xl transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-200 border border-transparent flex-1">
+                  <i className="fa fa-file-contract absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[9px] sm:text-[10px]"></i>
                   <select 
                     value={selectedContract}
                     onChange={(e) => { setSelectedContract(e.target.value); onFilterChange(); }}
-                    className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 bg-transparent text-[11px] sm:text-[13px] font-bold text-zinc-600 outline-none cursor-pointer appearance-none"
+                    className="w-full pl-7 sm:pl-9 pr-7 sm:pr-8 py-2 sm:py-2.5 bg-transparent text-[10px] sm:text-xs font-bold text-zinc-700 outline-none cursor-pointer appearance-none"
                   >
                     <option value="">Contrats</option>
                     {contracts.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
-                  <i className="fa fa-chevron-down absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-[10px] text-zinc-300 pointer-events-none group-hover:text-indigo-500 transition-colors"></i>
+                  <i className="fa fa-chevron-down absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-[8px] sm:text-[9px] text-zinc-400 pointer-events-none group-hover:text-indigo-500 transition-colors"></i>
                 </div>
               </div>
             </div>

@@ -233,7 +233,7 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <main className="max-w-5xl mx-auto w-full px-3 sm:px-6 flex-grow pb-16 sm:pb-24 pt-[13.5rem] sm:pt-[14.875rem]">
+      <main className="max-w-5xl mx-auto w-full px-3 sm:px-6 flex-grow pb-16 sm:pb-24 pt-[12.5rem] sm:pt-[18rem]">
         {/* Active Filters & Stats */}
         <div className="mb-4 sm:mb-6">
           {/* Mobile/Desktop Header with Count and Live Indicator */}

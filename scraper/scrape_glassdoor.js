@@ -17,7 +17,7 @@ export async function scrapeGlassdoor() {
     
     // Glassdoor Morocco jobs
     const url = 'https://www.glassdoor.com/Job/morocco-jobs-SRCH_IL.0,7_IN133.htm';
-    await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await wait(2000);
     
     // Close popup if exists

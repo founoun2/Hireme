@@ -21,7 +21,7 @@ export async function scrapeIndeed() {
     // Indeed Morocco job search with targeted keyword
     const encodedKeyword = encodeURIComponent(keyword);
     const url = `https://ma.indeed.com/jobs?q=${encodedKeyword}&l=Morocco`;
-    await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await wait(2000);
     
     // Accept cookies if present

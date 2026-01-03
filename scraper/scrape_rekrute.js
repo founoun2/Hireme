@@ -16,8 +16,8 @@ export async function scrapeRekrute() {
     // Navigate to ReKrute job listings with keyword search
     const encodedKeyword = encodeURIComponent(keyword);
     await page.goto(`https://www.rekrute.com/offres.html?s=${encodedKeyword}`, {
-      waitUntil: 'networkidle',
-      timeout: 30000
+      waitUntil: 'domcontentloaded',
+      timeout: 60000
     });
 
     // Wait for job cards to load
@@ -64,14 +64,27 @@ export async function scrapeRekrute() {
       source: 'rekrute.com'
     }));
 
-    // 🤖 AI ENRICHMENT - Use OpenAI + Gemini to enhance job data
-    console.log(`🤖 Enriching ${formatted.length} jobs with AI...`);
-    const enriched = await aiService.enrichBatch(formatted, { batchSize: 3, delayMs: 500 });
+    // 🤖 AI ENRICHMENT - Skip if APIs unavailable (faster processing)
+    const useAI = process.env.OPENAI_API_KEY || process.env.GEMINI_API_KEY;
+    let enriched = formatted;
+    
+    if (useAI && formatted.length > 0) {
+      console.log(`🤖 Enriching ${formatted.length} jobs with AI...`);
+      try {
+        enriched = await aiService.enrichBatch(formatted, { batchSize: 3, delayMs: 500 });
+      } catch (error) {
+        console.log('⚠️  AI enrichment failed, using basic data');
+        enriched = formatted;
+      }
+    } else {
+      console.log('⚡ Skipping AI enrichment (no API keys configured)');
+    }
 
     // Add final metadata
     const finalJobs = enriched.map(job => ({
       ...job,
-      slug: slugify(job.title, { lower: true, strict: true }) + `-${Date.now()}`,
+      title: job.title || job.title || 'Poste non spécifié', // Ensure title exists
+      slug: slugify((job.title || 'job'), { lower: true, strict: true }) + `-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
       source_url: job.url,
       published_at: new Date().toISOString().split('T')[0],
       created_at: new Date().toISOString()

@@ -16,8 +16,8 @@ export async function scrapeEmploiMa() {
     // Navigate to Emploi.ma job listings with keyword search
     const encodedKeyword = encodeURIComponent(keyword);
     await page.goto(`https://www.emploi.ma/recherche-jobs-maroc?keywords=${encodedKeyword}`, {
-      waitUntil: 'networkidle',
-      timeout: 30000
+      waitUntil: 'domcontentloaded',
+      timeout: 60000
     });
 
     // Wait for job cards to load

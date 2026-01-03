@@ -76,20 +76,6 @@ export const JobCard: React.FC<JobCardProps> = ({ job, isApplied, onClick, style
               <span className="font-bold text-emerald-700">{job.salary}</span>
             </div>
           )}
-
-          {job.company_email && (
-            <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">
-              <i className="fa fa-envelope text-blue-600 text-xs"></i>
-              <span className="font-medium text-blue-700 text-xs truncate max-w-[150px]">{job.company_email}</span>
-            </div>
-          )}
-
-          {job.company_phone && (
-            <div className="flex items-center gap-2 bg-purple-50 px-3 py-1.5 rounded-lg border border-purple-100">
-              <i className="fa fa-phone text-purple-600 text-xs"></i>
-              <span className="font-medium text-purple-700 text-xs">{job.company_phone}</span>
-            </div>
-          )}
         </div>
       </div>
 
