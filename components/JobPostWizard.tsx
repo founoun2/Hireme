@@ -54,12 +54,13 @@ export const JobPostWizard: React.FC<JobPostWizardProps> = ({ isOpen, onClose })
         title: formData.title,
         company: formData.companyName,
         city: formData.city,
-        description: `${formData.description}\n\nProfil recherché: ${formData.profile}\n\nAdresse: ${formData.address}${formData.salary ? `\n\nSalaire: ${formData.salary} MAD` : ''}`,
-        url: '#', // User posted jobs don't have external URLs
+        description: `${formData.description}\n\nProfil recherché: ${formData.profile}\n\nAdresse: ${formData.address}${formData.salary ? `\n\nSalaire: ${formData.salary}` : ''}`,
+        url: `https://user-posted-${Date.now()}`,
         source: 'user-posted',
         company_email: formData.email,
         company_phone: formData.phone,
         contract: formData.contract,
+        salary: formData.salary || null,
         created_at: new Date().toISOString()
       }]);
 
