@@ -37,7 +37,7 @@ export const JobPostWizard: React.FC<JobPostWizardProps> = ({ isOpen, onClose })
   };
 
   const validateStep1 = () => {
-    return formData.companyName && formData.city && formData.email && formData.phone;
+    return formData.companyName && formData.city && formData.email;
   };
 
   const validateStep2 = () => {
@@ -222,7 +222,7 @@ export const JobPostWizard: React.FC<JobPostWizardProps> = ({ isOpen, onClose })
 
                 <div>
                   <label className="block text-xs sm:text-sm font-bold text-zinc-700 mb-1.5 sm:mb-2">
-                    Téléphone <span className="text-red-500">*</span>
+                    Téléphone
                   </label>
                   <input
                     type="tel"

@@ -229,17 +229,22 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
                     )}
 
                     {/* Phone */}
-                    {(job.contactPhone || job.company_phone) && (
-                      <div className="bg-white/10 p-3 rounded-lg border border-white/10 hover:bg-white/15 transition-all group">
-                        <p className="text-[8px] font-black text-indigo-300 uppercase mb-1.5 flex items-center gap-1.5">
-                          <i className="fa fa-phone"></i> Téléphone
-                        </p>
+                    <div className="bg-white/10 p-3 rounded-lg border border-white/10 hover:bg-white/15 transition-all group">
+                      <p className="text-[8px] font-black text-indigo-300 uppercase mb-1.5 flex items-center gap-1.5">
+                        <i className="fa fa-phone"></i> Téléphone
+                      </p>
+                      {(job.contactPhone || job.company_phone) ? (
                         <a href={`tel:${job.company_phone || job.contactPhone}`} className="text-xs sm:text-sm font-bold text-white hover:text-indigo-300 transition-colors flex items-center gap-2">
                           <i className="fa fa-phone-volume text-indigo-400 text-[10px]"></i>
                           {job.company_phone || job.contactPhone}
                         </a>
-                      </div>
-                    )}
+                      ) : (
+                        <span className="text-xs sm:text-sm font-bold text-zinc-400 flex items-center gap-2">
+                          <i className="fa fa-ban text-zinc-500 text-[10px]"></i>
+                          Non disponible
+                        </span>
+                      )}
+                    </div>
 
                     {/* Website */}
                     {job.company_website && (
