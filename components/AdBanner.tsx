@@ -6,6 +6,7 @@ interface AdBannerProps {
   className?: string;
   style?: React.CSSProperties;
   isDesktopSidebar?: boolean;
+  enabled?: boolean; // whether to actually load/render the ad
 }
 
 export const AdBanner: React.FC<AdBannerProps> = ({ 
@@ -13,21 +14,56 @@ export const AdBanner: React.FC<AdBannerProps> = ({
   format = 'auto',
   className = '',
   style = {},
-  isDesktopSidebar = false
+  isDesktopSidebar = false,
+  enabled = true
 }) => {
   useEffect(() => {
-    try {
-      // @ts-ignore
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (error) {
-      console.error('AdSense error:', error);
-    }
-  }, []);
+    if (!enabled) return;
+
+    // Load the AdSense script only once and only when ads are enabled for this page
+    const loadScriptAndPush = () => {
+      try {
+        // If script already loaded, push immediately
+        if ((window as any).__adsbygoogleLoaded) {
+          (window as any).adsbygoogle = (window as any).adsbygoogle || [];
+          (window as any).adsbygoogle.push({});
+          return;
+        }
+
+        // If script tag already present but not flagged, just wait for onload
+        const existing = document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]');
+        if (existing) {
+          existing.addEventListener('load', () => {
+            (window as any).__adsbygoogleLoaded = true;
+            try { (window as any).adsbygoogle = (window as any).adsbygoogle || []; (window as any).adsbygoogle.push({}); } catch (e) { console.error('AdSense push failed:', e); }
+          });
+          return;
+        }
+
+        const s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2474444884447314';
+        s.crossOrigin = 'anonymous';
+        s.onload = () => {
+          (window as any).__adsbygoogleLoaded = true;
+          try { (window as any).adsbygoogle = (window as any).adsbygoogle || []; (window as any).adsbygoogle.push({}); } catch (e) { console.error('AdSense push failed after load:', e); }
+        };
+        s.onerror = (e) => { console.error('Failed to load AdSense script', e); };
+        document.head.appendChild(s);
+      } catch (error) {
+        console.error('AdSense error:', error);
+      }
+    };
+
+    loadScriptAndPush();
+  }, [enabled, slot]);
 
   // Desktop sidebar uses fixed 160x600 size
   const adStyle = isDesktopSidebar 
     ? { display: 'inline-block', width: '160px', height: '600px' }
     : { display: 'block', ...style };
+
+  if (!enabled) return null;
 
   return (
     <div className={className}>
@@ -44,7 +80,8 @@ export const AdBanner: React.FC<AdBannerProps> = ({
 };
 
 // Sidebar Ad Component (Desktop Left Side)
-export const SidebarAd: React.FC = () => {
+export const SidebarAd: React.FC<{ enabled?: boolean }> = ({ enabled = true }) => {
+  if (!enabled) return null;
   return (
     <div className="hidden lg:block fixed left-4 top-1/2 -translate-y-1/2 z-10">
       <div className="bg-white rounded-2xl border border-zinc-100 p-3 shadow-sm">
@@ -54,6 +91,7 @@ export const SidebarAd: React.FC = () => {
         <AdBanner 
           slot="6802637448"
           isDesktopSidebar={true}
+          enabled={enabled}
         />
       </div>
     </div>
@@ -61,7 +99,9 @@ export const SidebarAd: React.FC = () => {
 };
 
 // In-Feed Ad Component (Desktop & Mobile - Between Jobs)
-export const InFeedAd: React.FC = () => {
+export const InFeedAd: React.FC<{ enabled?: boolean }> = ({ enabled = true }) => {
+  if (!enabled) return null;
+
   return (
     <div className="w-full my-4">
       <div className="bg-gradient-to-br from-zinc-50 to-white rounded-2xl border border-zinc-100 p-4 shadow-sm">
@@ -73,6 +113,7 @@ export const InFeedAd: React.FC = () => {
           slot="7273410736"
           format="fluid"
           style={{ minHeight: '250px' }}
+          enabled={enabled}
         />
       </div>
     </div>

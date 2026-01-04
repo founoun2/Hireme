@@ -145,6 +145,9 @@ const App: React.FC = () => {
 
   const currentJobs = useMemo(() => filteredJobs.slice(0, displayedCount), [filteredJobs, displayedCount]);
 
+  // Only show ads on content-rich pages (avoid ads on low-content or empty result pages)
+  const shouldShowAds = filteredJobs.length >= 8 && !isScanning; // require at least 8 results and not in scanning state
+
   // Reset displayedCount when filters change
   useEffect(() => {
     setDisplayedCount(PAGE_SIZE);
@@ -322,8 +325,8 @@ const App: React.FC = () => {
                     />
                   </div>
                   {/* Show ad after every 4 jobs on mobile */}
-                  {(idx + 1) % 4 === 0 && idx < currentJobs.length - 1 && (
-                    <InFeedAd />
+                  {shouldShowAds && (idx + 1) % 4 === 0 && idx < currentJobs.length - 1 && (
+                    <InFeedAd enabled={shouldShowAds} />
                   )}
                 </React.Fragment>
               ))

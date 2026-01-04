@@ -37,14 +37,12 @@ Once approved:
 
 ### 4. Update Your Code
 
-#### A. Update index.html
-Replace `ca-pub-XXXXXXXXXXXXXXXX` with your Publisher ID:
+#### A. Script loading
+We intentionally **do not** include the AdSense script globally in `index.html` to avoid serving ads on pages with little or no server-side content (which can trigger policy flags).
 
-```html
-<!-- Line 8-10 in index.html -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_PUBLISHER_ID"
- crossorigin="anonymous"></script>
-```
+Instead, the app loads the script **dynamically** when a content-rich page requests an ad. This is implemented in `components/AdBanner.tsx` which will append the AdSense script on-demand and only when the ad component is enabled.
+
+If you prefer a global script (not recommended for SPAs), you can still add the script to `index.html` with your Publisher ID; however the recommended approach is to keep the script out of `index.html` and let `AdBanner` manage loading.
 
 #### B. Update AdBanner.tsx
 Replace placeholder IDs with your actual Ad Slot IDs:
