@@ -46,6 +46,18 @@ const App: React.FC = () => {
   useEffect(() => {
     loadJobsFromDatabase();
     syncLiveJobs();
+
+    // Support a query param to force mock data for local testing (e.g., ?forceMockJobs=1)
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('forceMockJobs') === '1') {
+        const mock = generateMockJobs();
+        console.log(`⚙️ forceMockJobs set: populating ${mock.length} mock jobs`);
+        setAllJobs(mock);
+      }
+    } catch (e) {
+      // ignore in non-browser env
+    }
     
     // Set up intervals
     const syncInterval = setInterval(syncLiveJobs, SYNC_INTERVAL);
