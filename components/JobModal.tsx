@@ -23,8 +23,7 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
     if (hasEmail) {
       // Open AI Application Wizard
       setShowApplicationWizard(true);
-      // Mark as applied
-      onApply(job.id);
+      // Do NOT mark as applied yet; wait for wizard completion
     } else {
       // Fallback to external URL
       onApply(job.id);
@@ -308,6 +307,9 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
           onClose={() => {
             setShowApplicationWizard(false);
             onClose();
+          }}
+          onApplicationComplete={() => {
+            onApply(job.id);
           }}
         />
       )}

@@ -4,6 +4,7 @@ import { Job } from '../types';
 interface ApplicationWizardProps {
   job: Job;
   onClose: () => void;
+  onApplicationComplete?: () => void;
 }
 
 type Step = 'upload' | 'generate' | 'review' | 'send' | 'success';
@@ -771,7 +772,12 @@ Candidature envoyée via HireMe Maroc
               </p>
 
               <button
-                onClick={onClose}
+                onClick={() => {
+                  if (typeof onApplicationComplete === 'function') {
+                    onApplicationComplete();
+                  }
+                  onClose();
+                }}
                 className="w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all shadow-lg"
               >
                 Fermer
