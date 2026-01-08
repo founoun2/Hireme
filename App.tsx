@@ -11,7 +11,7 @@ import { JobPostWizard } from './components/JobPostWizard';
 import { CookieConsent } from './components/CookieConsent';
 import { InFeedAd } from './components/AdBanner';
 import { jobService } from './services/jobService';
-import { aggregateJobs } from './services/jobAggregator';
+
 
 const PAGE_SIZE = 12;
 const SYNC_INTERVAL = 30000; // 30 seconds - auto-refresh
@@ -28,14 +28,14 @@ const App: React.FC = () => {
   const [activeSidebar, setActiveSidebar] = useState<SidebarKey>(null);
   const [showJobPostWizard, setShowJobPostWizard] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [appliedJobs, setAppliedJobs] = useState<Set<number>>(() => {
-    // Load applied jobs from localStorage on mount
+  const [appliedJobs, setAppliedJobs] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('appliedJobs');
     return saved ? new Set(JSON.parse(saved)) : new Set();
   });
   const [isScanning, setIsScanning] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const suggestionRef = useRef<HTMLDivElement>(null);
+  const [userEmail, setUserEmail] = useState<string>(() => localStorage.getItem('hireme_user_email') || '');
 
   // Save applied jobs to localStorage whenever it changes
   useEffect(() => {
@@ -45,14 +45,23 @@ const App: React.FC = () => {
   // Load jobs from database on mount
   useEffect(() => {
     loadJobsFromDatabase();
-    syncLiveJobs();
+
+
+    // Support a query param to force mock data for local testing (e.g., ?forceMockJobs=1)
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('forceMockJobs') === '1') {
+        const mock = generateMockJobs();
+        console.log(`⚙️ forceMockJobs set: populating ${mock.length} mock jobs`);
+        setAllJobs(mock);
+      }
+    } catch (e) {
+      // ignore in non-browser env
+    }
     
     // Set up intervals
-    const syncInterval = setInterval(syncLiveJobs, SYNC_INTERVAL);
     const cleanupInterval = setInterval(cleanupOldJobs, CLEANUP_INTERVAL);
-    
     return () => {
-      clearInterval(syncInterval);
       clearInterval(cleanupInterval);
     };
   }, []);
@@ -81,38 +90,8 @@ const App: React.FC = () => {
     }
   };
 
-  const syncLiveJobs = async () => {
-    // Don't show loading if we already have jobs (silent background refresh)
-    const shouldShowLoading = allJobs.length === 0;
-    if (shouldShowLoading) setIsScanning(true);
-    
-    try {
-      // Use job aggregator (Adzuna + Gemini)
-      const liveJobs = await aggregateJobs();
-      
-      if (liveJobs.length > 0) {
-        // Save new jobs to database
-        await jobService.saveJobs(liveJobs);
-        console.log(`✅ Synced ${liveJobs.length} new jobs`);
-        
-        // Update state with unique jobs
-        setAllJobs(prev => {
-          const uniqueNew = liveJobs.filter(lj => 
-            !prev.some(pj => pj.title === lj.title && pj.company === lj.company)
-          );
-          if (uniqueNew.length > 0) {
-            console.log(`➕ Adding ${uniqueNew.length} unique new jobs`);
-          }
-          return [...uniqueNew.map(j => ({ ...j, isNew: true })), ...prev];
-        });
-      }
-    } catch (error) {
-      console.error("⚠️ Sync failed:", error);
-      // Don't update state on error - keep existing jobs
-    } finally {
-      if (shouldShowLoading) setIsScanning(false);
-    }
-  };
+
+  // Removed syncLiveJobs and all Adzuna logic. Only user-submitted jobs are supported.
 
   const filteredJobs = useMemo(() => {
     const filtered = allJobs.filter(j => {
@@ -144,6 +123,9 @@ const App: React.FC = () => {
   }, [allJobs, keyword, selectedCity, selectedContract]);
 
   const currentJobs = useMemo(() => filteredJobs.slice(0, displayedCount), [filteredJobs, displayedCount]);
+
+  // Only show ads on content-rich pages (avoid ads on low-content or empty result pages)
+  const shouldShowAds = filteredJobs.length >= 8 && !isScanning; // require at least 8 results and not in scanning state
 
   // Reset displayedCount when filters change
   useEffect(() => {
@@ -182,10 +164,12 @@ const App: React.FC = () => {
   }, [keyword, allJobs]);
 
   // Fix: Added handleApply function to manage job applications state
-  const handleApply = useCallback((id: number) => {
+  const handleApply = useCallback((id: string | number) => {
+    console.log('[handleApply] Called with id:', id);
     setAppliedJobs(prev => {
       const next = new Set(prev);
-      next.add(id);
+      next.add(String(id));
+      console.log('[handleApply] New appliedJobs set:', Array.from(next));
       return next;
     });
   }, []);
@@ -313,17 +297,17 @@ const App: React.FC = () => {
           <div className="grid grid-cols-1 gap-2.5 sm:gap-3 md:gap-4">
             {currentJobs.length > 0 ? (
               currentJobs.map((job, idx) => (
-                <React.Fragment key={`${job.id}-${idx}`}>
-                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: `${(idx % PAGE_SIZE) * 50}ms` }}>
+                <React.Fragment key={`${String(job.id)}-${idx}`}>
+                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both mb-0" style={{ animationDelay: `${(idx % PAGE_SIZE) * 50}ms` }}>
                     <JobCard 
-                      job={job} 
-                      isApplied={appliedJobs.has(job.id)}
-                      onClick={() => setSelectedJob(job)}
+                      job={{ ...job, id: String(job.id) }}
+                      userEmail={userEmail}
+                      onClick={() => setSelectedJob({ ...job, id: String(job.id) })}
                     />
                   </div>
                   {/* Show ad after every 4 jobs on mobile */}
-                  {(idx + 1) % 4 === 0 && idx < currentJobs.length - 1 && (
-                    <InFeedAd />
+                  {shouldShowAds && (idx + 1) % 4 === 0 && idx < currentJobs.length - 1 && (
+                    <InFeedAd enabled={shouldShowAds} />
                   )}
                 </React.Fragment>
               ))
@@ -365,10 +349,11 @@ const App: React.FC = () => {
       </main>
 
       <JobModal 
-        job={selectedJob} 
-        isApplied={selectedJob ? appliedJobs.has(selectedJob.id) : false}
+        job={selectedJob}
+        isApplied={selectedJob ? appliedJobs.has(String(selectedJob.id)) : false}
         onClose={() => setSelectedJob(null)} 
         onApply={handleApply}
+        onReload={loadJobsFromDatabase}
       />
 
       <style>{`

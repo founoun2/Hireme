@@ -1,0 +1,54 @@
+name: 'Scan ad usage'
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [ master ]
+
+jobs:
+  scan-ads:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ad-scan (capture output)
+        id: scan
+        continue-on-error: true
+        shell: bash
+        run: |
+          # Run the scan, capture output and exit code
+          npm run scan:ads > scan-output.txt 2>&1 || true
+          EXIT_CODE=$?
+          echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+          echo "scan_output<<EOF" >> $GITHUB_OUTPUT
+          cat scan-output.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR if issues found
+        if: ${{ steps.scan.outputs.exit_code != '0' && github.event_name == 'pull_request' }}
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            :warning: **Ad scan detected potential issues**. The `scan-ads` script returned a non-zero exit code.
+
+            **Scan output:**
+            ```
+            ${{ steps.scan.outputs.scan_output }}
+            ```
+
+      - name: Fail job on scan issues
+        if: ${{ steps.scan.outputs.exit_code != '0' }}
+        run: |
+          echo "Scan found issues. Failing the job to block merge."
+          exit 1

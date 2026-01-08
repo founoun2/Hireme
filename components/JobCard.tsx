@@ -1,105 +1,100 @@
 
-import React from 'react';
-import { Job } from '../types';
+import React, { useEffect, useState } from 'react';
+import { FaBuilding, FaMapMarkerAlt, FaRegCalendarAlt, FaMoneyBillWave } from 'react-icons/fa';
+
+// Utility to format time ago
+function getTimeAgo(dateString: string) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSec = Math.floor(diffMs / 1000);
+  if (diffSec < 60) return `${diffSec}s ago`;
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  const diffDay = Math.floor(diffHr / 24);
+  return `${diffDay}d ago`;
+}
+import { applicationService } from '../services/applicationService';
 
 interface JobCardProps {
-  job: Job;
-  isApplied: boolean;
-  onClick: () => void;
+  job: any;
+  userEmail?: string;
+  onClick?: () => void;
   style?: React.CSSProperties;
 }
 
-export const JobCard: React.FC<JobCardProps> = ({ job, isApplied, onClick, style }) => {
-  // Detect if text contains Arabic characters
-  const hasArabic = /[\u0600-\u06FF]/.test(job.title + job.company + job.city);
+export const JobCard: React.FC<JobCardProps> = ({ job, userEmail, onClick, style }) => {
+  const hasArabic = /[\u0600-\u06FF]/.test(job.title + job.company);
+  const [hasApplied, setHasApplied] = useState(false);
 
-  // Calculate relative time
-  const getTimeAgo = (dateString?: string) => {
-    if (!dateString) return job.time || 'Récent';
-    
-    const now = new Date();
-    const posted = new Date(dateString);
-    const diffMs = now.getTime() - posted.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    
-    if (diffMins < 1) return 'À l\'instant';
-    if (diffMins < 60) return `${diffMins}min`;
-    return `${diffHours}h`;
-  };
+  useEffect(() => {
+    if (userEmail && job.id) {
+      applicationService.hasApplied(String(job.id), userEmail)
+        .then(setHasApplied)
+        .catch(() => setHasApplied(false));
+    }
+  }, [userEmail, job.id]);
 
   return (
-    <div 
-      onClick={onClick}
+    <div
+      className="relative bg-white rounded-3xl shadow-2xl border border-zinc-100 p-0 mt-[5px] mb-[5px] cursor-pointer hover:scale-[1.02] transition-transform duration-150 group flex flex-col sm:flex-row overflow-hidden"
       style={style}
-      className="group bg-white p-4 sm:p-5 flex flex-row gap-4 sm:gap-6 cursor-pointer border border-zinc-100 rounded-xl sm:rounded-2xl transition-all duration-300 hover:shadow-lg hover:border-indigo-200 hover:bg-indigo-50/30 active:scale-[0.99]"
-      dir={hasArabic ? 'rtl' : 'ltr'}
+      onClick={onClick}
     >
-      {/* Left section: Main info */}
-      <div className="flex-grow min-w-0 space-y-3">
-        {/* Title and badges */}
-        <div>
-          <div className="flex items-start gap-3 mb-2">
-            <h3 className="text-base sm:text-xl font-bold text-zinc-900 group-hover:text-indigo-600 transition-colors line-clamp-2" style={{ fontFamily: hasArabic ? 'Cairo, sans-serif' : 'inherit' }}>
-              {job.title}
-            </h3>
-            <div className="flex gap-1.5 flex-wrap shrink-0">
-              {isApplied ? (
-                <span className="bg-yellow-400 text-black text-[9px] font-bold uppercase px-3 py-1.5 rounded-md flex items-center gap-1.5 border border-yellow-500">
-                  ✓ Postulé
-                </span>
-              ) : (
-                <>
-                  {job.isNew && (
-                    <span className="bg-indigo-600 text-white text-[9px] font-bold uppercase px-2 py-1 rounded-md">New</span>
-                  )}
-                </>
-              )}
-            </div>
+      {/* Main content */}
+      <div className="flex-1 p-6">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="font-extrabold text-xl sm:text-2xl text-zinc-900 truncate" style={{ fontFamily: hasArabic ? 'Cairo, sans-serif' : 'inherit' }}>{job.title}</span>
+            {job.isNew && (
+              <span className="bg-indigo-500 text-white text-xs font-bold uppercase px-2 py-1 rounded-full shadow-sm">New</span>
+            )}
           </div>
-          
-          {/* Company and location */}
-          <div className="flex items-center gap-4 text-sm text-zinc-600">
-            <div className="flex items-center gap-2">
-              <i className="fa fa-building text-indigo-500 text-xs"></i>
+          <div className="flex flex-wrap items-center gap-6 text-sm text-zinc-600 mt-2">
+            <div className="flex items-center gap-1 text-xs sm:text-sm">
+              <FaBuilding className="text-indigo-400 text-base" />
               <span className="font-semibold" style={{ fontFamily: hasArabic ? 'Cairo, sans-serif' : 'inherit' }}>{job.company}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <i className="fa fa-location-dot text-indigo-500 text-xs"></i>
-              <span className="font-medium" style={{ fontFamily: hasArabic ? 'Cairo, sans-serif' : 'inherit' }}>{job.city || 'Maroc'}</span>
+            <div className="flex items-center gap-1 text-xs sm:text-sm">
+              <FaMapMarkerAlt className="text-emerald-400 text-base" />
+              <span>{job.city}</span>
             </div>
-          </div>
-        </div>
-
-        {/* Job details inline */}
-        <div className="flex flex-wrap items-center gap-3 text-sm">
-          <div className="flex items-center gap-2 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-100">
-            <i className="fa fa-file-contract text-indigo-600 text-xs"></i>
-            <span className="font-semibold text-zinc-700">
-              {job.contract || 'CDI'}
-              {job.salary && (
-                <>
-                  <span className="text-zinc-400 mx-2">·</span>
-                  <span className="text-emerald-600 font-bold">{job.salary}</span>
-                </>
-              )}
-            </span>
+            <div className="flex items-center gap-1 text-xs sm:text-sm">
+              <FaRegCalendarAlt className="text-pink-400 text-base" />
+              <span>{job.contract}</span>
+            </div>
+            {job.salary && (
+              <div className="flex items-center gap-1 text-xs sm:text-sm">
+                <FaMoneyBillWave className="text-amber-400 text-base" />
+                <span>{job.salary}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Right section: Time and action */}
-      <div className="flex flex-col items-end justify-between shrink-0 min-w-[120px]">
-        <div className="flex flex-col items-end gap-2">
-          <div className="flex items-center gap-2 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-100">
-            <i className="fa fa-clock text-indigo-600 text-[10px]"></i>
-            <span className="font-bold text-zinc-700 text-xs">{getTimeAgo(job.created_at)}</span>
-          </div>
-        </div>
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md flex items-center gap-2 group/btn">
-          <span>Détails</span>
-          <i className="fa fa-arrow-right text-xs group-hover/btn:translate-x-1 transition-transform"></i>
-        </button>
+      {/* Bottom section for mobile, right for desktop: time and button */}
+      <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 sm:gap-4 p-4 sm:p-6 w-full sm:w-56 bg-zinc-50 border-t sm:border-t-0 sm:border-l border-zinc-100">
+        {job.created_at && (
+          <span className="inline-flex items-center gap-1 text-xs text-zinc-400 font-medium px-3 py-1 rounded-full bg-white border border-zinc-100 shadow-sm">
+            <i className="fa fa-clock text-indigo-400"></i>
+            {getTimeAgo(job.created_at)}
+          </span>
+        )}
+        {hasApplied ? (
+          <span className="bg-yellow-300 text-zinc-900 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full flex items-center gap-1 border border-yellow-400 shadow-sm">
+            ✓ Déjà postulé
+          </span>
+        ) : (
+          <button
+            className={`inline-flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full bg-indigo-500 text-white shadow-sm`}
+            onClick={onClick}
+          >
+            <span className="tracking-wide">Postuler</span>
+            <i className="fa fa-arrow-right text-xs"></i>
+          </button>
+        )}
       </div>
     </div>
   );

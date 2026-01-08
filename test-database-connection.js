@@ -129,3 +129,4 @@ async function testConnection() {
 
 // Run the test
 testConnection();
+// This file has been removed. Demo jobs are no longer used.

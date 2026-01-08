@@ -1,3 +1,22 @@
+/* File deleted: Adzuna integration and setup guide removed. All jobs are now user-submitted and stored in Supabase. */
+
+After (Adzuna + Gemini):
+- ✅ Real, verified job postings from Adzuna
+- ✅ Broader coverage with Gemini backup
+- ✅ Deduplication prevents duplicates
+- ✅ Better user experience with real opportunities
+
+## Next Steps
+
+1. Get your Adzuna API credentials
+2. Add them to `.env` and Vercel
+3. Restart dev server
+4. Test locally: Check console for "Fetched X jobs from Adzuna"
+5. Push to GitHub
+6. Verify production at https://hireme-ivory.vercel.app
+7. Monitor usage at https://developer.adzuna.com/dashboard
+
+Your app now provides **real job opportunities** to job seekers in Morocco! 🎉
 # Adzuna API Setup Guide
 
 ## What is Adzuna?

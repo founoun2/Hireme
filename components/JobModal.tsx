@@ -8,23 +8,23 @@ interface JobModalProps {
   onClose: () => void;
   onApply: (id: number) => void;
   isApplied: boolean;
+  onReload?: () => void;
 }
 
-export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApplied }) => {
+export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApplied, onReload }) => {
   const [showApplicationWizard, setShowApplicationWizard] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   if (!job) return null;
 
   const handleExternalApply = () => {
+    if (isApplied) return; // Prevent duplicate application
     // Check if job has email for application wizard
     const hasEmail = job.company_email || job.email;
-    
     if (hasEmail) {
       // Open AI Application Wizard
       setShowApplicationWizard(true);
-      // Mark as applied
-      onApply(job.id);
+      // Do NOT mark as applied yet; wait for wizard completion
     } else {
       // Fallback to external URL
       onApply(job.id);
@@ -57,7 +57,12 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
             <div className="w-14 h-14 sm:w-16 sm:h-16 bg-zinc-900 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl font-black shadow-xl shadow-zinc-900/10 rotate-[-5deg] shrink-0 mx-auto sm:mx-0">
               {job.company[0]}
             </div>
-            <div className="text-center sm:text-left">
+            <div className="text-center sm:text-left flex flex-col items-center sm:items-start">
+              {isApplied && (
+                <span className="bg-yellow-300 text-zinc-900 text-xs font-bold uppercase px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-yellow-400 shadow-sm mb-2">
+                  ✓ Déjà postulé
+                </span>
+              )}
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 mb-1">
                 <span className="text-[10px] font-black text-indigo-600 uppercase tracking-wide">{job.company}</span>
                 <span className="text-zinc-200 hidden sm:block">•</span>
@@ -221,9 +226,17 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
                         <p className="text-[8px] font-black text-indigo-300 uppercase mb-1.5 flex items-center gap-1.5">
                           <i className="fa fa-envelope"></i> Email de candidature
                         </p>
-                        <a href={`mailto:${job.company_email || job.email}`} className="text-xs sm:text-sm font-bold text-white hover:text-indigo-300 transition-colors flex items-center gap-2 break-all">
+                        <a
+                          href={`mailto:${(job.company_email || job.email)?.replace(/\s+/g, '').replace(/\[at\]/i, '@').replace(/\[dot\]/gi, '.')}`}
+                          className="text-xs sm:text-sm font-bold text-white hover:text-indigo-300 transition-colors flex items-center gap-2 break-all"
+                        >
                           <i className="fa fa-paper-plane text-indigo-400 text-[10px]"></i>
-                          {job.company_email || job.email}
+                          {/* Obfuscate email for bots, readable for humans */}
+                          {(job.company_email || job.email)
+                            ? (job.company_email || job.email)
+                                .replace(/@/, ' [at] ')
+                                .replace(/\./g, ' [dot] ')
+                            : ''}
                         </a>
                       </div>
                     )}
@@ -274,18 +287,18 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
           {/* Action Bar */}
           <div className="sticky bottom-0 bg-white/80 backdrop-blur-xl pt-2 pb-2 sm:pb-0 border-t border-zinc-50 flex flex-col items-center">
             <button 
-              onClick={handleExternalApply}
+              onClick={isApplied ? undefined : handleExternalApply}
               disabled={isApplied}
               className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base transition-all duration-500 shadow-xl relative overflow-hidden active:scale-95 flex items-center justify-center gap-2.5 ${
                 isApplied 
-                ? 'bg-yellow-400 text-black cursor-not-allowed opacity-75' 
+                ? 'bg-yellow-400 text-black cursor-not-allowed opacity-90 border border-yellow-500' 
                 : 'bg-zinc-900 text-white hover:bg-indigo-600 shadow-indigo-500/10 hover:shadow-indigo-500/30'
               }`}
             >
               {isApplied ? (
                 <>
-                  <i className="fa fa-check-circle text-xs"></i>
-                  <span>Déjà Postulé</span>
+                  <i className="fa fa-check-circle text-black text-xs"></i>
+                  <span className="text-black">Déjà Postulé</span>
                 </>
               ) : (
                 <>
@@ -308,6 +321,13 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
           onClose={() => {
             setShowApplicationWizard(false);
             onClose();
+            if (onReload) onReload();
+          }}
+          onApplicationComplete={() => {
+            setShowApplicationWizard(false);
+            onApply(job.id);
+            onClose();
+            if (onReload) onReload();
           }}
         />
       )}

@@ -1,0 +1,41 @@
+name: "Preflight checks (headless)"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [ master ]
+
+jobs:
+  preflight:
+    name: Build + Headless Preflight
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production assets
+        run: npm run build
+
+      - name: Install http-server
+        run: npm i -g http-server
+
+      - name: Start static server (dist)
+        run: |
+          nohup http-server dist -p 8080 > server.log 2>&1 &
+          # wait until server is ready
+          npx wait-on http://localhost:8080
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run headless preflight
+        run: npm run preflight
