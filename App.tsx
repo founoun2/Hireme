@@ -28,7 +28,7 @@ const App: React.FC = () => {
   const [activeSidebar, setActiveSidebar] = useState<SidebarKey>(null);
   const [showJobPostWizard, setShowJobPostWizard] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [appliedJobs, setAppliedJobs] = useState<Set<number>>(() => {
+  const [appliedJobs, setAppliedJobs] = useState<Set<string>>(() => {
     // Load applied jobs from localStorage on mount
     const saved = localStorage.getItem('appliedJobs');
     return saved ? new Set(JSON.parse(saved)) : new Set();
@@ -197,10 +197,12 @@ const App: React.FC = () => {
   }, [keyword, allJobs]);
 
   // Fix: Added handleApply function to manage job applications state
-  const handleApply = useCallback((id: number) => {
+  const handleApply = useCallback((id: string | number) => {
+    console.log('[handleApply] Called with id:', id);
     setAppliedJobs(prev => {
       const next = new Set(prev);
-      next.add(id);
+      next.add(String(id));
+      console.log('[handleApply] New appliedJobs set:', Array.from(next));
       return next;
     });
   }, []);
@@ -330,10 +332,11 @@ const App: React.FC = () => {
               currentJobs.map((job, idx) => (
                 <React.Fragment key={`${job.id}-${idx}`}>
                   <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: `${(idx % PAGE_SIZE) * 50}ms` }}>
+                    {console.log('[JobCard] Rendering job.id:', String(job.id), 'isApplied:', appliedJobs.has(String(job.id)), 'appliedJobs:', Array.from(appliedJobs))}
                     <JobCard 
-                      job={job} 
-                      isApplied={appliedJobs.has(job.id)}
-                      onClick={() => setSelectedJob(job)}
+                      job={{ ...job, id: String(job.id) }}
+                      isApplied={appliedJobs.has(String(job.id))}
+                      onClick={() => setSelectedJob({ ...job, id: String(job.id) })}
                     />
                   </div>
                   {/* Show ad after every 4 jobs on mobile */}
@@ -380,8 +383,8 @@ const App: React.FC = () => {
       </main>
 
       <JobModal 
-        job={selectedJob} 
-        isApplied={selectedJob ? appliedJobs.has(selectedJob.id) : false}
+        job={selectedJob ? { ...selectedJob, id: String(selectedJob.id) } : null}
+        isApplied={selectedJob ? appliedJobs.has(String(selectedJob.id)) : false}
         onClose={() => setSelectedJob(null)} 
         onApply={handleApply}
       />

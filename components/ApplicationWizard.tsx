@@ -99,6 +99,7 @@ export const ApplicationWizard: React.FC<ApplicationWizardProps> = ({ job, onClo
     reader.readAsDataURL(file);
   };
 
+    // ...existing code...
   const generateCoverLetter = async () => {
     setIsGenerating(true);
     try {
@@ -108,168 +109,54 @@ export const ApplicationWizard: React.FC<ApplicationWizardProps> = ({ job, onClo
         setUserEmail(extractedEmail);
         localStorage.setItem('hireme_user_email', extractedEmail);
       }
-
-      // Extract text from CV (simplified - in production use proper PDF parser)
-      const cvText = `CV for ${job.title} position`;
-
-      // Different prompt styles for variety on refresh
-      const promptStyles = [
-        `You are a professional career advisor. Write a compelling cover letter in ${LANGUAGE_OPTIONS.find(l => l.code === language)?.name} for this job application.`,
-        `You are an expert HR consultant. Create a persuasive cover letter in ${LANGUAGE_OPTIONS.find(l => l.code === language)?.name} that stands out.`,
-        `You are a senior recruiter. Draft an impressive cover letter in ${LANGUAGE_OPTIONS.find(l => l.code === language)?.name} for this candidate.`,
-      ];
-
-      const styleIndex = refreshCount % promptStyles.length;
-      const promptIntro = promptStyles[styleIndex];
-
-      const prompt = `${promptIntro}
-
-Job Title: ${job.title}
-Company: ${job.company}
-Job Description: ${job.description}
-
-Write a professional, concise cover letter (max 200 words) that:
-- Opens with a ${refreshCount === 0 ? 'strong introduction' : refreshCount === 1 ? 'compelling hook' : 'unique opening'}
-- Highlights relevant skills matching the job
-- Shows enthusiasm and cultural fit
-- ${refreshCount === 0 ? 'Emphasizes technical competencies' : refreshCount === 1 ? 'Focuses on achievements and impact' : 'Demonstrates passion and motivation'}
-- Ends with a call to action
-
-IMPORTANT: Generate version ${refreshCount + 1} - make it unique and different from previous attempts.
-Write ONLY the letter content in ${LANGUAGE_OPTIONS.find(l => l.code === language)?.name}, no subject line or extra formatting.`;
-
-      // Try AI providers in order: OpenAI → Gemini → Z.AI → Flowith
-      let generatedText = '';
-
-      // Try OpenAI first
-      try {
-        const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-        if (!apiKey) throw new Error('No OpenAI key');
-        
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
-            messages: [{ role: 'user', content: prompt }],
-            max_tokens: 400,
-            temperature: 0.8 + (refreshCount * 0.1) // Increase randomness on each refresh
-          })
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          generatedText = data.choices[0].message.content.trim();
-        }
-      } catch (error) {
-        console.log('OpenAI failed, trying Gemini...');
-      }
-
-      // Try Gemini if OpenAI failed
-      if (!generatedText) {
-        try {
-          const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-          if (!apiKey) throw new Error('No Gemini key');
-          
-          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: {
-                temperature: 0.9 + (refreshCount * 0.05), // More variety on refresh
-                maxOutputTokens: 400
-              }
-            })
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            generatedText = data.candidates[0].content.parts[0].text.trim();
-          }
-        } catch (error) {
-          console.log('Gemini failed, trying Z.AI...');
-        }
-      }
-
-      // Fallback: Simple template if all AI fails
-      if (!generatedText) {
-        generatedText = getTemplateCoverLetter(language);
-      }
-
-      setCoverLetter(generatedText);
+      // Pick template by refreshCount: 0=short, 1=medium, 2=long
+      setCoverLetter(getTemplateCoverLetter(language, refreshCount));
       setStep('review');
     } catch (error) {
-      console.error('Error generating cover letter:', error);
-      setCoverLetter(getTemplateCoverLetter(language));
+      setCoverLetter(getTemplateCoverLetter(language, refreshCount));
       setStep('review');
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const getTemplateCoverLetter = (lang: Language): string => {
+  // Returns short, medium, or long template for the language
+  const getTemplateCoverLetter = (lang: Language, style: number = 0): string => {
+    // 0 = short, 1 = medium, 2 = long
     const templates = {
-      fr: `Madame, Monsieur,
-
-Je me permets de vous adresser ma candidature pour le poste de ${job.title} au sein de ${job.company}.
-
-Fort(e) d'une expérience significative dans ce domaine, je suis convaincu(e) que mon profil correspond parfaitement à vos attentes. Mon parcours m'a permis de développer les compétences techniques et relationnelles nécessaires pour exceller dans ce rôle.
-
-Motivé(e) et dynamique, je serais ravi(e) de contribuer au succès de votre entreprise et de relever les défis que ce poste implique.
-
-Je reste à votre disposition pour un entretien à votre convenance.
-
-Cordialement.`,
-      en: `Dear Hiring Manager,
-
-I am writing to express my interest in the ${job.title} position at ${job.company}.
-
-With relevant experience in this field, I am confident that my profile aligns perfectly with your requirements. My background has enabled me to develop the technical and interpersonal skills necessary to excel in this role.
-
-Motivated and dynamic, I would be delighted to contribute to your company's success and take on the challenges this position entails.
-
-I remain available for an interview at your convenience.
-
-Best regards.`,
-      ar: `سيدي/سيدتي المحترم/ة،
-
-أتقدم بطلبي للحصول على منصب ${job.title} في ${job.company}.
-
-بفضل خبرتي الواسعة في هذا المجال، أنا واثق من أن ملفي الشخصي يتوافق تمامًا مع متطلباتكم. لقد مكنتني مسيرتي من تطوير المهارات التقنية والشخصية اللازمة للتفوق في هذا الدور.
-
-متحمس وديناميكي، سأكون سعيدًا بالمساهمة في نجاح شركتكم ومواجهة التحديات التي يتضمنها هذا المنصب.
-
-أبقى تحت تصرفكم لإجراء مقابلة في الوقت الذي يناسبكم.
-
-مع فائق الاحترام.`,
-      es: `Estimado/a señor/a,
-
-Me dirijo a usted para presentar mi candidatura para el puesto de ${job.title} en ${job.company}.
-
-Con experiencia relevante en este campo, estoy convencido/a de que mi perfil se ajusta perfectamente a sus requisitos. Mi trayectoria me ha permitido desarrollar las habilidades técnicas e interpersonales necesarias para destacar en este rol.
-
-Motivado/a y dinámico/a, estaré encantado/a de contribuir al éxito de su empresa y asumir los desafíos que implica este puesto.
-
-Quedo a su disposición para una entrevista cuando le resulte conveniente.
-
-Atentamente.`,
-      it: `Gentile responsabile delle assunzioni,
-
-Mi rivolgo a Lei per presentare la mia candidatura per la posizione di ${job.title} presso ${job.company}.
-
-Con esperienza rilevante in questo campo, sono convinto/a che il mio profilo corrisponda perfettamente alle Vostre esigenze. Il mio percorso mi ha permesso di sviluppare le competenze tecniche e relazionali necessarie per eccellere in questo ruolo.
-
-Motivato/a e dinamico/a, sarei felice di contribuire al successo della Vostra azienda e affrontare le sfide che questa posizione comporta.
-
-Rimango a Vostra disposizione per un colloquio a Vostro piacimento.
-
-Cordiali saluti.`
+      fr: [
+        // Short
+        `Madame, Monsieur,\n\nJe souhaite postuler au poste de ${job.title} chez ${job.company}.\n\nCordialement.`,
+        // Medium
+        `Madame, Monsieur,\n\nJe me permets de vous adresser ma candidature pour le poste de ${job.title} au sein de ${job.company}.\n\nFort(e) d'une expérience dans ce domaine, je pense que mon profil correspond à vos attentes.\n\nCordialement.`,
+        // Long
+        `Madame, Monsieur,\n\nJe me permets de vous adresser ma candidature pour le poste de ${job.title} au sein de ${job.company}.\n\nFort(e) d'une expérience significative dans ce domaine, je suis convaincu(e) que mon profil correspond parfaitement à vos attentes. Mon parcours m'a permis de développer les compétences techniques et relationnelles nécessaires pour exceller dans ce rôle.\n\nMotivé(e) et dynamique, je serais ravi(e) de contribuer au succès de votre entreprise et de relever les défis que ce poste implique.\n\nJe reste à votre disposition pour un entretien à votre convenance.\n\nCordialement.`
+      ],
+      en: [
+        `Dear Hiring Manager,\n\nI am applying for the ${job.title} position at ${job.company}.\n\nBest regards.`,
+        `Dear Hiring Manager,\n\nI am writing to express my interest in the ${job.title} position at ${job.company}. I believe my experience matches your requirements.\n\nBest regards.`,
+        `Dear Hiring Manager,\n\nI am writing to express my interest in the ${job.title} position at ${job.company}. With relevant experience in this field, I am confident that my profile aligns perfectly with your requirements. My background has enabled me to develop the technical and interpersonal skills necessary to excel in this role. Motivated and dynamic, I would be delighted to contribute to your company's success and take on the challenges this position entails. I remain available for an interview at your convenience.\n\nBest regards.`
+      ],
+      ar: [
+        `سيدي/سيدتي،\n\nأتقدم بطلب الحصول على منصب ${job.title} في ${job.company}.\n\nمع فائق الاحترام.`,
+        `سيدي/سيدتي المحترم/ة،\n\nأتقدم بطلبي للحصول على منصب ${job.title} في ${job.company}. أعتقد أن خبرتي تناسب متطلباتكم.\n\nمع فائق الاحترام.`,
+        `سيدي/سيدتي المحترم/ة،\n\nأتقدم بطلبي للحصول على منصب ${job.title} في ${job.company}. بفضل خبرتي الواسعة في هذا المجال، أنا واثق من أن ملفي الشخصي يتوافق تمامًا مع متطلباتكم. لقد مكنتني مسيرتي من تطوير المهارات التقنية والشخصية اللازمة للتفوق في هذا الدور. متحمس وديناميكي، سأكون سعيدًا بالمساهمة في نجاح شركتكم ومواجهة التحديات التي يتضمنها هذا المنصب. أبقى تحت تصرفكم لإجراء مقابلة في الوقت الذي يناسبكم.\n\nمع فائق الاحترام.`
+      ],
+      es: [
+        `Estimado/a,\n\nSolicito el puesto de ${job.title} en ${job.company}.\n\nAtentamente.`,
+        `Estimado/a señor/a,\n\nMe dirijo a usted para presentar mi candidatura para el puesto de ${job.title} en ${job.company}. Creo que mi perfil se ajusta a sus requisitos.\n\nAtentamente.`,
+        `Estimado/a señor/a,\n\nMe dirijo a usted para presentar mi candidatura para el puesto de ${job.title} en ${job.company}. Con experiencia relevante en este campo, estoy convencido/a de que mi perfil se ajusta perfectamente a sus requisitos. Mi trayectoria me ha permitido desarrollar las habilidades técnicas e interpersonales necesarias para destacar en este rol. Motivado/a y dinámico/a, estaré encantado/a de contribuir al éxito de su empresa y asumir los desafíos que implica este puesto. Quedo a su disposición para una entrevista cuando le resulte conveniente.\n\nAtentamente.`
+      ],
+      it: [
+        `Gentile responsabile,\n\nMi candido per la posizione di ${job.title} presso ${job.company}.\n\nCordiali saluti.`,
+        `Gentile responsabile delle assunzioni,\n\nMi rivolgo a Lei per presentare la mia candidatura per la posizione di ${job.title} presso ${job.company}. Credo che il mio profilo corrisponda alle vostre esigenze.\n\nCordiali saluti.`,
+        `Gentile responsabile delle assunzioni,\n\nMi rivolgo a Lei per presentare la mia candidatura per la posizione di ${job.title} presso ${job.company}. Con esperienza rilevante in questo campo, sono convinto/a che il mio profilo corrisponda perfettamente alle Vostre esigenze. Il mio percorso mi ha permesso di sviluppare le competenze tecniche e relazionali necessarie per eccellere in questo ruolo. Motivato/a e dinamico/a, sarei felice di contribuire al successo della Vostra azienda e affrontare le sfide che questa posizione comporta. Rimango a Vostra disposizione per un colloquio a Vostro piacimento.\n\nCordiali saluti.`
+      ]
     };
-    return templates[lang] || templates.fr;
+    const arr = templates[lang] || templates.fr;
+    // Clamp style index to 0-2
+    const idx = Math.max(0, Math.min(2, style));
+    return arr[idx];
   };
 
   const handleRefresh = () => {
