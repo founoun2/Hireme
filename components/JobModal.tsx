@@ -8,9 +8,10 @@ interface JobModalProps {
   onClose: () => void;
   onApply: (id: number) => void;
   isApplied: boolean;
+  onReload?: () => void;
 }
 
-export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApplied }) => {
+export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApplied, onReload }) => {
   const [showApplicationWizard, setShowApplicationWizard] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
@@ -315,9 +316,11 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
           onClose={() => {
             setShowApplicationWizard(false);
             onClose();
+            if (onReload) onReload();
           }}
           onApplicationComplete={() => {
             onApply(job.id);
+            if (onReload) onReload();
           }}
         />
       )}

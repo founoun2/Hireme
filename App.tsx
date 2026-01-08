@@ -354,6 +354,7 @@ const App: React.FC = () => {
         isApplied={selectedJob ? appliedJobs.has(String(selectedJob.id)) : false}
         onClose={() => setSelectedJob(null)} 
         onApply={handleApply}
+        onReload={loadJobsFromDatabase}
       />
 
       <style>{`
