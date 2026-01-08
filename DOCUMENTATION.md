@@ -296,7 +296,7 @@ Consultez notre politique complète sur :
 - Réduction taille des popups
 - Meilleure UX desktop
 
-#### ✅ Nouveautés v0.4.4
+#### ✅ Nouveautés V 0.1 2026
 - Documentation officielle
 - Protection copyright
 - Header navigation amélioré

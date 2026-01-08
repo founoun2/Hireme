@@ -220,9 +220,17 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose, onApply, isApp
                         <p className="text-[8px] font-black text-indigo-300 uppercase mb-1.5 flex items-center gap-1.5">
                           <i className="fa fa-envelope"></i> Email de candidature
                         </p>
-                        <a href={`mailto:${job.company_email || job.email}`} className="text-xs sm:text-sm font-bold text-white hover:text-indigo-300 transition-colors flex items-center gap-2 break-all">
+                        <a
+                          href={`mailto:${(job.company_email || job.email)?.replace(/\s+/g, '').replace(/\[at\]/i, '@').replace(/\[dot\]/gi, '.')}`}
+                          className="text-xs sm:text-sm font-bold text-white hover:text-indigo-300 transition-colors flex items-center gap-2 break-all"
+                        >
                           <i className="fa fa-paper-plane text-indigo-400 text-[10px]"></i>
-                          {job.company_email || job.email}
+                          {/* Obfuscate email for bots, readable for humans */}
+                          {(job.company_email || job.email)
+                            ? (job.company_email || job.email)
+                                .replace(/@/, ' [at] ')
+                                .replace(/\./g, ' [dot] ')
+                            : ''}
                         </a>
                       </div>
                     )}

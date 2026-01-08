@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface AdBannerProps {
   slot: string;
@@ -17,45 +17,50 @@ export const AdBanner: React.FC<AdBannerProps> = ({
   isDesktopSidebar = false,
   enabled = true
 }) => {
+  const insRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!enabled) return;
 
-    // Load the AdSense script only once and only when ads are enabled for this page
-    const loadScriptAndPush = () => {
+    let initialized = false;
+    const ins = insRef.current?.querySelector('ins.adsbygoogle');
+    if (ins && !(ins as any)._adsbygoogleInit) {
+      // Mark as initialized to prevent double push
+      (ins as any)._adsbygoogleInit = true;
+      initialized = true;
       try {
-        // If script already loaded, push immediately
-        if ((window as any).__adsbygoogleLoaded) {
-          (window as any).adsbygoogle = (window as any).adsbygoogle || [];
+        if ((window as any).adsbygoogle && Array.isArray((window as any).adsbygoogle)) {
           (window as any).adsbygoogle.push({});
-          return;
         }
+      } catch (e) {
+        console.error('AdSense push failed:', e);
+      }
+    }
 
-        // If script tag already present but not flagged, just wait for onload
-        const existing = document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]');
-        if (existing) {
-          existing.addEventListener('load', () => {
-            (window as any).__adsbygoogleLoaded = true;
-            try { (window as any).adsbygoogle = (window as any).adsbygoogle || []; (window as any).adsbygoogle.push({}); } catch (e) { console.error('AdSense push failed:', e); }
-          });
-          return;
-        }
-
+    // Load the AdSense script only once
+    if (!(window as any).__adsbygoogleLoaded) {
+      const existing = document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]');
+      if (!existing) {
         const s = document.createElement('script');
         s.async = true;
         s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2474444884447314';
         s.crossOrigin = 'anonymous';
-        s.onload = () => {
-          (window as any).__adsbygoogleLoaded = true;
-          try { (window as any).adsbygoogle = (window as any).adsbygoogle || []; (window as any).adsbygoogle.push({}); } catch (e) { console.error('AdSense push failed after load:', e); }
-        };
+        s.onload = () => { (window as any).__adsbygoogleLoaded = true; };
         s.onerror = (e) => { console.error('Failed to load AdSense script', e); };
         document.head.appendChild(s);
-      } catch (error) {
-        console.error('AdSense error:', error);
       }
-    };
-
-    loadScriptAndPush();
+    }
+    // If script is already loaded, push if not already done
+    if ((window as any).__adsbygoogleLoaded && !initialized && ins && !(ins as any)._adsbygoogleInit) {
+      (ins as any)._adsbygoogleInit = true;
+      try {
+        if ((window as any).adsbygoogle && Array.isArray((window as any).adsbygoogle)) {
+          (window as any).adsbygoogle.push({});
+        }
+      } catch (e) {
+        console.error('AdSense push failed:', e);
+      }
+    }
   }, [enabled, slot]);
 
   // Desktop sidebar uses fixed 160x600 size
@@ -66,7 +71,7 @@ export const AdBanner: React.FC<AdBannerProps> = ({
   if (!enabled) return null;
 
   return (
-    <div className={className}>
+    <div className={className} ref={insRef}>
       <ins
         className="adsbygoogle"
         style={adStyle}

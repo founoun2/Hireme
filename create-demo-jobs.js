@@ -171,3 +171,4 @@ async function insertJobs() {
 }
 
 insertJobs();
+// This file has been removed. Demo jobs are no longer used.

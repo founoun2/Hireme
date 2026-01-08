@@ -11,7 +11,7 @@ import { JobPostWizard } from './components/JobPostWizard';
 import { CookieConsent } from './components/CookieConsent';
 import { InFeedAd } from './components/AdBanner';
 import { jobService } from './services/jobService';
-import { aggregateJobs } from './services/jobAggregator';
+
 
 const PAGE_SIZE = 12;
 const SYNC_INTERVAL = 30000; // 30 seconds - auto-refresh
@@ -45,7 +45,7 @@ const App: React.FC = () => {
   // Load jobs from database on mount
   useEffect(() => {
     loadJobsFromDatabase();
-    syncLiveJobs();
+
 
     // Support a query param to force mock data for local testing (e.g., ?forceMockJobs=1)
     try {
@@ -60,11 +60,8 @@ const App: React.FC = () => {
     }
     
     // Set up intervals
-    const syncInterval = setInterval(syncLiveJobs, SYNC_INTERVAL);
     const cleanupInterval = setInterval(cleanupOldJobs, CLEANUP_INTERVAL);
-    
     return () => {
-      clearInterval(syncInterval);
       clearInterval(cleanupInterval);
     };
   }, []);
@@ -93,38 +90,8 @@ const App: React.FC = () => {
     }
   };
 
-  const syncLiveJobs = async () => {
-    // Don't show loading if we already have jobs (silent background refresh)
-    const shouldShowLoading = allJobs.length === 0;
-    if (shouldShowLoading) setIsScanning(true);
-    
-    try {
-      // Use job aggregator (Adzuna + Gemini)
-      const liveJobs = await aggregateJobs();
-      
-      if (liveJobs.length > 0) {
-        // Save new jobs to database
-        await jobService.saveJobs(liveJobs);
-        console.log(`✅ Synced ${liveJobs.length} new jobs`);
-        
-        // Update state with unique jobs
-        setAllJobs(prev => {
-          const uniqueNew = liveJobs.filter(lj => 
-            !prev.some(pj => pj.title === lj.title && pj.company === lj.company)
-          );
-          if (uniqueNew.length > 0) {
-            console.log(`➕ Adding ${uniqueNew.length} unique new jobs`);
-          }
-          return [...uniqueNew.map(j => ({ ...j, isNew: true })), ...prev];
-        });
-      }
-    } catch (error) {
-      console.error("⚠️ Sync failed:", error);
-      // Don't update state on error - keep existing jobs
-    } finally {
-      if (shouldShowLoading) setIsScanning(false);
-    }
-  };
+
+  // Removed syncLiveJobs and all Adzuna logic. Only user-submitted jobs are supported.
 
   const filteredJobs = useMemo(() => {
     const filtered = allJobs.filter(j => {

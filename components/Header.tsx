@@ -1,4 +1,8 @@
 
+<>
+  <span className="text-[9px] font-black text-indigo-600 uppercase tracking-wider">V 0.1 2026</span>
+</>
+
 import React, { useState, useEffect, useRef } from 'react';
 import { SidebarKey } from '../types';
 
@@ -51,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-500 ${scrolled ? 'py-2 bg-white/95 border-b border-zinc-200 shadow-md' : 'py-3 bg-white/80'} backdrop-blur-2xl border-b border-zinc-100/50`}>
-      <div className="max-w-5xl mx-auto px-3 sm:px-6 flex items-center justify-between relative">
+      <div className="max-w-5xl mx-auto px-3 sm:px-6 flex items-center justify-between relative mb-3">
         <div className="flex items-center gap-2 cursor-pointer group" onClick={() => window.location.reload()}>
           <div className="relative w-9 h-9 sm:w-11 sm:h-11 transition-all duration-500 group-hover:scale-110 active:scale-95">
             <div className="absolute inset-0 bg-[#c1272d] rounded-xl sm:rounded-2xl shadow-lg shadow-red-900/10 flex items-center justify-center overflow-hidden">
@@ -164,7 +168,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
 
               <div className="mt-4 pt-4 border-t border-zinc-50 flex items-center justify-between px-2">
                 <span className="text-[9px] font-black text-zinc-300 uppercase tracking-[0.2em]">Hireme Maroc Hub</span>
-                <span className="text-[9px] font-black text-indigo-600 uppercase tracking-wider">V 0.4.4</span>
+                <span className="text-[9px] font-black text-indigo-600 uppercase tracking-wider">V 0.1 2026</span>
               </div>
             </div>
           </div>

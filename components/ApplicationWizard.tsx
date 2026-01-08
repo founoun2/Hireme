@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Job } from '../types';
+import { applicationService } from '../services/applicationService';
 
 interface ApplicationWizardProps {
   job: Job;
@@ -228,9 +229,14 @@ Candidature envoyée via HireMe Maroc
       console.log('📤 Sending email with CV attachment to:', targetEmail);
       console.log('📎 CV file:', cvFile?.name, `(${((cvFile?.size || 0) / 1024).toFixed(0)} KB)`);
 
+      // Save application to Supabase
+      await applicationService.saveApplication({
+        job_id: String(job.id),
+        user_email: userEmail,
+      });
+
       // Development mode: Show success without actually sending
       const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      
       if (isDevelopment) {
         console.log('🚀 DEV MODE: Email simulation');
         console.log('📧 To:', targetEmail);
@@ -238,10 +244,8 @@ Candidature envoyée via HireMe Maroc
         console.log('📄 Subject:', `Candidature: ${job.title} - ${userName}`);
         console.log('📎 CV:', cvFile?.name);
         console.log('✅ In production, this will send via SendGrid API');
-        
         // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 1500));
-        
         setStep('success');
         setTimeout(() => {
           onClose();

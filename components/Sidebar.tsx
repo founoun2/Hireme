@@ -1,3 +1,4 @@
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Hireme Maroc V 0.1 2026 | Smart Hub</p>
 
 import React from 'react';
 import { SidebarKey } from '../types';
