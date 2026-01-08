@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
+import { FaBuilding, FaMapMarkerAlt, FaRegCalendarAlt, FaMoneyBillWave } from 'react-icons/fa';
 
 // Utility to format time ago
 function getTimeAgo(dateString: string) {
@@ -38,7 +39,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, userEmail, onClick, style
 
   return (
     <div
-      className="relative bg-white rounded-3xl shadow-2xl border border-zinc-100 p-0 mb-8 cursor-pointer hover:scale-[1.02] transition-transform duration-150 group flex flex-col sm:flex-row overflow-hidden"
+      className="relative bg-white rounded-3xl shadow-2xl border border-zinc-100 p-0 mt-[5px] mb-[5px] cursor-pointer hover:scale-[1.02] transition-transform duration-150 group flex flex-col sm:flex-row overflow-hidden"
       style={style}
       onClick={onClick}
     >
@@ -47,31 +48,29 @@ export const JobCard: React.FC<JobCardProps> = ({ job, userEmail, onClick, style
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3 min-w-0">
             <span className="font-extrabold text-xl sm:text-2xl text-zinc-900 truncate" style={{ fontFamily: hasArabic ? 'Cairo, sans-serif' : 'inherit' }}>{job.title}</span>
-            {hasApplied ? (
-              <span className="bg-yellow-300 text-zinc-900 text-xs font-bold uppercase px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-yellow-400 shadow-sm">
-                ✓ Déjà postulé
-              </span>
-            ) : (
-              <>
-                {job.isNew && (
-                  <span className="bg-indigo-500 text-white text-xs font-bold uppercase px-2 py-1 rounded-full shadow-sm">New</span>
-                )}
-              </>
+            {job.isNew && (
+              <span className="bg-indigo-500 text-white text-xs font-bold uppercase px-2 py-1 rounded-full shadow-sm">New</span>
             )}
           </div>
           <div className="flex flex-wrap items-center gap-6 text-sm text-zinc-600 mt-2">
             <div className="flex items-center gap-1 text-xs sm:text-sm">
-              <i className="fa fa-building text-indigo-400 text-base"></i>
+              <FaBuilding className="text-indigo-400 text-base" />
               <span className="font-semibold" style={{ fontFamily: hasArabic ? 'Cairo, sans-serif' : 'inherit' }}>{job.company}</span>
             </div>
             <div className="flex items-center gap-1 text-xs sm:text-sm">
-              <i className="fa fa-location-dot text-emerald-400 text-base"></i>
+              <FaMapMarkerAlt className="text-emerald-400 text-base" />
               <span>{job.city}</span>
             </div>
             <div className="flex items-center gap-1 text-xs sm:text-sm">
-              <i className="fa fa-calendar text-pink-400 text-base"></i>
+              <FaRegCalendarAlt className="text-pink-400 text-base" />
               <span>{job.contract}</span>
             </div>
+            {job.salary && (
+              <div className="flex items-center gap-1 text-xs sm:text-sm">
+                <FaMoneyBillWave className="text-amber-400 text-base" />
+                <span>{job.salary}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -83,10 +82,13 @@ export const JobCard: React.FC<JobCardProps> = ({ job, userEmail, onClick, style
             {getTimeAgo(job.created_at)}
           </span>
         )}
-        {!hasApplied && (
+        {hasApplied ? (
+          <span className="bg-yellow-300 text-zinc-900 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full flex items-center gap-1 border border-yellow-400 shadow-sm">
+            ✓ Déjà postulé
+          </span>
+        ) : (
           <button
-            className={`inline-flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full bg-indigo-500 text-white shadow-sm ${hasApplied ? 'opacity-60 cursor-not-allowed' : ''}`}
-            disabled={hasApplied}
+            className={`inline-flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full bg-indigo-500 text-white shadow-sm`}
             onClick={onClick}
           >
             <span className="tracking-wide">Postuler</span>

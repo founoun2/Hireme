@@ -29,13 +29,13 @@ const App: React.FC = () => {
   const [showJobPostWizard, setShowJobPostWizard] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [appliedJobs, setAppliedJobs] = useState<Set<string>>(() => {
-    // Load applied jobs from localStorage on mount
     const saved = localStorage.getItem('appliedJobs');
     return saved ? new Set(JSON.parse(saved)) : new Set();
   });
   const [isScanning, setIsScanning] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const suggestionRef = useRef<HTMLDivElement>(null);
+  const [userEmail, setUserEmail] = useState<string>(() => localStorage.getItem('hireme_user_email') || '');
 
   // Save applied jobs to localStorage whenever it changes
   useEffect(() => {
@@ -297,12 +297,11 @@ const App: React.FC = () => {
           <div className="grid grid-cols-1 gap-2.5 sm:gap-3 md:gap-4">
             {currentJobs.length > 0 ? (
               currentJobs.map((job, idx) => (
-                <React.Fragment key={`${job.id}-${idx}`}>
-                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: `${(idx % PAGE_SIZE) * 50}ms` }}>
-                    {console.log('[JobCard] Rendering job.id:', String(job.id), 'isApplied:', appliedJobs.has(String(job.id)), 'appliedJobs:', Array.from(appliedJobs))}
+                <React.Fragment key={`${String(job.id)}-${idx}`}>
+                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both mb-0" style={{ animationDelay: `${(idx % PAGE_SIZE) * 50}ms` }}>
                     <JobCard 
                       job={{ ...job, id: String(job.id) }}
-                      isApplied={appliedJobs.has(String(job.id))}
+                      userEmail={userEmail}
                       onClick={() => setSelectedJob({ ...job, id: String(job.id) })}
                     />
                   </div>
@@ -350,7 +349,7 @@ const App: React.FC = () => {
       </main>
 
       <JobModal 
-        job={selectedJob ? { ...selectedJob, id: String(selectedJob.id) } : null}
+        job={selectedJob}
         isApplied={selectedJob ? appliedJobs.has(String(selectedJob.id)) : false}
         onClose={() => setSelectedJob(null)} 
         onApply={handleApply}
