@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { SidebarKey } from '../types';
 
 interface HeaderProps {
@@ -68,10 +69,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
         </div>
         
         <nav className="hidden lg:flex items-center gap-6 text-[10px] font-black tracking-widest text-zinc-400">
-          <button onClick={() => handleLinkClick('about')} className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">À Propos</button>
-          <button onClick={() => handleLinkClick('faq')} className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">FAQ</button>
-          <button onClick={() => handleLinkClick('contact')} className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Contact</button>
-          <button onClick={() => handleLinkClick('disclaimer')} className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Avertissement</button>
+          <Link to="/villes" className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Villes</Link>
+          <Link to="/categories" className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Catégories</Link>
+          <Link to="/entreprises" className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Entreprises</Link>
+          <Link to="/salaires" className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Salaires</Link>
+          <Link to="/blog" className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Blog</Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -121,95 +123,71 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSidebar, keyword, setKeywo
                 </div>
               </button>
               
-              <button 
-                onClick={() => handleLinkClick('about')}
+              <Link 
+                to="/villes"
+                onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-4 px-5 py-3 rounded-2xl hover:bg-zinc-50 transition-colors group active:bg-zinc-100"
               >
                 <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                  <i className="fa fa-info-circle text-sm"></i>
+                  <i className="fa fa-city text-sm"></i>
                 </div>
-                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">À Propos</span>
-              </button>
+                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Villes</span>
+              </Link>
 
-              <button 
-                onClick={() => handleLinkClick('faq')}
+              <Link 
+                to="/categories"
+                onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-4 px-5 py-3 rounded-2xl hover:bg-zinc-50 transition-colors group active:bg-zinc-100"
               >
                 <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                  <i className="fa fa-question-circle text-sm"></i>
+                  <i className="fa fa-layer-group text-sm"></i>
                 </div>
-                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">FAQ</span>
-              </button>
+                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Catégories</span>
+              </Link>
 
-              <button 
-                onClick={() => handleLinkClick('contact')}
+              <Link 
+                to="/entreprises"
+                onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-4 px-5 py-3 rounded-2xl hover:bg-zinc-50 transition-colors group active:bg-zinc-100"
               >
                 <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                  <i className="fa fa-envelope text-sm"></i>
+                  <i className="fa fa-building text-sm"></i>
                 </div>
-                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Contact</span>
-              </button>
+                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Entreprises</span>
+              </Link>
 
-              <button 
-                onClick={() => handleLinkClick('disclaimer')}
+              <Link 
+                to="/salaires"
+                onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-4 px-5 py-3 rounded-2xl hover:bg-zinc-50 transition-colors group active:bg-zinc-100"
               >
                 <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-500 group-hover:bg-amber-600 group-hover:text-white transition-colors">
-                  <i className="fa fa-exclamation-triangle text-sm"></i>
+                  <i className="fa fa-dirham-sign text-sm"></i>
                 </div>
-                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Avertissement</span>
-              </button>
+                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Salaires</span>
+              </Link>
 
-              <button 
-                onClick={() => handleLinkClick('privacy')}
-                className="flex items-center gap-4 px-5 py-3 rounded-2xl hover:bg-zinc-50 transition-colors group active:bg-zinc-100"
-              >
-                <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center text-violet-500 group-hover:bg-violet-600 group-hover:text-white transition-colors">
-                  <i className="fa fa-shield-alt text-sm"></i>
-                </div>
-                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Confidentialité</span>
-              </button>
-
-              <button 
-                onClick={() => handleLinkClick('terms')}
-                className="flex items-center gap-4 px-5 py-3 rounded-2xl hover:bg-zinc-50 transition-colors group active:bg-zinc-100"
-              >
-                <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center text-rose-500 group-hover:bg-rose-600 group-hover:text-white transition-colors">
-                  <i className="fa fa-file-contract text-sm"></i>
-                </div>
-                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Conditions</span>
-              </button>
-
-              <button 
-                onClick={() => handleLinkClick('editorial')}
+              <Link 
+                to="/blog"
+                onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-4 px-5 py-3 rounded-2xl hover:bg-zinc-50 transition-colors group active:bg-zinc-100"
               >
                 <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center text-teal-500 group-hover:bg-teal-600 group-hover:text-white transition-colors">
                   <i className="fa fa-newspaper text-sm"></i>
                 </div>
-                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Éditorial</span>
-              </button>
+                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Blog</span>
+              </Link>
 
-              <button 
-                onClick={() => handleLinkClick('dmca')}
+              <Link 
+                to="/a-propos"
+                onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-4 px-5 py-3 rounded-2xl hover:bg-zinc-50 transition-colors group active:bg-zinc-100"
               >
-                <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500 group-hover:bg-orange-600 group-hover:text-white transition-colors">
-                  <i className="fa fa-copyright text-sm"></i>
+                <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center text-violet-500 group-hover:bg-violet-600 group-hover:text-white transition-colors">
+                  <i className="fa fa-info-circle text-sm"></i>
                 </div>
-                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">DMCA</span>
-              </button>
-
-              <button 
-                onClick={() => handleLinkClick('cookies')}
-                className="flex items-center gap-4 px-5 py-3 rounded-2xl hover:bg-zinc-50 transition-colors group active:bg-zinc-100"
-              >
-                <div className="w-8 h-8 rounded-lg bg-yellow-50 flex items-center justify-center text-yellow-500 group-hover:bg-yellow-600 group-hover:text-white transition-colors">
-                  <i className="fa fa-cookie-bite text-sm"></i>
-                </div>
-                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Cookies</span>
-              </button>
+                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">À Propos</span>
+              </Link>
 
               <div className="mt-4 pt-4 border-t border-zinc-50 flex items-center justify-between px-2">
                 <span className="text-[9px] font-black text-zinc-300 uppercase tracking-[0.2em]">Hireme Maroc Hub</span>

@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { Analytics } from "@vercel/analytics/react"
 import { Job, SidebarKey } from './types';
 import { CITIES, CONTRACTS, PROFESSIONS } from './constants';
@@ -12,12 +13,41 @@ import { CookieConsent } from './components/CookieConsent';
 import { InFeedAd } from './components/AdBanner';
 import { jobService } from './services/jobService';
 import { aggregateJobs } from './services/jobAggregator';
+import CityPage from './pages/programmatic/CityPage';
+import CategoryPage from './pages/programmatic/CategoryPage';
+import CompanyPage from './pages/programmatic/CompanyPage';
+import SalaryPage from './pages/programmatic/SalaryPage';
+import BlogPost from './pages/programmatic/BlogPost';
+import BlogIndex from './pages/programmatic/BlogIndex';
+import SitemapPage from './pages/programmatic/Sitemap';
+import AllCitiesPage from './pages/programmatic/AllCitiesPage';
+import AllCategoriesPage from './pages/programmatic/AllCategoriesPage';
+import AllCompaniesPage from './pages/programmatic/AllCompaniesPage';
+import AllSalariesPage from './pages/programmatic/AllSalariesPage';
+import { useSEO } from './hooks/useSEO';
+import { AboutUs } from './pages/AboutUs';
+import { FAQ } from './pages/FAQ';
+import { Contact } from './pages/Contact';
+import { JobDisclaimer } from './pages/JobDisclaimer';
+import { PrivacyPolicy } from './pages/PrivacyPolicy';
+import { TermsOfService } from './pages/TermsOfService';
+import { CookiePolicy } from './pages/CookiePolicy';
+import { EditorialPolicy } from './pages/EditorialPolicy';
+import { DMCAPolicy } from './pages/DMCAPolicy';
+import { Accessibility } from './pages/Accessibility';
 
 const PAGE_SIZE = 12;
 
 console.log('🚀 HIREME App Loading...');
 
-const App: React.FC = () => {
+function HomePage() {
+function HomePage() {
+  useSEO({
+    title: 'Offres d\'emploi au Maroc - Smart Job Hub',
+    description: 'Trouvez les meilleures offres d\'emploi au Maroc. CDI, CDD, Stage, Freelance. Casablanca, Rabat, Marrakech, Tanger et toutes les villes. Moteur de recherche intelligent.',
+    url: 'https://hirememaroc.online'
+  });
+
   const [allJobs, setAllJobs] = useState<Job[]>([]);
   const [keyword, setKeyword] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
@@ -380,30 +410,32 @@ const App: React.FC = () => {
             </div>
             
             <div>
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4">Emploi</h4>
+              <ul className="space-y-2.5">
+                <li><Link to="/villes" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Offres par Ville</Link></li>
+                <li><Link to="/categories" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Catégories</Link></li>
+                <li><Link to="/entreprises" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Entreprises</Link></li>
+                <li><Link to="/salaires" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Guide des Salaires</Link></li>
+              </ul>
+            </div>
+            
+            <div>
               <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4">Plateforme</h4>
               <ul className="space-y-2.5">
-                <li><button onClick={() => setActiveSidebar('about')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">À Propos</button></li>
-                <li><button onClick={() => setActiveSidebar('faq')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">FAQ</button></li>
-                <li><button onClick={() => setActiveSidebar('contact')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Contact</button></li>
-                <li><button onClick={() => setActiveSidebar('disclaimer')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Avertissement Emploi</button></li>
+                <li><Link to="/a-propos" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">À Propos</Link></li>
+                <li><Link to="/blog" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Blog</Link></li>
+                <li><Link to="/faq" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">FAQ</Link></li>
+                <li><Link to="/contact" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Contact</Link></li>
               </ul>
             </div>
             
             <div>
               <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4">Légal</h4>
               <ul className="space-y-2.5">
-                <li><button onClick={() => setActiveSidebar('privacy')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Politique de Confidentialité</button></li>
-                <li><button onClick={() => setActiveSidebar('terms')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Conditions d'Utilisation</button></li>
-                <li><button onClick={() => setActiveSidebar('cookies')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Politique de Cookies</button></li>
-                <li><button onClick={() => setActiveSidebar('dmca')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">DMCA / Droits d'Auteur</button></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4">Ressources</h4>
-              <ul className="space-y-2.5">
-                <li><button onClick={() => setActiveSidebar('editorial')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Politique Éditoriale</button></li>
-                <li><button onClick={() => setActiveSidebar('accessibility')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Accessibilité</button></li>
+                <li><Link to="/confidentialite" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Confidentialité</Link></li>
+                <li><Link to="/conditions" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Conditions</Link></li>
+                <li><Link to="/cookies-policy" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Cookies</Link></li>
+                <li><Link to="/avertissement" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Avertissement</Link></li>
               </ul>
             </div>
           </div>
@@ -428,4 +460,48 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+function StaticPage({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen bg-[#fcfcfc]">
+      <div className="max-w-3xl mx-auto px-3 sm:px-6 pt-32 pb-20">
+        <div className="bg-white rounded-3xl border border-zinc-100 p-8 sm:p-12">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/emploi/:slug" element={<CityPage />} />
+      <Route path="/categorie/:slug" element={<CategoryPage />} />
+      <Route path="/entreprise/:slug" element={<CompanyPage />} />
+      <Route path="/salaire/:slug" element={<SalaryPage />} />
+      <Route path="/blog" element={<BlogIndex />} />
+      <Route path="/blog/:slug" element={<BlogPost />} />
+      <Route path="/villes" element={<AllCitiesPage />} />
+      <Route path="/categories" element={<AllCategoriesPage />} />
+      <Route path="/entreprises" element={<AllCompaniesPage />} />
+      <Route path="/salaires" element={<AllSalariesPage />} />
+      <Route path="/plan-du-site" element={<SitemapPage />} />
+      <Route path="/a-propos" element={<StaticPage><AboutUs /></StaticPage>} />
+      <Route path="/faq" element={<StaticPage><FAQ /></StaticPage>} />
+      <Route path="/contact" element={<StaticPage><Contact /></StaticPage>} />
+      <Route path="/avertissement" element={<StaticPage><JobDisclaimer /></StaticPage>} />
+      <Route path="/confidentialite" element={<StaticPage><PrivacyPolicy /></StaticPage>} />
+      <Route path="/conditions" element={<StaticPage><TermsOfService /></StaticPage>} />
+      <Route path="/cookies-policy" element={<StaticPage><CookiePolicy /></StaticPage>} />
+      <Route path="/editorial" element={<StaticPage><EditorialPolicy /></StaticPage>} />
+      <Route path="/dmca" element={<StaticPage><DMCAPolicy /></StaticPage>} />
+      <Route path="/accessibilite" element={<StaticPage><Accessibility /></StaticPage>} />
+      <Route path="*" element={<HomePage />} />
+    </Routes>
+  );
+}
+
+export default function App() {
+  return <AppRoutes />;
+}
