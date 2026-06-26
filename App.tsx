@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import { Analytics } from "@vercel/analytics/react"
 import { Job, SidebarKey } from './types';
 import { CITIES, CONTRACTS, PROFESSIONS } from './constants';
@@ -82,8 +82,7 @@ function HomePage() {
       console.log(`📊 Loaded ${jobs.length} real jobs from database`);
       setAllJobs(jobs);
     } catch (error) {
-      console.error('❌ Error loading jobs:', error);
-      setAllJobs([]);
+      console.log('ℹ️ Database not available, using local CSV data');
     } finally {
       setIsScanning(false);
     }
@@ -94,14 +93,13 @@ function HomePage() {
     if (shouldShowLoading) setIsScanning(true);
     
     try {
-      const csvJobs = await aggregateJobs();
+      const csvJobsData = await aggregateJobs();
       
-      if (csvJobs.length > 0) {
-        await jobService.saveJobs(csvJobs);
-        console.log(`✅ Loaded ${csvJobs.length} jobs from CSV`);
+      if (csvJobsData.length > 0) {
+        console.log(`✅ Loaded ${csvJobsData.length} jobs from CSV`);
         
         setAllJobs(prev => {
-          const uniqueNew = csvJobs.filter(lj => 
+          const uniqueNew = csvJobsData.filter(lj => 
             !prev.some(pj => pj.title === lj.title && pj.company === lj.company)
           );
           if (uniqueNew.length > 0) {
@@ -109,6 +107,12 @@ function HomePage() {
           }
           return [...uniqueNew.map(j => ({ ...j, isNew: true })), ...prev];
         });
+
+        try {
+          await jobService.saveJobs(csvJobsData);
+        } catch (saveError) {
+          console.log("⚠️ Could not save to database (using local data):", saveError);
+        }
       }
     } catch (error) {
       console.error("⚠️ Sync failed:", error);
