@@ -34,7 +34,21 @@ const BLOG_POSTS = [
   'guide-salaire-developpeur-maroc',
   'conseils-cv-lettre-motivation-maroc',
   'metiers-futur-maroc-2025',
-  'teletravail-maroc-opportunites'
+  'teletravail-maroc-opportunites',
+  'premier-emploi-apres-diplome',
+  'entretien-embauche-reussir',
+  'emploi-casablanca-guide',
+  'emploi-rabat-opportunites',
+  'emploi-tanger-industrie',
+  'salaire-infirmier-maroc',
+  'salaire-comptable-maroc',
+  'cdi-cdd-stage-differences',
+  'secteur-tech-maroc-croissance',
+  'reconversion-professionnelle-maroc',
+  'emploi-freelance-maroc',
+  'negociation-salaire-maroc',
+  'reseau-professionnel-maroc',
+  'emploi-etrangers-maroc'
 ];
 
 function url(loc, lastmod, changefreq, priority) {
