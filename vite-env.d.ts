@@ -10,9 +10,9 @@ interface ImportMetaEnv {
   readonly VITE_OPENAI_API_KEY: string
   readonly VITE_Z_AI_API_KEY: string
   readonly VITE_FLOWITH_API_KEY: string
-  readonly VITE_SENDGRID_API_KEY: string
-  readonly VITE_SENDGRID_FROM_EMAIL: string
-  readonly VITE_SENDGRID_FROM_NAME: string
+  readonly VITE_RESEND_API_KEY: string
+  readonly VITE_RESEND_FROM_EMAIL: string
+  readonly VITE_RESEND_FROM_NAME: string
 }
 
 interface ImportMeta {

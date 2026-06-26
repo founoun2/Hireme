@@ -413,14 +413,14 @@ Candidature envoyée via HireMe Maroc
       } else if (error.message?.includes('429') || error.message?.includes('limit')) {
         errorMessage += '\n⏱️ Limite d\'envoi atteinte (100 emails/jour)';
       } else if (error.message?.includes('401') || error.message?.includes('403')) {
-        errorMessage += '\n🔑 Clé SendGrid invalide - Vérifiez votre configuration';
+        errorMessage += '\n🔑 Clé Resend invalide - Vérifiez RESEND_API_KEY';
       } else if (error.message?.includes('400')) {
         errorMessage += '\n📝 Données invalides - Vérifiez les informations';
       } else {
         errorMessage += '\n💡 Vérifiez la console (F12) pour plus de détails';
       }
       
-      errorMessage += '\n\n📖 Consultez SENDGRID_SETUP.md pour l\'aide';
+      errorMessage += '\n\n📖 Vérifiez la configuration Resend dans Vercel';
       
       alert(errorMessage);
     } finally {

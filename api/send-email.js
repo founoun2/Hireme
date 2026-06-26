@@ -1,4 +1,8 @@
-// Vercel Serverless Function for SendGrid Email
+// Vercel Serverless Function for Resend Email
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -6,7 +10,6 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Handle preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -16,89 +19,64 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { 
-      to, 
-      toName, 
-      subject, 
-      content, 
-      replyToEmail, 
+    const {
+      to,
+      toName,
+      subject,
+      content,
+      replyToEmail,
       replyToName,
-      attachment 
+      attachment
     } = req.body;
 
-    // Get SendGrid config from environment variables
-    const apiKey = process.env.SENDGRID_API_KEY;
-    const fromEmail = process.env.SENDGRID_FROM_EMAIL;
-    const fromName = process.env.SENDGRID_FROM_NAME || 'HireMe Maroc';
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'applications@hirememaroc.online';
+    const fromName = process.env.RESEND_FROM_NAME || 'HireMe Maroc';
 
-    if (!apiKey || !fromEmail) {
-      console.error('Missing SendGrid configuration');
-      return res.status(500).json({ 
-        error: 'Missing SendGrid configuration',
-        details: 'Server environment variables not configured'
+    if (!process.env.RESEND_API_KEY) {
+      console.error('Missing RESEND_API_KEY');
+      return res.status(500).json({
+        error: 'Missing Resend configuration',
+        details: 'RESEND_API_KEY not set'
       });
     }
 
-    // Prepare SendGrid payload
-    const emailData = {
-      personalizations: [{
-        to: [{ email: to, name: toName }],
-        subject: subject
-      }],
-      from: {
-        email: fromEmail,
-        name: fromName
-      },
-      reply_to: {
-        email: replyToEmail,
-        name: replyToName
-      },
-      content: [{
-        type: 'text/plain',
-        value: content
-      }]
+    const emailOptions = {
+      from: `${fromName} <${fromEmail}>`,
+      to: [to],
+      subject: subject,
+      text: content,
+      replyTo: replyToEmail,
     };
 
-    // Add attachment if provided
     if (attachment) {
-      emailData.attachments = [{
-        content: attachment.content,
+      emailOptions.attachments = [{
         filename: attachment.filename,
-        type: attachment.type,
-        disposition: 'attachment'
+        content: attachment.content,
       }];
     }
 
-    // Call SendGrid API
-    const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(emailData)
-    });
+    const { data, error } = await resend.emails.send(emailOptions);
 
-    if (response.status === 202) {
-      console.log('✅ Email sent successfully via SendGrid');
-      return res.status(200).json({ 
-        success: true, 
-        message: 'Email sent successfully' 
-      });
-    } else {
-      const errorData = await response.json();
-      console.error('SendGrid API Error:', errorData);
-      return res.status(response.status).json({ 
-        error: 'SendGrid API error', 
-        details: errorData 
+    if (error) {
+      console.error('Resend API Error:', error);
+      return res.status(400).json({
+        error: 'Resend API error',
+        details: error
       });
     }
 
+    console.log('✅ Email sent via Resend:', data?.id);
+    return res.status(200).json({
+      success: true,
+      message: 'Email sent successfully',
+      id: data?.id
+    });
+
   } catch (error) {
     console.error('Error in send-email function:', error);
-    return res.status(500).json({ 
-      error: 'Internal server error', 
-      details: error.message 
+    return res.status(500).json({
+      error: 'Internal server error',
+      details: error.message
     });
   }
 }
