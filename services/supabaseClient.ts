@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Hardcoded production values as primary (since env vars aren't working in Vercel)
-const PROD_SUPABASE_URL = 'https://zfhxgosamaeeuxmhqjkj.supabase.co';
-const PROD_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmaHhnb3NhbWFlZXV4bWhxamtqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMTY1NzYsImV4cCI6MjA4Mjc5MjU3Nn0.QumAqvlvAy18GqA3i2xnEtI6e-7GGvOH_qjqEybcY2E';
+const PROD_SUPABASE_URL = 'https://gunchtkpfebsynolxugr.supabase.co';
+const PROD_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1bmNodGtwZmVic3lub2x4dWdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0ODQ4NzYsImV4cCI6MjA5ODA2MDg3Nn0.uUchxf2SOW8XLy1wvFyo2cFU7eKIxbZzzGJWhIQBmrI';
 
 // Only use env vars if they exist and are valid
 const envUrl = import.meta.env.VITE_SUPABASE_URL;
