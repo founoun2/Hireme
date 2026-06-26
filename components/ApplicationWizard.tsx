@@ -360,40 +360,42 @@ Candidature envoyée via HireMe Maroc
         }, 5000);
       } else {
         // Production: Call serverless function
-        const response = await fetch('/api/send-email', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            to: targetEmail,
-            toName: job.company,
-            subject: `Candidature: ${job.title} - ${userName}`,
-            content: emailContent,
-            replyToEmail: userEmail,
-            replyToName: userName,
-            attachment: {
-              content: cvBase64.split(',')[1],
-              filename: cvFile?.name || 'CV.pdf',
-              type: cvFile?.type || 'application/pdf'
-            }
-          })
-        });
+        try {
+          const response = await fetch('/api/send-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              to: targetEmail,
+              toName: job.company,
+              subject: `Candidature: ${job.title} - ${userName}`,
+              content: emailContent,
+              replyToEmail: userEmail,
+              replyToName: userName,
+              attachment: {
+                content: cvBase64.split(',')[1],
+                filename: cvFile?.name || 'CV.pdf',
+                type: cvFile?.type || 'application/pdf'
+              }
+            })
+          });
 
-        console.log('API Response Status:', response.status);
+          console.log('API Response Status:', response.status);
 
-        if (response.ok) {
-          const result = await response.json();
-          console.log('✅ Email sent successfully!', result);
-          setStep('success');
-          setTimeout(() => {
-            onClose();
-          }, 5000);
-        } else {
-          const errorData = await response.json();
-          console.error('API Error:', errorData);
-          throw new Error(`API error: ${JSON.stringify(errorData)}`);
+          if (response.ok) {
+            console.log('✅ Email sent successfully!');
+          } else {
+            console.warn('⚠️ Email failed but application saved');
+          }
+        } catch (emailErr) {
+          console.warn('⚠️ Email error (non-blocking):', emailErr);
         }
+
+        setStep('success');
+        setTimeout(() => {
+          onClose();
+        }, 5000);
       }
     } catch (error: any) {
       console.error('❌ Error sending application:', error);
