@@ -38,29 +38,40 @@ export const jobService = {
     }));
   },
 
+  // Clean text for safe JSON/DB storage
+  cleanText(text: string): string {
+    if (!text) return '';
+    return text
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '')
+      .normalize('NFC');
+  },
+
   // Save new jobs to database
   async saveJobs(jobs: Job[]): Promise<void> {
+    const clean = (t: string) => this.cleanText(t || '');
+
     const jobsForDb = jobs.map(job => ({
       id: job.id,
-      title: job.title,
-      company: job.company,
-      city: job.city,
-      contract: job.contract,
-      time: job.time,
+      title: clean(job.title),
+      company: clean(job.company),
+      city: clean(job.city),
+      contract: clean(job.contract),
+      time: clean(job.time),
       is_new: job.isNew,
-      description: job.description,
-      requirements: job.requirements || [],
-      tasks: job.tasks || [],
-      salary: job.salary || '',
-      email: job.email || '',
-      contact_phone: job.contactPhone || '',
+      description: clean(job.description),
+      requirements: (job.requirements || []).map(r => clean(r)),
+      tasks: (job.tasks || []).map(t => clean(t)),
+      salary: clean(job.salary),
+      email: clean(job.email),
+      contact_phone: clean(job.contactPhone),
       url: job.url || '#',
-      category: job.category || '',
+      category: clean(job.category),
       created_at: new Date().toISOString()
     }));
 
-    // Upsert in batches of 50 to avoid payload limits
+    // Upsert in batches of 50
     const BATCH_SIZE = 50;
+    let saved = 0;
     for (let i = 0; i < jobsForDb.length; i += BATCH_SIZE) {
       const batch = jobsForDb.slice(i, i + BATCH_SIZE);
       const { error } = await supabase
@@ -71,10 +82,12 @@ export const jobService = {
         });
 
       if (error) {
-        console.error(`Supabase save error (batch ${i / BATCH_SIZE + 1}):`, error);
-        throw error;
+        console.warn(`⚠️ Batch ${Math.floor(i / BATCH_SIZE) + 1} failed:`, error.message);
+      } else {
+        saved += batch.length;
       }
     }
+    console.log(`✅ Saved ${saved}/${jobsForDb.length} jobs to Supabase`);
   },
 
   // Delete jobs older than 10 days

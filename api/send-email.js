@@ -29,7 +29,7 @@ export default async function handler(req, res) {
       attachment
     } = req.body;
 
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'applications@hirememaroc.online';
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
     const fromName = process.env.RESEND_FROM_NAME || 'HireMe Maroc';
 
     if (!process.env.RESEND_API_KEY) {
