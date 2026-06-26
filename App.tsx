@@ -80,14 +80,28 @@ function HomePage() {
       const csvJobsData = await aggregateJobs();
       console.log(`📋 Loaded ${csvJobsData.length} jobs from CSV`);
 
-      if (csvJobsData.length > 0) {
+      // Show CSV jobs immediately
+      setAllJobs(csvJobsData);
+      setIsScanning(false);
+
+      // Sync to Supabase in background
+      try {
         await jobService.saveJobs(csvJobsData);
         console.log(`✅ Synced ${csvJobsData.length} jobs to Supabase`);
+      } catch (saveErr) {
+        console.error('⚠️ Supabase save failed:', saveErr);
       }
 
-      const jobs = await jobService.getAllJobs();
-      console.log(`📊 Loaded ${jobs.length} jobs from Supabase`);
-      setAllJobs(jobs);
+      // Fetch fresh from Supabase
+      try {
+        const dbJobs = await jobService.getAllJobs();
+        if (dbJobs.length > 0) {
+          console.log(`📊 Loaded ${dbJobs.length} jobs from Supabase`);
+          setAllJobs(dbJobs);
+        }
+      } catch (fetchErr) {
+        console.log('ℹ️ Using local CSV data');
+      }
     } catch (error) {
       console.error('❌ Failed to initialize jobs:', error);
     } finally {

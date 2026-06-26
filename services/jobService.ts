@@ -59,16 +59,21 @@ export const jobService = {
       created_at: new Date().toISOString()
     }));
 
-    const { error } = await supabase
-      .from('jobs')
-      .upsert(jobsForDb, { 
-        onConflict: 'id',
-        ignoreDuplicates: false 
-      });
+    // Upsert in batches of 50 to avoid payload limits
+    const BATCH_SIZE = 50;
+    for (let i = 0; i < jobsForDb.length; i += BATCH_SIZE) {
+      const batch = jobsForDb.slice(i, i + BATCH_SIZE);
+      const { error } = await supabase
+        .from('jobs')
+        .upsert(batch, { 
+          onConflict: 'id',
+          ignoreDuplicates: false 
+        });
 
-    if (error) {
-      console.error('Supabase save error:', error);
-      throw error;
+      if (error) {
+        console.error(`Supabase save error (batch ${i / BATCH_SIZE + 1}):`, error);
+        throw error;
+      }
     }
   },
 
