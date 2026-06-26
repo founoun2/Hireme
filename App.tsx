@@ -69,55 +69,29 @@ function HomePage() {
     localStorage.setItem('appliedJobs', JSON.stringify([...appliedJobs]));
   }, [appliedJobs]);
 
-  // Load jobs from database on mount
+  // Load jobs from Supabase + sync CSV into database on mount
   useEffect(() => {
-    loadJobsFromDatabase();
-    syncLiveJobs();
+    initializeJobs();
   }, []);
 
-  const loadJobsFromDatabase = async () => {
+  const initializeJobs = async () => {
     setIsScanning(true);
     try {
+      const csvJobsData = await aggregateJobs();
+      console.log(`📋 Loaded ${csvJobsData.length} jobs from CSV`);
+
+      if (csvJobsData.length > 0) {
+        await jobService.saveJobs(csvJobsData);
+        console.log(`✅ Synced ${csvJobsData.length} jobs to Supabase`);
+      }
+
       const jobs = await jobService.getAllJobs();
-      console.log(`📊 Loaded ${jobs.length} real jobs from database`);
+      console.log(`📊 Loaded ${jobs.length} jobs from Supabase`);
       setAllJobs(jobs);
     } catch (error) {
-      console.log('ℹ️ Database not available, using local CSV data');
+      console.error('❌ Failed to initialize jobs:', error);
     } finally {
       setIsScanning(false);
-    }
-  };
-
-  const syncLiveJobs = async () => {
-    const shouldShowLoading = allJobs.length === 0;
-    if (shouldShowLoading) setIsScanning(true);
-    
-    try {
-      const csvJobsData = await aggregateJobs();
-      
-      if (csvJobsData.length > 0) {
-        console.log(`✅ Loaded ${csvJobsData.length} jobs from CSV`);
-        
-        setAllJobs(prev => {
-          const uniqueNew = csvJobsData.filter(lj => 
-            !prev.some(pj => pj.title === lj.title && pj.company === lj.company)
-          );
-          if (uniqueNew.length > 0) {
-            console.log(`➕ Adding ${uniqueNew.length} unique new jobs`);
-          }
-          return [...uniqueNew.map(j => ({ ...j, isNew: true })), ...prev];
-        });
-
-        try {
-          await jobService.saveJobs(csvJobsData);
-        } catch (saveError) {
-          console.log("⚠️ Could not save to database (using local data):", saveError);
-        }
-      }
-    } catch (error) {
-      console.error("⚠️ Sync failed:", error);
-    } finally {
-      if (shouldShowLoading) setIsScanning(false);
     }
   };
 
@@ -240,7 +214,7 @@ function HomePage() {
         isOpen={showJobPostWizard} 
         onClose={() => {
           setShowJobPostWizard(false);
-          loadJobsFromDatabase(); // Refresh jobs after posting
+          initializeJobs(); // Refresh jobs after posting
         }} 
       />
       

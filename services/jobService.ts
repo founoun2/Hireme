@@ -36,7 +36,8 @@ export const jobService = {
       });
 
     if (error) {
-      console.error('Error saving jobs:', error);
+      console.error('Supabase save error:', error);
+      throw error;
     }
   },
 
