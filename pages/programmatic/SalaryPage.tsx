@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useSEO } from '../../hooks/useSEO';
 import { SALARY_DATA } from '../../seo/seoData';
+import { Breadcrumb } from '../../components/Breadcrumb';
 
 function slugToSalaryTitle(slug: string): string {
   return slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -50,6 +51,10 @@ const SalaryPage: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-8 sm:py-12">
+      <Breadcrumb items={[
+        { label: 'Salaires', path: '/salaires' },
+        { label: salaryData?.title || slug }
+      ]} />
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
 
       <div className="mb-8">

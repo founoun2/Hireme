@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 
+Sitemap: https://hirememaroc.online/sitemap-index.xml
 Sitemap: https://hirememaroc.online/sitemap.xml
 
 # Disallow admin/private paths

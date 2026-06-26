@@ -41,7 +41,6 @@ const PAGE_SIZE = 12;
 console.log('🚀 HIREME App Loading...');
 
 function HomePage() {
-function HomePage() {
   useSEO({
     title: 'Offres d\'emploi au Maroc - Smart Job Hub',
     description: 'Trouvez les meilleures offres d\'emploi au Maroc. CDI, CDD, Stage, Freelance. Casablanca, Rabat, Marrakech, Tanger et toutes les villes. Moteur de recherche intelligent.',

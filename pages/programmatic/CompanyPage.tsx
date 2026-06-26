@@ -5,6 +5,7 @@ import { JobCard } from '../../components/JobCard';
 import { csvJobs } from '../../data/csvJobs';
 import { generateJobId } from '../../utils/jobUtils';
 import { COMPANIES } from '../../seo/seoData';
+import { Breadcrumb } from '../../components/Breadcrumb';
 
 function slugToCompanyName(slug: string): string {
   return slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -95,6 +96,10 @@ const CompanyPage: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-8 sm:py-12">
+      <Breadcrumb items={[
+        { label: 'Entreprises', path: '/entreprises' },
+        { label: companyName }
+      ]} />
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       {jobPostingJsonLd && (
         <script type="application/ld+json">{JSON.stringify(jobPostingJsonLd)}</script>
