@@ -18,19 +18,50 @@ export const jobService = {
       return [];
     }
 
-    return data || [];
+    return (data || []).map(row => ({
+      id: row.id,
+      title: row.title,
+      company: row.company,
+      city: row.city,
+      contract: row.contract,
+      time: row.time,
+      isNew: row.is_new ?? true,
+      description: row.description,
+      requirements: row.requirements || [],
+      tasks: row.tasks || [],
+      salary: row.salary || '',
+      email: row.email || '',
+      contactPhone: row.contact_phone || '',
+      url: row.url || '#',
+      category: row.category || '',
+      created_at: row.created_at,
+    }));
   },
 
   // Save new jobs to database
   async saveJobs(jobs: Job[]): Promise<void> {
-    const jobsWithTimestamp = jobs.map(job => ({
-      ...job,
+    const jobsForDb = jobs.map(job => ({
+      id: job.id,
+      title: job.title,
+      company: job.company,
+      city: job.city,
+      contract: job.contract,
+      time: job.time,
+      is_new: job.isNew,
+      description: job.description,
+      requirements: job.requirements || [],
+      tasks: job.tasks || [],
+      salary: job.salary || '',
+      email: job.email || '',
+      contact_phone: job.contactPhone || '',
+      url: job.url || '#',
+      category: job.category || '',
       created_at: new Date().toISOString()
     }));
 
     const { error } = await supabase
       .from('jobs')
-      .upsert(jobsWithTimestamp, { 
+      .upsert(jobsForDb, { 
         onConflict: 'id',
         ignoreDuplicates: false 
       });
