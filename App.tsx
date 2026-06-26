@@ -1,0 +1,431 @@
+
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { Analytics } from "@vercel/analytics/react"
+import { Job, SidebarKey } from './types';
+import { CITIES, CONTRACTS, PROFESSIONS } from './constants';
+import { Header } from './components/Header';
+import { Sidebar } from './components/Sidebar';
+import { JobCard } from './components/JobCard';
+import { JobModal } from './components/JobModal';
+import { JobPostWizard } from './components/JobPostWizard';
+import { CookieConsent } from './components/CookieConsent';
+import { InFeedAd } from './components/AdBanner';
+import { jobService } from './services/jobService';
+import { aggregateJobs } from './services/jobAggregator';
+
+const PAGE_SIZE = 12;
+
+console.log('🚀 HIREME App Loading...');
+
+const App: React.FC = () => {
+  const [allJobs, setAllJobs] = useState<Job[]>([]);
+  const [keyword, setKeyword] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedContract, setSelectedContract] = useState('');
+  const [displayedCount, setDisplayedCount] = useState(PAGE_SIZE);
+  const [activeSidebar, setActiveSidebar] = useState<SidebarKey>(null);
+  const [showJobPostWizard, setShowJobPostWizard] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [appliedJobs, setAppliedJobs] = useState<Set<number>>(() => {
+    // Load applied jobs from localStorage on mount
+    const saved = localStorage.getItem('appliedJobs');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+  const [isScanning, setIsScanning] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const suggestionRef = useRef<HTMLDivElement>(null);
+
+  // Save applied jobs to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('appliedJobs', JSON.stringify([...appliedJobs]));
+  }, [appliedJobs]);
+
+  // Load jobs from database on mount
+  useEffect(() => {
+    loadJobsFromDatabase();
+    syncLiveJobs();
+  }, []);
+
+  const loadJobsFromDatabase = async () => {
+    setIsScanning(true);
+    try {
+      const jobs = await jobService.getAllJobs();
+      console.log(`📊 Loaded ${jobs.length} real jobs from database`);
+      setAllJobs(jobs);
+    } catch (error) {
+      console.error('❌ Error loading jobs:', error);
+      setAllJobs([]);
+    } finally {
+      setIsScanning(false);
+    }
+  };
+
+  const syncLiveJobs = async () => {
+    const shouldShowLoading = allJobs.length === 0;
+    if (shouldShowLoading) setIsScanning(true);
+    
+    try {
+      const csvJobs = await aggregateJobs();
+      
+      if (csvJobs.length > 0) {
+        await jobService.saveJobs(csvJobs);
+        console.log(`✅ Loaded ${csvJobs.length} jobs from CSV`);
+        
+        setAllJobs(prev => {
+          const uniqueNew = csvJobs.filter(lj => 
+            !prev.some(pj => pj.title === lj.title && pj.company === lj.company)
+          );
+          if (uniqueNew.length > 0) {
+            console.log(`➕ Adding ${uniqueNew.length} unique new jobs`);
+          }
+          return [...uniqueNew.map(j => ({ ...j, isNew: true })), ...prev];
+        });
+      }
+    } catch (error) {
+      console.error("⚠️ Sync failed:", error);
+    } finally {
+      if (shouldShowLoading) setIsScanning(false);
+    }
+  };
+
+  const filteredJobs = useMemo(() => {
+    const filtered = allJobs.filter(j => {
+      // Enhanced keyword search - searches across multiple fields (NULL-SAFE)
+      const searchTerm = keyword.toLowerCase().trim();
+      const matchesKeyword = !searchTerm || 
+        j.title?.toLowerCase().includes(searchTerm) ||
+        j.company?.toLowerCase().includes(searchTerm) ||
+        j.city?.toLowerCase().includes(searchTerm) ||
+        j.contract?.toLowerCase().includes(searchTerm) ||
+        (j.description && j.description.toLowerCase().includes(searchTerm)) ||
+        (j.salary && j.salary.toLowerCase().includes(searchTerm));
+      
+      // City filter - case-insensitive match (NULL-SAFE)
+      const matchesCity = !selectedCity || 
+        (j.city?.toLowerCase().trim() === selectedCity.toLowerCase().trim());
+      
+      // Contract filter - case-insensitive match (NULL-SAFE)
+      const matchesContract = !selectedContract || 
+        (j.contract?.toLowerCase().trim() === selectedContract.toLowerCase().trim());
+      
+      return matchesKeyword && matchesCity && matchesContract;
+    });
+    
+    console.log(`🔍 Filters: keyword="${keyword}", city="${selectedCity}", contract="${selectedContract}"`);
+    console.log(`📊 Results: ${filtered.length} jobs matched (from ${allJobs.length} total)`);
+    
+    return filtered;
+  }, [allJobs, keyword, selectedCity, selectedContract]);
+
+  const currentJobs = useMemo(() => filteredJobs.slice(0, displayedCount), [filteredJobs, displayedCount]);
+
+  // Reset displayedCount when filters change
+  useEffect(() => {
+    setDisplayedCount(PAGE_SIZE);
+  }, [keyword, selectedCity, selectedContract]);
+
+  const suggestions = useMemo(() => {
+    if (!keyword.trim()) return [];
+    
+    const searchTerm = keyword.toLowerCase();
+    
+    // Priority 1: Profession matches (most relevant)
+    const professionMatches = PROFESSIONS.filter(p => 
+      p.toLowerCase().includes(searchTerm)
+    ).slice(0, 5);
+    
+    // Priority 2: Job titles from database
+    const titleMatches = Array.from(new Set(allJobs.map(j => j.title)))
+      .filter(t => t.toLowerCase().includes(searchTerm))
+      .slice(0, 5);
+    
+    // Priority 3: Company names
+    const companyMatches = Array.from(new Set(allJobs.map(j => j.company)))
+      .filter(c => c.toLowerCase().includes(searchTerm))
+      .slice(0, 3);
+    
+    // Priority 4: Cities
+    const cityMatches = CITIES.filter(city => 
+      city.toLowerCase().includes(searchTerm)
+    ).slice(0, 3);
+    
+    // Combine all suggestions, remove duplicates, limit to 10
+    return [...professionMatches, ...titleMatches, ...companyMatches, ...cityMatches]
+      .filter((item, index, self) => self.indexOf(item) === index)
+      .slice(0, 10);
+  }, [keyword, allJobs]);
+
+  // Fix: Added handleApply function to manage job applications state
+  const handleApply = useCallback((id: number) => {
+    setAppliedJobs(prev => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(e => {
+      if (e[0].isIntersecting && displayedCount < filteredJobs.length) {
+        setDisplayedCount(p => p + PAGE_SIZE);
+      }
+    }, { threshold: 0.1 });
+    const anchor = document.getElementById('scroll-anchor');
+    if (anchor) observer.observe(anchor);
+    return () => observer.disconnect();
+  }, [displayedCount, filteredJobs.length]);
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#fcfcfc]">
+      <Header 
+        onOpenSidebar={(key) => {
+          if (key === 'postJob') {
+            setShowJobPostWizard(true);
+          } else {
+            setActiveSidebar(key);
+          }
+        }}
+        keyword={keyword}
+        setKeyword={setKeyword}
+        selectedCity={selectedCity}
+        setSelectedCity={setSelectedCity}
+        selectedContract={selectedContract}
+        setSelectedContract={setSelectedContract}
+        suggestions={suggestions}
+        showSuggestions={showSuggestions}
+        setShowSuggestions={setShowSuggestions}
+        suggestionRef={suggestionRef}
+        cities={CITIES}
+        contracts={CONTRACTS}
+        onFilterChange={() => setDisplayedCount(PAGE_SIZE)}
+      />
+
+      <Sidebar activeKey={activeSidebar} onClose={() => setActiveSidebar(null)} />
+      
+      {/* Job Post Wizard */}
+      <JobPostWizard 
+        isOpen={showJobPostWizard} 
+        onClose={() => {
+          setShowJobPostWizard(false);
+          loadJobsFromDatabase(); // Refresh jobs after posting
+        }} 
+      />
+      
+      {/* Scanning Splash Screen (Mobile/Desktop Optimized) */}
+      {isScanning && allJobs.length === 0 && (
+        <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-700">
+          <div className="relative mb-8">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 border-[6px] border-zinc-100 rounded-[2.5rem] sm:rounded-[3rem] animate-pulse"></div>
+            <div className="absolute inset-0 w-24 h-24 sm:w-32 sm:h-32 border-[6px] border-indigo-600 border-t-transparent rounded-[2.5rem] sm:rounded-[3rem] animate-spin"></div>
+            <i className="fa fa-magnifying-glass absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl text-indigo-600 animate-float"></i>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 mb-2 tracking-tighter">Initialisation de l'IA...</h2>
+          <p className="text-zinc-400 font-bold text-sm sm:text-base max-w-xs mx-auto">Détection en temps réel sur tout le Web Marocain</p>
+        </div>
+      )}
+
+      <main className="max-w-5xl mx-auto w-full px-3 sm:px-6 flex-grow pb-16 sm:pb-24 pt-[12.5rem] sm:pt-[18rem]">
+        {/* Active Filters & Stats */}
+        <div className="mb-4 sm:mb-6">
+          {/* Mobile/Desktop Header with Count and Live Indicator */}
+          <div className="flex items-center justify-between gap-2 mb-3 sm:mb-4 px-1 sm:px-2">
+            <h2 className="text-[9px] sm:text-[11px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-zinc-400 flex-shrink-0">
+              {filteredJobs.length} Opportunités {keyword || selectedCity || selectedContract ? 'Trouvées' : 'Détectées'}
+            </h2>
+            
+            {/* Live Search Indicator */}
+            <div className="flex gap-1.5 sm:gap-2 items-center bg-zinc-900 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg shadow-zinc-900/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_6px_rgba(34,197,94,0.6)]"></span>
+              <span className="text-[8px] sm:text-[9px] font-black text-green-400 uppercase tracking-widest">Live Search</span>
+            </div>
+          </div>
+
+          {/* Active Filter Badges */}
+          {(keyword || selectedCity || selectedContract) && (
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-3 sm:mb-4 px-1 sm:px-2">
+              {keyword && (
+                <span className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-full text-[10px] font-bold">
+                  <i className="fa fa-search text-[8px]"></i>
+                  <span className="max-w-[120px] truncate">{keyword}</span>
+                  <button onClick={() => setKeyword('')} className="hover:bg-indigo-100 rounded-full w-4 h-4 flex items-center justify-center transition-colors">
+                    <i className="fa fa-times text-[8px]"></i>
+                  </button>
+                </span>
+              )}
+              {selectedCity && (
+                <span className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-[10px] font-bold">
+                  <i className="fa fa-location-dot text-[8px]"></i>
+                  {selectedCity}
+                  <button onClick={() => setSelectedCity('')} className="hover:bg-emerald-100 rounded-full w-4 h-4 flex items-center justify-center transition-colors">
+                    <i className="fa fa-times text-[8px]"></i>
+                  </button>
+                </span>
+              )}
+              {selectedContract && (
+                <span className="inline-flex items-center gap-2 bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full text-[10px] font-bold">
+                  <i className="fa fa-file-contract text-[8px]"></i>
+                  {selectedContract}
+                  <button onClick={() => setSelectedContract('')} className="hover:bg-amber-100 rounded-full w-4 h-4 flex items-center justify-center transition-colors">
+                    <i className="fa fa-times text-[8px]"></i>
+                  </button>
+                </span>
+              )}
+              <button 
+                onClick={() => { setKeyword(''); setSelectedCity(''); setSelectedContract(''); }}
+                className="inline-flex items-center gap-1 bg-red-50 text-red-600 px-3 py-1.5 rounded-full text-[10px] font-bold hover:bg-red-100 transition-colors active:scale-95"
+              >
+                <i className="fa fa-times-circle text-[8px]"></i>
+                Effacer tout
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Content Area */}
+        <div className="space-y-3 sm:space-y-4">
+
+          <div className="grid grid-cols-1 gap-2.5 sm:gap-3 md:gap-4">
+            {currentJobs.length > 0 ? (
+              currentJobs.map((job, idx) => (
+                <React.Fragment key={`${job.id}-${idx}`}>
+                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: `${(idx % PAGE_SIZE) * 50}ms` }}>
+                    <JobCard 
+                      job={job} 
+                      isApplied={appliedJobs.has(job.id)}
+                      onClick={() => setSelectedJob(job)}
+                    />
+                  </div>
+                  {/* Show ad after every 4 jobs on mobile */}
+                  {(idx + 1) % 4 === 0 && idx < currentJobs.length - 1 && (
+                    <InFeedAd />
+                  )}
+                </React.Fragment>
+              ))
+            ) : (
+              <div className="py-24 sm:py-32 text-center bg-white rounded-[2.5rem] border border-dashed border-zinc-100 animate-in zoom-in-95 duration-500">
+                <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-zinc-50 rounded-full mb-6 text-zinc-200">
+                  <i className="fa fa-ghost text-2xl sm:text-3xl"></i>
+                </div>
+                <h3 className="text-lg sm:text-xl font-black text-zinc-900 mb-2">
+                  {allJobs.length === 0 ? 'Aucune offre disponible' : 'Aucun résultat trouvé'}
+                </h3>
+                <p className="text-zinc-400 font-bold text-xs sm:text-sm px-10">
+                  {allJobs.length === 0 
+                    ? 'Aucune offre disponible. Ajoutez des emplois depuis un fichier CSV.'
+                    : 'Essayez de modifier vos filtres ou lancez une nouvelle recherche.'}
+                </p>
+                {(keyword || selectedCity || selectedContract) && (
+                  <button 
+                    onClick={() => { setKeyword(''); setSelectedCity(''); setSelectedContract(''); setDisplayedCount(PAGE_SIZE); }}
+                    className="mt-8 px-8 py-3 bg-zinc-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all hover:scale-105 active:scale-95"
+                  >
+                    Réinitialiser Filtres
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {displayedCount < filteredJobs.length && (
+          <div id="scroll-anchor" className="h-40 flex items-center justify-center">
+            <div className="flex gap-2">
+              <div className="w-1.5 h-1.5 bg-indigo-200 rounded-full animate-bounce"></div>
+              <div className="w-1.5 h-1.5 bg-indigo-300 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+              <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      <JobModal 
+        job={selectedJob} 
+        isApplied={selectedJob ? appliedJobs.has(selectedJob.id) : false}
+        onClose={() => setSelectedJob(null)} 
+        onApply={handleApply}
+      />
+
+      <style>{`
+        .animate-in {
+          animation-duration: 500ms;
+          animation-fill-mode: both;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInFromBottom { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideInFromTop { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .fade-in { animation-name: fadeIn; }
+        .slide-in-from-bottom-4 { animation-name: slideInFromBottom; }
+        .slide-in-from-bottom-8 { animation-name: slideInFromBottom; }
+        .slide-in-from-top-2 { animation-name: slideInFromTop; }
+        .zoom-in-95 { animation-name: zoomIn; }
+      `}</style>
+
+      {/* Footer */}
+      <footer className="bg-zinc-900 text-white mt-auto">
+        <div className="max-w-5xl mx-auto px-3 sm:px-6 py-10 sm:py-16">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-10">
+            <div className="col-span-2 sm:col-span-1">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 bg-[#c1272d] rounded-lg flex items-center justify-center">
+                  <svg viewBox="0 0 512 512" className="w-5 h-5 fill-none stroke-[#006233] stroke-[35]">
+                    <path d="M256 160l26.4 81.3h85.5l-69.1 50.2 26.4 81.3-69.2-50.2-69.2 50.2 26.4-81.3-69.1-50.2h85.5z" />
+                  </svg>
+                </div>
+                <span className="text-sm font-black uppercase tracking-tighter">HireMe Maroc</span>
+              </div>
+              <p className="text-[11px] text-zinc-500 leading-relaxed font-medium">
+                Le hub intelligent du recrutement au Maroc. Centralisation des opportunités d'emploi sur une seule plateforme.
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4">Plateforme</h4>
+              <ul className="space-y-2.5">
+                <li><button onClick={() => setActiveSidebar('about')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">À Propos</button></li>
+                <li><button onClick={() => setActiveSidebar('faq')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">FAQ</button></li>
+                <li><button onClick={() => setActiveSidebar('contact')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Contact</button></li>
+                <li><button onClick={() => setActiveSidebar('disclaimer')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Avertissement Emploi</button></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4">Légal</h4>
+              <ul className="space-y-2.5">
+                <li><button onClick={() => setActiveSidebar('privacy')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Politique de Confidentialité</button></li>
+                <li><button onClick={() => setActiveSidebar('terms')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Conditions d'Utilisation</button></li>
+                <li><button onClick={() => setActiveSidebar('cookies')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Politique de Cookies</button></li>
+                <li><button onClick={() => setActiveSidebar('dmca')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">DMCA / Droits d'Auteur</button></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4">Ressources</h4>
+              <ul className="space-y-2.5">
+                <li><button onClick={() => setActiveSidebar('editorial')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Politique Éditoriale</button></li>
+                <li><button onClick={() => setActiveSidebar('accessibility')} className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Accessibilité</button></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-zinc-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-wider">
+              &copy; 2026 HireMe Maroc. Tous droits réservés.
+            </p>
+            <p className="text-[10px] font-bold text-zinc-600">
+              hirememaroc.online
+            </p>
+          </div>
+        </div>
+      </footer>
+
+      {/* Cookie Consent Popup */}
+      <CookieConsent />
+
+      {/* Vercel Analytics */}
+      <Analytics />
+    </div>
+  );
+};
+
+export default App;
