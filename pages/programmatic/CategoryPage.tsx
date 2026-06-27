@@ -6,6 +6,7 @@ import { csvJobs } from '../../data/csvJobs';
 import { generateJobId } from '../../utils/jobUtils';
 import { CATEGORIES, CITIES_DATA } from '../../seo/seoData';
 import { Breadcrumb } from '../../components/Breadcrumb';
+import { SiteNav } from '../../components/SiteNav';
 
 function slugToCategoryName(slug: string): string {
   return slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -104,6 +105,7 @@ const CategoryPage: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-8 sm:py-12">
+      <SiteNav />
       <Breadcrumb items={[
         { label: 'Catégories', path: '/categories' },
         { label: categoryName }

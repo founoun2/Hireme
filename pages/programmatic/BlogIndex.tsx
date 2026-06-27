@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSEO } from '../../hooks/useSEO';
 import { BLOG_POSTS } from '../../seo/seoData';
+import { SiteNav } from '../../components/SiteNav';
 
 const BlogIndex: React.FC = () => {
   useSEO({
@@ -14,6 +15,7 @@ const BlogIndex: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-8 sm:py-12">
+      <SiteNav />
       <div className="mb-10">
         <div className="flex items-center gap-2 text-xs text-indigo-600 font-bold mb-3 uppercase tracking-wider">
           <i className="fa fa-newspaper"></i>

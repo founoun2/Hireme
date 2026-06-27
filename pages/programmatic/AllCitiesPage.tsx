@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSEO } from '../../hooks/useSEO';
 import { CITIES_DATA } from '../../seo/seoData';
+import { SiteNav } from '../../components/SiteNav';
 
 export default function AllCitiesPage() {
   useSEO({
@@ -12,6 +13,7 @@ export default function AllCitiesPage() {
 
   return (
     <div className="min-h-screen bg-[#fcfcfc]">
+      <SiteNav />
       <div className="max-w-5xl mx-auto px-3 sm:px-6 pt-32 pb-20">
         <div className="mb-12">
           <h1 className="text-3xl sm:text-4xl font-black text-zinc-900 tracking-tight mb-4">

@@ -451,9 +451,12 @@ function HomePage() {
   );
 };
 
+import { SiteNav } from './components/SiteNav';
+
 function StaticPage({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[#fcfcfc]">
+      <SiteNav />
       <div className="max-w-3xl mx-auto px-3 sm:px-6 pt-32 pb-20">
         <div className="bg-white rounded-3xl border border-zinc-100 p-8 sm:p-12">
           {children}

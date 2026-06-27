@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useSEO } from '../../hooks/useSEO';
 import { BLOG_POSTS } from '../../seo/seoData';
+import { SiteNav } from '../../components/SiteNav';
 
 const BlogPost: React.FC = () => {
   const { postSlug } = useParams<{ postSlug: string }>();
@@ -35,6 +36,7 @@ const BlogPost: React.FC = () => {
   if (!post) {
     return (
       <div className="max-w-5xl mx-auto px-3 sm:px-6 py-8 sm:py-12">
+        <SiteNav />
         <div className="text-center py-20">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-slate-100 rounded-full mb-6 text-slate-300">
             <i className="fa fa-file-circle-question text-3xl"></i>
@@ -55,6 +57,7 @@ const BlogPost: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-3 sm:px-6 py-8 sm:py-12">
+      <SiteNav />
       <div className="mb-6">
         <Link
           to="/blog"

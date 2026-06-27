@@ -6,6 +6,7 @@ import { csvJobs } from '../../data/csvJobs';
 import { generateJobId } from '../../utils/jobUtils';
 import { CITIES_DATA } from '../../seo/seoData';
 import { Breadcrumb } from '../../components/Breadcrumb';
+import { SiteNav } from '../../components/SiteNav';
 
 function slugToCityName(slug: string): string {
   return slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -95,6 +96,7 @@ const CityPage: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-8 sm:py-12">
+      <SiteNav />
       <Breadcrumb items={[
         { label: 'Villes', path: '/villes' },
         { label: cityName }
