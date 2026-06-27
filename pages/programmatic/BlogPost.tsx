@@ -5,7 +5,7 @@ import { BLOG_POSTS } from '../../seo/seoData';
 import { SiteNav } from '../../components/SiteNav';
 
 const BlogPost: React.FC = () => {
-  const { postSlug } = useParams<{ postSlug: string }>();
+  const { slug: postSlug } = useParams<{ slug: string }>();
 
   const post = useMemo(() => {
     return BLOG_POSTS.find(p => p.slug === postSlug);
@@ -104,7 +104,7 @@ const BlogPost: React.FC = () => {
             prose-p:text-sm prose-p:text-slate-600 prose-p:leading-relaxed
             prose-li:text-sm prose-li:text-slate-600
             prose-strong:text-slate-900"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: post.content.split('\n\n').map(p => `<p>${p}</p>`).join('') }}
         />
       </article>
 
