@@ -478,8 +478,6 @@ function AppRoutes() {
       <Route path="/blog/:slug" element={<BlogPost />} />
       <Route path="/villes" element={<AllCitiesPage />} />
       <Route path="/categories" element={<AllCategoriesPage />} />
-      <Route path="/entreprises" element={<AllCompaniesPage />} />
-      <Route path="/salaires" element={<AllSalariesPage />} />
       <Route path="/plan-du-site" element={<SitemapPage />} />
       <Route path="/a-propos" element={<StaticPage><AboutUs /></StaticPage>} />
       <Route path="/faq" element={<StaticPage><FAQ /></StaticPage>} />

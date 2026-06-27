@@ -47,8 +47,6 @@ export const SiteNav: React.FC = () => {
         <nav className="hidden lg:flex items-center gap-6 text-[10px] font-black tracking-widest text-zinc-400">
           <Link to="/villes" className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Villes</Link>
           <Link to="/categories" className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Catégories</Link>
-          <Link to="/entreprises" className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Entreprises</Link>
-          <Link to="/salaires" className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Salaires</Link>
           <Link to="/blog" className="hover:text-indigo-600 transition-all hover:translate-y-[-1px]">Blog</Link>
         </nav>
 
@@ -97,20 +95,6 @@ export const SiteNav: React.FC = () => {
                   <i className="fa fa-layer-group text-sm"></i>
                 </div>
                 <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Catégories</span>
-              </Link>
-
-              <Link to="/entreprises" className="flex items-center gap-4 px-5 py-3 rounded-2xl hover:bg-zinc-50 transition-colors group active:bg-zinc-100">
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                  <i className="fa fa-building text-sm"></i>
-                </div>
-                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Entreprises</span>
-              </Link>
-
-              <Link to="/salaires" className="flex items-center gap-4 px-5 py-3 rounded-2xl hover:bg-zinc-50 transition-colors group active:bg-zinc-100">
-                <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-500 group-hover:bg-amber-600 group-hover:text-white transition-colors">
-                  <i className="fa fa-dirham-sign text-sm"></i>
-                </div>
-                <span className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Salaires</span>
               </Link>
 
               <Link to="/blog" className="flex items-center gap-4 px-5 py-3 rounded-2xl hover:bg-zinc-50 transition-colors group active:bg-zinc-100">
