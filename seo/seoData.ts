@@ -48,88 +48,88 @@ export interface BlogPost {
 
 export const CATEGORIES: Category[] = [
   {
-    slug: 'informatique',
-    name: 'Informatique & Technologies',
-    description: "Le secteur de l'informatique et des technologies au Maroc connaît une croissance exceptionnelle, portée par la transformation numérique des entreprises et l'émergence de hubs technologiques à Casablanca, Rabat et Tanger. Les métiers du développement web, mobile, data science et cybersécurité sont particulièrement recherchés. Les entreprises marocaines et les filiales de groupes internationales recrutent massivement des développeurs Java, Python, JavaScript et des ingénieurs DevOps. Le secteur offre des salaires compétitifs allant de 8 000 à 25 000 MAD mensuels pour les profils expérimentés. Les opportunités incluent également l'administration système, l'architecture logicielle, l'analyse de données et la gestion de projets IT. La demande dépasse largement l'offre, ce qui en fait l'un des domaines les plus porteurs pour les chercheurs d'emploi au Royaume du Maroc.",
+    slug: 'tech-digital',
+    name: 'Tech & Digital',
+    description: "Le secteur technologique au Maroc connaît une croissance exceptionnelle. Développeurs, data scientists et spécialistes en cybersécurité sont très recherchés.",
     icon: 'fa-laptop-code',
-    sampleJobs: ['Développeur Full Stack', 'Ingénieur DevOps', 'Data Scientist', 'Développeur Mobile', 'Chef de Projet IT', 'Analyste Cybersécurité']
+    sampleJobs: ['Développeur Web', 'Spécialiste SEO', 'Community Manager', 'Motion Designer', 'Web Designer', 'Graphic Designer']
   },
   {
-    slug: 'marketing',
-    name: 'Marketing & Communication',
-    description: "Le marketing et la communication au Maroc sont en pleine mutation digitale, avec une demande croissante pour les profils maîtrisant le marketing digital, le community management et le SEO. Les entreprises marocaines investissent massivement dans leur présence en ligne, créant ainsi de nombreuses opportunités pour les attachés de presse, chefs de produit marketing et responsables de la communication d'entreprise. Les agences spécialisées de Casablanca et Rabat recrutent régulièrement des talents capables de gérer les campagnes publicitaires, le marketing de contenu et la stratégie de marque. Les salaires varient entre 6 000 et 18 000 MAD selon l'expérience. Le secteur offre des perspectives d'évolution rapide pour les profils créatifs et orientés résultats, notamment dans le e-commerce et le marketing d'influence.",
-    icon: 'fa-bullhorn',
-    sampleJobs: ['Community Manager', 'Responsable Marketing Digital', 'Chef de Produit', 'Attaché de Presse', 'Traffic Manager', 'Consultant SEO']
+    slug: 'nettoyage',
+    name: 'Nettoyage & Entretien',
+    description: "Le secteur du nettoyage et de l'entretien offre de nombreuses opportunités à travers tout le Maroc.",
+    icon: 'fa-broom',
+    sampleJobs: ['Agent de nettoyage', 'Technicien de surface', 'Superviseur de nettoyage', 'Femme de ménage', 'Laveur de vitres', 'Nettoyeur industriel']
   },
   {
-    slug: 'design',
-    name: 'Design & Créativité',
-    description: "Le domaine du design et de la créativité au Maroc expansion remarquable grâce à la digitalisation croissante des entreprises et au boom du e-commerce. Les graphistes, designers UI/UX, directeurs artistiques et motion designers sont très demandés sur le marché marocain. Les agences créatives de Casablanca, Rabat et Marrakech travaillent avec des clients internationaux, offrant ainsi des opportunités excitantes pour les talents créatifs. La maîtrise des outils Adobe, Figma et des tendances du design web moderne est essentielle. Les salaires du secteur oscillent entre 5 000 et 15 000 MAD mensuels. Le Maroc devient un hub créatif en Afrique du Nord, attirant des projets de branding, de design d'interface et d'identité visuelle pour des marques pan-africaines et européennes.",
-    icon: 'fa-palette',
-    sampleJobs: ['Graphiste', 'Designer UI/UX', 'Directeur Artistique', 'Motion Designer', 'Designer Produit', 'Illustrateur']
+    slug: 'santé',
+    name: 'Santé & Médical',
+    description: "Le secteur de la santé au Maroc est en pleine expansion. Infirmiers, assistants médicaux et techniciens de laboratoire sont en forte demande.",
+    icon: 'fa-heartbeat',
+    sampleJobs: ['Infirmier', 'Assistant médical', 'Technicien de laboratoire', 'Aide-soignant', 'Secrétaire médicale', 'Délégué médical']
   },
   {
-    slug: 'comptabilite',
-    name: 'Comptabilité & Finance',
-    description: "La comptabilité et la finance constituent un pilier fondamental de l'économie marocaine, avec une demande permanente pour les comptables, auditeurs et analysts financiers. Les cabinets d'audit internationaux (Big Four), les banques et les grandes entreprises du Royaume recrutent régulièrement des profils qualifiés en comptabilité, fiscalité marocaine et gestion financière. Les experts comptables, commissaires aux comptes et responsables de la comptabilité générale sont particulièrement recherchés. Les salaires dans ce secteur vont de 7 000 à 20 000 MAD mensuels selon le niveau d'expérience et la taille de l'entreprise. La maîtrise des logiciels comptables comme Sage, Cegid et les normes IFRS est un atout majeur pour les candidats souhaitant évoluer dans ce domaine porteur au Maroc.",
-    icon: 'fa-calculator',
-    sampleJobs: ['Comptable Général', 'Auditeur Interne', 'Analyste Financier', 'Responsable Fiscalité', 'Comptable Senior', 'Contrôleur de Gestion']
+    slug: 'hôtellerie',
+    name: 'Hôtellerie & Tourisme',
+    description: "L'hôtellerie et le tourisme sont des piliers de l'économie marocaine. Chefs, serveurs et réceptionnistes sont très recherchés.",
+    icon: 'fa-hotel',
+    sampleJobs: ['Serveur', 'Barman', 'Chef de partie', 'Réceptionniste', 'Gouvernante', 'Maître d\'hôtel']
+  },
+  {
+    slug: 'centre-appel',
+    name: 'Centre d\'appel',
+    description: "Les centres d'appels recrutent massivement au Maroc. Conseillers client et opérateurs sont très demandés.",
+    icon: 'fa-headset',
+    sampleJobs: ['Conseiller client', 'Agent d\'appel', 'Superviseur', 'Technicien support']
+  },
+  {
+    slug: 'sécurité',
+    name: 'Sécurité',
+    description: "Le secteur de la sécurité offre des emplois stables à travers tout le Maroc. Agents, vigiles et chefs d'équipe sont recherchés.",
+    icon: 'fa-shield-halved',
+    sampleJobs: ['Agent de sécurité', 'Vigile', 'Gardien de nuit', 'Chef d\'équipe sécurité', 'Agent cynophile', 'Contrôleur d\'accès']
   },
   {
     slug: 'commercial',
     name: 'Commercial & Vente',
-    description: "Le secteur commercial et de la vente au Maroc offre des opportunités considérables pour les profiles dynamiques et orientés résultats. Les entreprises de tous secteurs — automobile, immobilier, technologies, services — recherchent des commerciaux, des conseillers de vente et des responsables de comptes clés capables de développer leur chiffre d'affaires. Le Maroc, avec sa position stratégique entre l'Europe et l'Afrique, est un terrain de jeu idéal pour les professionnels de la vente internationale. Les salaires varient entre 5 000 et 25 000 MAD mensuels, souvent complétés par des commissions attractives. Les compétences en négociation, gestion de portefeuille clients et connaissance du marché marocain sont essentielles. Ce secteur permet une progression rapide pour les performeurs.",
+    description: "Le secteur commercial offre des opportunités pour les profils dynamiques. Commerciaux et vendeurs sont très recherchés.",
     icon: 'fa-handshake',
-    sampleJobs: ['Commercial Terrain', 'Responsable Zone', 'Conseiller Vente', 'Key Account Manager', 'Directeur Commercial', 'Agent Immobilier']
+    sampleJobs: ['Commercial terrain', 'Vendeur', 'Conseiller client', 'Chef de rayon', 'Responsable magasin']
   },
   {
-    slug: 'rh',
-    name: 'Ressources Humaines',
-    description: "La gestion des ressources humaines au Maroc connaît une professionnalisation accélérée, avec une demande croissante pour les DRH, responsables du recrutement et chargés de formation. Les entreprises marocaines investissent de plus en plus dans la gestion des talents, le développement des compétences et la culture d'entreprise. Les spécialistes RH maîtrisant le droit du travail marocain, la gestion de la paie et les outils de gestion des ressources humaines sont très recherchés. Les salaires dans ce domaine vont de 6 000 à 18 000 MAD mensuels. Les RH jouent un rôle stratégique dans l'attraction et la fidélisation des talents, notamment dans un contexte de marché de l'emploi très compétitif au Royaume du Maroc.",
-    icon: 'fa-users',
-    sampleJobs: ['DRH', 'Responsable Recrutement', 'Chargé de Formation', 'Gestionnaire de Paie', 'Responsable Administration du Personnel', 'Coach en Développement']
-  },
-  {
-    slug: 'sante',
-    name: 'Santé & Médical',
-    description: "Le secteur de la santé au Maroc est en pleine expansion, soutenu par les investissements governmentaux dans les infrastructures hospitalières et la couverture médicale universelle. Les médecins, infirmiers, pharmaciens et biologistes sont très demandés dans les hôpitaux publics et les cliniques privées du Royaume. Les spécialistes en cardiologie, pédiatrie et chirurgie sont particulièrement recherchés dans les centres hospitaliers de Casablanca, Rabat et Marrakech. Les salaires varient considérablement selon la spécialité, allant de 8 000 à 35 000 MAD mensuels pour les médecins spécialistes. Le secteur offre également des opportunités dans la recherche pharmaceutique, la biotechnologie et la gestion hospitalière, contribuant ainsi à l'amélioration du système de santé marocain.",
-    icon: 'fa-heartbeat',
-    sampleJobs: ['Médecin Généraliste', 'Infirmier Diplômé', 'Pharmacien', 'Biologiste', 'Chirurgien', 'Cadre de Santé']
-  },
-  {
-    slug: 'education',
-    name: 'Éducation & Formation',
-    description: "Le secteur éducatif au Maroc est un domaine en constante évolution, porté par les réformes gouvernementales et l'essor de la formation professionnelle. Les enseignants, formateurs et pédagogues sont recherchés dans les établissements scolaires, les universités et les centres de formation professionnelle. La demande est forte pour les enseignants de langues, les professeurs de mathématiques et sciences, et les formateurs en compétences numériques. Le Maroc investit massivement dans la digitalisation de l'éducation et la formation des jeunes, créant ainsi de nouvelles opportunités. Les salaires varient entre 4 000 et 15 000 MAD mensuels. Les profils bilingues et maîtrisant les méthodes pédagogiques modernes sont particulièrement prisés dans ce secteur porteur.",
+    slug: 'enseignement',
+    name: 'Enseignement & Formation',
+    description: "Le secteur éducatif au Maroc est en constante évolution. Enseignants et formateurs sont recherchés.",
     icon: 'fa-graduation-cap',
-    sampleJobs: ['Enseignant', 'Formateur Professionnel', 'Professeur de Langues', 'Conseiller Pédagogique', 'Directeur d\'École', 'Chargé de Mission']
+    sampleJobs: ['Enseignant', 'Formateur', 'Professeur de langues', 'Conseiller pédagogique']
   },
   {
-    slug: 'hotellerie',
-    name: 'Hôtellerie & Tourisme',
-    description: "L'hôtellerie et le tourisme sont des piliers essentiels de l'économie marocaine, avec plus de 13 millions de touristes accueillis annuellement. Les professionnels de la restauration, de l'hébergement et du service client sont très recherchés dans les hôtels, riads et resorts de Marrakech, Agadir, Tanger et Fès. Les chefs de cuisine, réceptionnistes, managers hôteliers et responsables de la qualité du service sont en demande constante. Le secteur offre des salaires allant de 4 000 à 15 000 MAD mensuels, avec des perspectives intéressantes dans le tourisme de luxe et l'hébergement de prestige. La maîtrise des langues étrangères, notamment l'anglais, le français et l'espagnol, est un atout majeur pour évoluer dans ce secteur touristique en plein essor au Royaume du Maroc.",
-    icon: 'fa-hotel',
-    sampleJobs: ['Chef Cuisinier', 'Réceptionniste', 'Manager Hôtelier', 'Responsable Restaurant', 'Concierge', 'Animator Touristique']
+    slug: 'admin-bureau',
+    name: 'Admin & Bureau',
+    description: "Les métiers de l'administration et du bureau sont essentiels dans toutes les entreprises marocaines.",
+    icon: 'fa-briefcase',
+    sampleJobs: ['Secrétaire de direction', 'Assistant RH', 'Comptable', 'Office Manager', 'Agent de saisie', 'Assistant administratif']
   },
   {
-    slug: 'industrie',
-    name: 'Industrie & Production',
-    description: "Le secteur industriel marocain est en pleine transformation, porté par les investissements dans l'automobile, l'aéronautique, l'électronique et l'agroalimentaire. Les ingénieurs industriels, techniciens de production et responsables qualité sont très recherchés dans les zones industrielles de Casablanca, Tanger, Kenitra et Meknès. Le Maroc s'est imposé comme un hub de production pour les grands groupes mondiaux (Renault, Stellantis, Boeing), créant de nombreuses opportunités d'emploi. Les salaires dans l'industrie varient entre 5 000 et 18 000 MAD mensuels. Les compétences en management de production, lean manufacturing et amélioration continue sont très valorisées. Ce secteur offre des perspectives d'évolution solides pour les ingénieurs et techniciens qualifiés souhaitant construire leur carrière au Maroc.",
-    icon: 'fa-industry',
-    sampleJobs: ['Ingénieur Production', 'Technicien de Maintenance', 'Responsable Qualité', 'Chef d\'Atelier', 'Ingénieur Process', 'Technicien Mécanique']
+    slug: 'grande-distribution',
+    name: 'Grande Distribution',
+    description: "La grande distribution au Maroc recrute en continu. Caissiers, vendeurs et responsables de rayon sont recherchés.",
+    icon: 'fa-cart-shopping',
+    sampleJobs: ['Caissier', 'Vendeur', 'Chef de rayon', 'Responsable magasin', 'Commercial terrain']
   },
   {
-    slug: 'logistique',
-    name: 'Logistique & Transport',
-    description: "La logistique et le transport au Maroc connaissent un développement impressionnant, porté par la position géographique stratégique du Royaume comme hub logistique entre l'Europe et l'Afrique. Les ports de Tanger-Med et Casablanca, ainsi que les zones logistiques des grandes villes, génèrent une forte demande pour les responsables logistique, planificateurs de transport et gestionnaires de stock. Les e-commerçants et les grandes entreprises de distribution recrutent massivement des profils maîtrisant la chaîne d'approvisionnement et la gestion des flux logistiques. Les salaires varient entre 5 000 et 16 000 MAD mensuels. La maîtrise des outils de gestion de stock, la connaissance des réglementations douanières et l'expérience en logistique internationale sont des atouts précieux pour réussir dans ce secteur en plein essor au Maroc.",
+    slug: 'btp-construction',
+    name: 'BTP & Construction',
+    description: "Le secteur du BTP est en pleine expansion au Maroc. Maçons, électriciens et chefs de chantier sont très demandés.",
+    icon: 'fa-helmet-safety',
+    sampleJobs: ['Maçon', 'Charpentier', 'Peintre', 'Plombier', 'Électricien bâtiment', 'Chef de chantier']
+  },
+  {
+    slug: 'transport',
+    name: 'Transport & Logistique',
+    description: "Le transport et la logistique sont essentiels grâce à la position stratégique du Maroc. Chauffeurs et livreurs sont recherchés.",
     icon: 'fa-truck',
-    sampleJobs: ['Responsable Logistique', 'Planificateur Transport', 'Gestionnaire de Stock', 'Coordinateur Supply Chain', 'Chef d\'Entrepôt', 'Spéditionnaire']
-  },
-  {
-    slug: 'banque',
-    name: 'Banque & Assurances',
-    description: "Le secteur bancaire et assurantiel marocain est l'un des plus dynamiques d'Afrique, avec un réseau bancaire dense et une digitalisation accélérée des services financiers. Les conseillers bancaires, gestionnaires de patrimoine et souscripteurs d'assurances sont très recherchés par les grandes banques marocaines (Attijariwafa Bank, BMCE, CIH Bank) et les compagnies d'assurance. Les métiers de la fintech et de la banque en ligne émergent rapidement, offrant de nouvelles opportunités pour les profils digitaux. Les salaires dans ce secteur vont de 6 000 à 22 000 MAD mensuels, avec des primes et avantages attractifs. La connaissance des produits financiers, la maîtrise des outils numériques et les compétences en relation client sont essentielles pour évoluer dans ce secteur porteur au Maroc.",
-    icon: 'fa-university',
-    sampleJobs: ['Conseiller Bancaire', 'Gestionnaire de Patrimoine', 'Souscripteur Assurance', 'Analyste Crédit', 'Chef de Agence', 'Auditeur Bancaire']
+    sampleJobs: ['Chauffeur coursier', 'Chauffeur de bus', 'Livreur B2B', 'Conducteur d\'engins', 'Chauffeur Poids Lourd']
   }
 ];
 

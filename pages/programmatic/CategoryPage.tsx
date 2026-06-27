@@ -1,42 +1,32 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useSEO } from '../../hooks/useSEO';
 import { JobCard } from '../../components/JobCard';
-import { csvJobs } from '../../data/csvJobs';
-import { generateJobId } from '../../utils/jobUtils';
-import { CATEGORIES, CITIES_DATA } from '../../seo/seoData';
+import { CATEGORIES } from '../../seo/seoData';
 import { Breadcrumb } from '../../components/Breadcrumb';
 import { SiteNav } from '../../components/SiteNav';
-
-function slugToCategoryName(slug: string): string {
-  return slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-}
+import { jobService } from '../../services/jobService';
 
 const CategoryPage: React.FC = () => {
-  const { categorySlug } = useParams<{ categorySlug: string }>();
-  const categoryName = slugToCategoryName(categorySlug || '');
+  const { slug: categorySlug } = useParams<{ slug: string }>();
 
   const categoryData = useMemo(() => {
     return CATEGORIES.find(c => c.slug === categorySlug);
   }, [categorySlug]);
 
+  const [allJobs, setAllJobs] = useState<any[]>([]);
+  useEffect(() => {
+    jobService.getAllJobs().then(setAllJobs);
+  }, []);
+
   const filteredJobs = useMemo(() => {
-    return csvJobs
-      .filter(job => job.category?.toLowerCase() === categoryName.toLowerCase())
-      .map(job => ({
-        id: generateJobId(job.title, job.company, job.city || ''),
-        title: job.title,
-        company: job.company,
-        city: job.city || 'Maroc',
-        contract: job.contract || 'CDI',
-        time: 'Maintenant',
-        isNew: false,
-        description: job.description || `${job.title} chez ${job.company}.`,
-        salary: job.salary,
-        email: job.email,
-        url: '',
-      }));
-  }, [categoryName]);
+    if (!categoryData) return [];
+    return allJobs.filter(job => {
+      const cat = (job.category || '').toLowerCase().trim();
+      const slug = categorySlug || '';
+      return cat === slug || cat === slug.replace(/-/g, ' ') || cat.includes(slug.split('-')[0]);
+    });
+  }, [allJobs, categorySlug, categoryData]);
 
   const displayJobs = filteredJobs.slice(0, 12);
 
@@ -69,16 +59,16 @@ const CategoryPage: React.FC = () => {
   }, [categorySlug]);
 
   useSEO({
-    title: `Emplois ${categoryName} au Maroc - Offres d'emploi ${categoryName}`,
-    description: `Découvrez les meilleures offres d'emploi ${categoryName.toLowerCase()} au Maroc. ${displayJobs.length} offres disponibles. Postulez maintenant !`,
+    title: `Emplois ${categoryData?.name || categorySlug} au Maroc - Offres d'emploi`,
+    description: `Découvrez les meilleures offres d'emploi ${categoryData?.name || ''} au Maroc. ${displayJobs.length} offres disponibles. Postulez maintenant !`,
     canonical: `https://hirememaroc.online/categorie/${categorySlug}`,
   });
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: `Emplois ${categoryName} au Maroc`,
-    description: `Liste des offres d'emploi ${categoryName.toLowerCase()} au Maroc`,
+    name: `Emplois ${categoryData?.name || categorySlug} au Maroc`,
+    description: `Liste des offres d'emploi ${categoryData?.name || ''} au Maroc`,
     numberOfItems: displayJobs.length,
     itemListElement: displayJobs.map((job, index) => ({
       '@type': 'ListItem',
@@ -108,7 +98,7 @@ const CategoryPage: React.FC = () => {
       <SiteNav />
       <Breadcrumb items={[
         { label: 'Catégories', path: '/categories' },
-        { label: categoryName }
+        { label: categoryData?.name || categorySlug || '' }
       ]} />
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
 
@@ -118,10 +108,10 @@ const CategoryPage: React.FC = () => {
           <span>Catégorie d'Emploi</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-4">
-          Emplois {categoryName} au Maroc
+          Emplois {categoryData?.name || categorySlug} au Maroc
         </h1>
         <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-3xl">
-          {categoryData?.description || `Découvrez toutes les offres d'emploi dans le secteur ${categoryName.toLowerCase()} au Maroc. ${displayJobs.length} opportunités vous attendent dans ce domaine en pleine croissance.`}
+          {categoryData?.description || `Découvrez toutes les offres d'emploi dans ce secteur au Maroc. ${displayJobs.length} opportunités vous attendent.`}
         </p>
       </div>
 
@@ -144,7 +134,7 @@ const CategoryPage: React.FC = () => {
         <section className="mb-10">
           <h2 className="text-lg font-black text-slate-900 mb-4">
             <i className="fa fa-map-marker-alt text-indigo-500 mr-2"></i>
-            Top Villes pour {categoryName}
+            Top Villes pour {categoryData?.name || categorySlug}
           </h2>
           <div className="flex flex-wrap gap-2 sm:gap-3">
             {topCities.map(({ city, count }) => (
@@ -207,7 +197,7 @@ const CategoryPage: React.FC = () => {
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-black text-slate-900">
             <i className="fa fa-briefcase text-indigo-500 mr-2"></i>
-            Dernières Offres {categoryName}
+            Dernières Offres {categoryData?.name || categorySlug}
           </h2>
           <span className="text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1.5 rounded-full">
             {displayJobs.length} offres
@@ -232,7 +222,7 @@ const CategoryPage: React.FC = () => {
             </div>
             <h3 className="text-lg font-bold text-slate-700 mb-2">Aucune offre disponible</h3>
             <p className="text-sm text-slate-400 max-w-md mx-auto">
-              Nous n'avons pas trouvé d'offres d'emploi {categoryName.toLowerCase()} pour le moment. Revenez bientôt !
+              Nous n'avons pas trouvé d'offres d'emploi pour le moment. Revenez bientôt !
             </p>
           </div>
         )}
