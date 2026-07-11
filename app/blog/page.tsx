@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Breadcrumb } from '@/components/Breadcrumb';
 import { BLOG_ARTICLES } from '@/data/blog-articles';
+import { AdBanner } from '@/components/AdBanner';
 
 export const metadata: Metadata = {
   title: 'Blog & Conseils Emploi au Maroc',
@@ -102,10 +103,19 @@ export default function BlogPage({
               href={`/blog/${article.slug}`}
               className="group bg-white rounded-xl border border-zinc-100 overflow-hidden hover:shadow-lg hover:border-[#c1272d]/20 transition-all duration-300"
             >
-              <div className="aspect-[16/9] bg-gradient-to-br from-[#c1272d]/10 to-[#006233]/10 flex items-center justify-center relative">
-                <svg className="w-10 h-10 text-[#c1272d]/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5" />
-                </svg>
+              <div className="aspect-[16/9] bg-gradient-to-br from-[#c1272d]/10 to-[#006233]/10 flex items-center justify-center relative overflow-hidden">
+                {article.featuredImage ? (
+                  <img
+                    src={article.featuredImage}
+                    alt={article.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <svg className="w-10 h-10 text-[#c1272d]/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5" />
+                  </svg>
+                )}
                 <div className="absolute top-3 left-3">
                   <span className="text-[11px] font-bold text-[#c1272d] bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-md shadow-sm">
                     {article.category}
@@ -184,6 +194,11 @@ export default function BlogPage({
           )}
         </nav>
       )}
+
+      {/* Ad Banner */}
+      <div className="mt-10">
+        <AdBanner slot="1234567890" format="horizontal" />
+      </div>
 
       {/* Schema */}
       <script

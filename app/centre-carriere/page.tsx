@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { careerArticles } from "@/data/career-articles";
+import { GuideIcon } from "@/components/CategoryIcon";
 
 export const metadata: Metadata = {
   title: "Centre de Carrière - HireMe Maroc",
@@ -92,7 +93,9 @@ export default function CentreCarrierePage() {
           {categories.map((cat) => (
             <div key={cat.slug} className={`${cat.color} rounded-2xl p-6 hover:shadow-lg transition-shadow`}>
               <div className="flex items-center gap-3 mb-4">
-                <span className="text-3xl" aria-hidden="true">{cat.icon}</span>
+                <span className="w-8 h-8 text-[#c1272d]" aria-hidden="true">
+                  <GuideIcon icon={cat.icon} className="w-8 h-8" />
+                </span>
                 <h2 className="text-xl font-bold text-gray-900">{cat.title}</h2>
               </div>
               <p className="text-gray-600 mb-6">{cat.description}</p>

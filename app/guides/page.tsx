@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Breadcrumb } from '@/components/Breadcrumb';
+import { GuideIcon } from '@/components/CategoryIcon';
 
 export const metadata: Metadata = {
   title: "Guides d'Emploi au Maroc | HireMe Maroc",
@@ -39,7 +40,9 @@ export default function GuidesPage() {
             href={`/guides/${guide.slug}`}
             className="group bg-white rounded-2xl border border-zinc-100 p-6 hover:shadow-lg hover:shadow-zinc-200/50 hover:border-zinc-200 transition-all duration-300"
           >
-            <div className="text-3xl mb-4">{guide.icon}</div>
+            <div className="w-12 h-12 mb-4 text-[#c1272d]">
+              <GuideIcon icon={guide.icon} className="w-12 h-12" />
+            </div>
             <h2 className="text-base font-bold text-zinc-900 group-hover:text-[#c1272d] transition-colors mb-2">
               {guide.title}
             </h2>

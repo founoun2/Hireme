@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { SearchBar } from '@/components/SearchBar';
 import { JobCard } from '@/components/JobCard';
 import { NewsletterSignup } from '@/components/NewsletterSignup';
+import { AdBanner } from '@/components/AdBanner';
 import { getAllJobs } from '@/lib/supabase';
 import { csvJobs } from '@/data/csvJobs';
 import { CITIES_DATA } from '@/data/cities';
@@ -134,6 +135,11 @@ export default async function HomePage() {
             <p className="text-sm text-zinc-500">Aucune offre disponible pour le moment. Revenez bientôt !</p>
           </div>
         )}
+      </section>
+
+      {/* Ad Banner */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+        <AdBanner slot="5566778899" format="horizontal" />
       </section>
 
       {/* Popular Cities */}

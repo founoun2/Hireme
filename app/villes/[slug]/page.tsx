@@ -5,6 +5,8 @@ import { Breadcrumb } from '@/components/Breadcrumb';
 import { JobCard } from '@/components/JobCard';
 import { FAQAccordion } from '@/components/FAQAccordion';
 import { CITIES_DATA } from '@/data/cities';
+import { StatIcon } from '@/components/CategoryIcon';
+import { AdBanner } from '@/components/AdBanner';
 import { getJobsByCity } from '@/lib/supabase';
 
 const SITE_URL = 'https://hirememaroc.online';
@@ -179,15 +181,22 @@ export default async function CityPage({
           { label: 'Offres actives', value: cityJobs.length.toString(), icon: '📋' },
           { label: 'Secteurs', value: city.popularIndustries.length.toString(), icon: '🏭' },
           { label: 'Grands employeurs', value: city.largestEmployers.length.toString(), icon: '🏢' },
-          { label: 'Pop.', value: city.population, icon: '👥' },
+          { label: 'Population', value: city.population, icon: '👥' },
         ].map((stat, i) => (
           <div key={i} className="bg-white p-4 rounded-xl border border-zinc-100 text-center">
-            <span className="text-lg mb-1 block">{stat.icon}</span>
+            <span className="w-5 h-5 mx-auto mb-1 block text-[#c1272d]">
+              <StatIcon icon={stat.icon} className="w-5 h-5" />
+            </span>
             <p className="text-base font-extrabold text-zinc-900">{stat.value}</p>
             <p className="text-[11px] text-zinc-500 mt-0.5">{stat.label}</p>
           </div>
         ))}
       </section>
+
+      {/* Ad Banner */}
+      <div className="mb-10">
+        <AdBanner slot="9988776655" format="horizontal" />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content */}

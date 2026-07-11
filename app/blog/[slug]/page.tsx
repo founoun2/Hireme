@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Breadcrumb } from '@/components/Breadcrumb';
 import { FAQAccordion } from '@/components/FAQAccordion';
 import { BLOG_ARTICLES } from '@/data/blog-articles';
+import { AdBanner } from '@/components/AdBanner';
 
 const SITE_URL = 'https://hirememaroc.online';
 
@@ -143,6 +144,16 @@ export default async function BlogPostPage({
 
       {/* Article Header */}
       <header className="mb-8">
+        {article.featuredImage && (
+          <div className="aspect-[16/9] sm:aspect-[2/1] rounded-xl overflow-hidden mb-6 bg-gradient-to-br from-[#c1272d]/10 to-[#006233]/10">
+            <img
+              src={article.featuredImage}
+              alt={article.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+
         <div className="flex items-center gap-2 mb-4">
           <Link
             href={`/blog?category=${encodeURIComponent(article.category)}`}
@@ -216,6 +227,8 @@ export default async function BlogPostPage({
 
         {/* Article Content */}
         <div className="flex-1 min-w-0">
+          <AdBanner slot="0987654321" format="horizontal" className="mb-6" />
+
           <div
             className="prose prose-zinc prose-sm max-w-none
               [&_h2]:text-xl [&_h2]:font-extrabold [&_h2]:text-zinc-900 [&_h2]:mt-10 [&_h2]:mb-4
@@ -353,10 +366,19 @@ export default async function BlogPostPage({
                     href={`/blog/${related.slug}`}
                     className="group bg-white rounded-xl border border-zinc-100 overflow-hidden hover:shadow-lg hover:border-[#c1272d]/20 transition-all duration-300"
                   >
-                    <div className="aspect-[16/9] bg-gradient-to-br from-[#c1272d]/10 to-[#006233]/10 flex items-center justify-center">
-                      <svg className="w-8 h-8 text-[#c1272d]/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5" />
-                      </svg>
+                    <div className="aspect-[16/9] bg-gradient-to-br from-[#c1272d]/10 to-[#006233]/10 flex items-center justify-center overflow-hidden">
+                      {related.featuredImage ? (
+                        <img
+                          src={related.featuredImage}
+                          alt={related.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <svg className="w-8 h-8 text-[#c1272d]/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5" />
+                        </svg>
+                      )}
                     </div>
                     <div className="p-3">
                       <span className="text-[10px] font-bold text-[#c1272d] bg-[#c1272d]/5 px-2 py-0.5 rounded-md">

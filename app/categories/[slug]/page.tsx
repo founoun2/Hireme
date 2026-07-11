@@ -5,6 +5,7 @@ import { CATEGORIES_DATA } from "@/data/categories";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { JobCard } from "@/components/JobCard";
+import { CategoryIcon } from "@/components/CategoryIcon";
 import { getJobsByCategory } from "@/lib/supabase";
 
 interface PageProps {
@@ -96,7 +97,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
           <div className="flex flex-col sm:flex-row items-start gap-5">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#c1272d] to-[#a12024] flex items-center justify-center text-white shadow-xl shadow-red-900/30 shrink-0">
-              <i className={`fas ${category.icon} text-2xl`} />
+              <CategoryIcon icon={category.icon} className="w-8 h-8 text-white" />
             </div>
             <div className="flex-1">
               <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">
@@ -233,7 +234,7 @@ export default async function CategoryPage({ params }: PageProps) {
                     className="flex items-center gap-3 p-3 rounded-xl hover:bg-zinc-50 border border-transparent hover:border-zinc-100 transition-all"
                   >
                     <div className="w-9 h-9 rounded-lg bg-[#c1272d]/10 flex items-center justify-center shrink-0">
-                      <i className={`fas ${cat.icon} text-[#c1272d] text-xs`} />
+                      <CategoryIcon icon={cat.icon} className="w-4 h-4 text-[#c1272d]" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-zinc-900 truncate">{cat.name}</p>

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CATEGORIES_DATA } from "@/data/categories";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { CategoryIcon } from "@/components/CategoryIcon";
+import { AdBanner } from "@/components/AdBanner";
 
 export const metadata: Metadata = {
   title: "Categories d'Emploi au Maroc | HireMe Maroc",
@@ -60,6 +62,9 @@ export default function CategoriesPage() {
       </section>
 
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+        <div className="mb-8">
+          <AdBanner slot="1122334455" format="horizontal" />
+        </div>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
@@ -73,7 +78,7 @@ export default function CategoriesPage() {
             >
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#c1272d] to-[#a12024] flex items-center justify-center text-white shadow-lg shadow-red-200/30">
-                  <i className={`fas ${cat.icon} text-lg`} />
+                  <CategoryIcon icon={cat.icon} className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h2 className="text-lg font-extrabold text-zinc-900 group-hover:text-[#c1272d] transition-colors">
