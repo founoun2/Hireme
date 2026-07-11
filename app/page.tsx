@@ -4,6 +4,7 @@ import { SearchBar } from '@/components/SearchBar';
 import { JobCard } from '@/components/JobCard';
 import { NewsletterSignup } from '@/components/NewsletterSignup';
 import { AdBanner } from '@/components/AdBanner';
+import { CategoryIcon } from '@/components/CategoryIcon';
 import { getAllJobs } from '@/lib/supabase';
 import { csvJobs } from '@/data/csvJobs';
 import { CITIES_DATA } from '@/data/cities';
@@ -207,7 +208,7 @@ export default async function HomePage() {
               className="group bg-white p-4 sm:p-5 rounded-xl border border-zinc-100 hover:border-[#c1272d]/20 hover:shadow-lg hover:shadow-red-100/30 transition-all duration-300"
             >
               <div className="w-10 h-10 rounded-lg bg-[#c1272d]/5 flex items-center justify-center mb-3">
-                <i className={`fas ${cat.icon} text-[#c1272d] text-sm`} />
+                <CategoryIcon icon={cat.icon} className="w-5 h-5 text-[#c1272d]" />
               </div>
               <h3 className="text-sm font-bold text-zinc-900 group-hover:text-[#c1272d] transition-colors">{cat.name}</h3>
               <p className="text-xs text-zinc-500 mt-1">{cat.jobCount.toLocaleString()} emplois</p>
