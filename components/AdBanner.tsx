@@ -46,6 +46,7 @@ export function AdBanner({
         data-ad-slot={slot}
         data-ad-format={format}
         data-full-width-responsive={responsive ? 'true' : 'false'}
+        suppressHydrationWarning
       />
     </div>
   );
