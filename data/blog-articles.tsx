@@ -31,7 +31,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 8,
     category: "CV et Candidature",
     tags: ["CV", "redaction CV", "marche marocain", "emploi", "candidature"],
-    featuredImage: "/images/blog/cv-maroc-2026.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=450&fit=crop",
     faq: [
       { question: "Faut-il mettre sa photo sur un CV au Maroc ?", answer: "Oui, la photo est largement attendue au Maroc. Elle est integrée dans 80% des CV remis aux recruteurs marocains." },
       { question: "Quelle langue pour un CV au Maroc ?", answer: "Le francais reste la langue principale, sauf pour le secteur public. L'anglais est recommande pour les entreprises internationales." },
@@ -51,7 +51,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 10,
     category: "CV et Candidature",
     tags: ["exemple CV", "CV francais", "marche marocain", "modele CV", "redaction CV"],
-    featuredImage: "/images/blog/exemple-cv-francais.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=450&fit=crop",
     faq: [
       { question: "Dois-je mettre mes notes de diplomes sur mon CV ?", answer: "Oui, au Maroc les recruteurs s'interessent aux mentions obtenues, surtout pour les jeunes diplomes." },
       { question: "Combien d' experiences dois-je mentionner ?", answer: "Mentionnez vos 3 a 5 dernieres experiences pertinentes. Les stages et projets academiques comptent pour les jeunes diplomes." },
@@ -70,7 +70,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 9,
     category: "CV et Candidature",
     tags: ["CV anglais", "entreprises internationales", "multinationales", "resume", "emploi international"],
-    featuredImage: "/images/blog/cv-anglais-international.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&h=450&fit=crop",
     faq: [
       { question: "Faut-il mettre une photo sur un CV en anglais ?", answer: "Non, dans le format anglo-saxon la photo est generalement exclue. Si l'entreprise est au Maroc, renseignez-vous." },
       { question: "Quel niveau d'anglais mentionner ?", answer: "Mentionnez votre score TOEFL, IELTS ou Cambridge. Sinon, decrivez votre niveau : Fluent, Advanced, Intermediate." },
@@ -89,7 +89,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 8,
     category: "CV et Candidature",
     tags: ["CV arabe", "secteur public", "administration", "ecriture arabe", "emploi"],
-    featuredImage: "/images/blog/cv-arabe-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=450&fit=crop",
     faq: [
       { question: "Un CV en arabe est-il accepte dans le prive ?", answer: "Oui, dans certains secteurs comme l'education, la communication ou le commerce traditionnel. Pour les entreprises internationales, preferez le francais ou l'anglais." },
       { question: "Faut-il inclure une photo sur un CV en arabe ?", answer: "Oui, au Maroc la photo est generalement incluse, que le cv soit en arabe, francais ou anglais." },
@@ -108,7 +108,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Entretien d'Embauche",
     tags: ["entretien", "embauche", "conseils", "recrutement", "marche marocain"],
-    featuredImage: "/images/blog/entretien-emploi-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&h=450&fit=crop",
     faq: [
       { question: "Combien de temps dure un entretien moyen au Maroc ?", answer: "Un entretien dure generalement entre 30 et 60 minutes. Les premieres interviews sont souvent plus courtes avec les RH." },
       { question: "Faut-il apporter son CV papier a l'entretien ?", answer: "Oui, apportez toujours 2-3 copies imprimees de votre CV. C'est un signe de professionnalisme." },
@@ -127,7 +127,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 9,
     category: "Emploi et Carriere",
     tags: ["teletravail", "remote", "travail a domicile", "freelance", "digital"],
-    featuredImage: "/images/blog/jobs-remote-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=800&h=450&fit=crop",
     faq: [
       { question: "Le teletravail est-il legal au Maroc ?", answer: "Oui, le Maroc a adopte une loi sur le teletravail en 2023. Elle definit les droits et obligations des employers et salaries." },
       { question: "Quel salaire pour un poste remote au Maroc ?", answer: "Les entreprises internationales offrent 20-30% superieurs aux tarifs locaux. En general de 10 000 a 35 000 MAD/mois." },
@@ -146,7 +146,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 8,
     category: "Secteur Public",
     tags: ["secteur public", "concours", "fonction publique", "administration", "emploi public"],
-    featuredImage: "/images/blog/emploi-secteur-public.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1555848962-6e79363ec58f?w=800&h=450&fit=crop",
     faq: [
       { question: "Quel diplome pour passer les concours ?", answer: "Les concours sont ouverts aux titulaires de differents niveaux de diplomes, du BEM au doctorat, selon les postes." },
       { question: "Les concours sont-ils ouverts aux Marocains resident a l'etranger ?", answer: "Oui, sous reserve de justifier des conditions de nationalite et de diplome." },
@@ -165,7 +165,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 8,
     category: "Emploi et Carriere",
     tags: ["secteur prive", "entreprises marocaines", "recrutement", "opportunites", "emploi"],
-    featuredImage: "/images/blog/emplois-prives-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=450&fit=crop",
     faq: [
       { question: "Quel secteur recrute le plus au Maroc ?", answer: "L'industrie, le tourisme et le digital. Le seul secteur automobile represente 200 000 emplois directs et indirects." },
       { question: "Les salaires sont-ils negociables dans le prive ?", answer: "Oui, surtout pour les postes qualifies. Renseignez-vous sur les fourchettes avant l'entretien." },
@@ -184,7 +184,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Salaire et Carriere",
     tags: ["salaire", "metiers bien payes", "revenus", "carriere", "emploi"],
-    featuredImage: "/images/blog/metiers-mieux-payes-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=450&fit=crop",
     faq: [
       { question: "Quel est le salaire moyen au Maroc en 2026 ?", answer: "Le salaire brut moyen est d'environ 6 500 MAD/mois selon l'ONS, avec de fortes variations selon le secteur." },
       { question: "Les femmes gagnent-elles autant que les hommes ?", answer: "Un ecart salarial persiste, estime a 15-20% selon les secteurs. Des initiatives sont en cours pour le reduire." },
@@ -203,7 +203,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Guide par Ville",
     tags: ["Casablanca", "emploi", "offres emploi", "capitale economique", "maroc"],
-    featuredImage: "/images/blog/emploi-casablanca.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1590076215667-875d4ef2d7de?w=800&h=450&fit=crop",
     faq: [
       { question: "Quel est le salaire moyen a Casablanca ?", answer: "Environ 7 000 a 10 000 MAD/mois, plus eleve que dans les autres villes." },
       { question: "C'est facile de trouver un emploi a Casablanca ?", answer: "Le plus grand nombre d'offres, mais une concurrence forte. Bonne preparation et reseau actif essentiels." },
@@ -222,7 +222,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 6,
     category: "Guide par Ville",
     tags: ["Rabat", "capitale", "emploi", "administration", "secteur public"],
-    featuredImage: "/images/blog/emploi-rabat.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=450&fit=crop",
     faq: [
       { question: "Rabat offre-t-elle plus d'emplois que Casablanca ?", answer: "Non, mais elle compense par une qualite de vie superieure et une forte presence du secteur public." },
       { question: "Le tramway facilite-t-il les deplacements ?", answer: "Oui, il dessert les principaux quartiers et est fiable et ponctuel." },
@@ -241,7 +241,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 6,
     category: "Guide par Ville",
     tags: ["Tanger", "industrie", "automobile", "emploi", "nord maroc"],
-    featuredImage: "/images/blog/emploi-tanger.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1579242514563-4d4d7986319e?w=800&h=450&fit=crop",
     faq: [
       { question: "Tanger est-elle une bonne ville pour les jeunes ?", answer: "Oui, nombreux emplois industriels et cout de la vie abordable." },
       { question: "Le port de Tanger Med recrute-t-il ?", answer: "Oui, regulierement des logisticiens, commerciaux et techniciens." },
@@ -260,7 +260,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 6,
     category: "Guide par Ville",
     tags: ["Marrakech", "tourisme", "hotellerie", "emploi", "sud maroc"],
-    featuredImage: "/images/blog/emploi-marrakech.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800&h=450&fit=crop",
     faq: [
       { question: "Le tourisme est-il le seul secteur ?", answer: "Non, le digital, l'immobilier et l'evenementiel se developpent aussi." },
       { question: "L'hotellerie recrute-t-elle toute l'annee ?", answer: "Oui, mais la saison haute (mars-novembre) est la plus active." },
@@ -279,7 +279,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 6,
     category: "Guide par Ville",
     tags: ["Agadir", "sud maroc", "tourisme", "peche", "emploi"],
-    featuredImage: "/images/blog/emploi-agadir.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&h=450&fit=crop",
     faq: [
       { question: "Agadir est-elle bonne pour les jeunes ?", answer: "Oui, cadre de vie agreable et opportunites dans le tourisme et l'industrie." },
       { question: "Le tourisme est-il le seul secteur ?", answer: "Non, la peche, l'agroalimentaire et l'industrie textile sont aussi importants." },
@@ -298,7 +298,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Stages et Etudiants",
     tags: ["stage", "etudiants", "debutant", "candidature", "emploi"],
-    featuredImage: "/images/blog/stage-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&h=450&fit=crop",
     faq: [
       { question: "Un stage est-il obligatoire ?", answer: "Pour la plupart des formations superieures, oui. Il conditionne l'obtention du diplome." },
       { question: "Combien gagne un stagiaire ?", answer: "De 500 a 4 000 MAD/mois selon l'entreprise et le niveau d'etudes." },
@@ -317,7 +317,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Stages et Etudiants",
     tags: ["etudiants", "travail etudiant", "temps partiel", "revenus", "etudes"],
-    featuredImage: "/images/blog/emplois-etudiants.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&h=450&fit=crop",
     faq: [
       { question: "Un etudiant peut-il travailler sans contrat ?", answer: "Non, tout travail doit etre declare. Un contrat est necessaire pour etre protege." },
       { question: "Combien peut gagner un etudiant ?", answer: "Entre 1 500 et 5 000 MAD/mois selon l'emploi." },
@@ -336,7 +336,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 8,
     category: "Freelance et Independance",
     tags: ["freelance", "independant", "auto-entrepreneur", "statut", "fiscalite"],
-    featuredImage: "/images/blog/freelancing-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=450&fit=crop",
     faq: [
       { question: "Quel statut pour un freelance au Maroc ?", answer: "Auto-entrepreneur pour debuter, entreprise individuelle au-dessus de 500 000 MAD de CA." },
       { question: "Combien coute la creation d'une societe ?", answer: "L'auto-entrepreneur : gratuite en ligne. L'entreprise individuelle : environ 1 000-3 000 MAD de frais." },
@@ -355,7 +355,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 6,
     category: "Emploi et Carriere",
     tags: ["LinkedIn", "reseau professionnel", "profil", "personal branding", "recrutement"],
-    featuredImage: "/images/blog/linkedin-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1611944209730-bd491db83ef4?w=800&h=450&fit=crop",
     faq: [
       { question: "LinkedIn est-il utilise au Maroc ?", answer: "Oui, plus de 5 millions d'utilisateurs. 87% des recruteurs l'utilisent pour chercher des candidats." },
       { question: "Faut-il payer pour LinkedIn Premium ?", answer: "Non, le compte gratuit suffit pour la plupart des utilisateurs. Premium est utile pour les recherches intensives." },
@@ -374,7 +374,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Emploi et Carriere",
     tags: ["reconversion", "changement de carriere", "transition", "formation", "reorientation"],
-    featuredImage: "/images/blog/changer-carriere.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=450&fit=crop",
     faq: [
       { question: "Combien de temps dure une reconversion ?", answer: "En general 6 a 18 mois selon le domaine et le niveau de formation necessaire." },
       { question: "Faut-il quitter son poste avant de changer ?", answer: "Non, preparez votre transition pendant que vous etes encore en poste pour securiser vos revenus." },
@@ -393,7 +393,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Emploi et Carriere",
     tags: ["recherche emploi", "strategie", "candidature", "plateformes", "reseau"],
-    featuredImage: "/images/blog/strategies-recherche-emploi.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=450&fit=crop",
     faq: [
       { question: "Combien de candidatures envoyer par jour ?", answer: "5 a 10 candidatures personnalisees par jour est un bon objectif." },
       { question: "Faut-il relancer apres une candidature ?", answer: "Oui, apres 1 semaine sans reponse. Un email court et professionnel." },
@@ -412,7 +412,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 8,
     category: "Entretien d'Embauche",
     tags: ["entretien", "questions", "reponses", "preparation", "recrutement"],
-    featuredImage: "/images/blog/questions-entretien-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&h=450&fit=crop",
     faq: [
       { question: "Les recruteurs marocains posent-ils toujours les memes questions ?", answer: "Oui, les 15 questions ci-dessus reviennent dans 80% des entretiens." },
       { question: "Faut-il memoriser ses reponses ?", answer: "Ne les apprenez pas par coeur, mais connaissez les grandes lignes. L'authenticite est importante." },
@@ -431,7 +431,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 6,
     category: "Emploi et Carriere",
     tags: ["soft skills", "competences douces", "communication", "travail equipe", "developpement personnel"],
-    featuredImage: "/images/blog/competences-douces-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1573497620053-ea5300f94f21?w=800&h=450&fit=crop",
     faq: [
       { question: "Les soft skills sont-elles importantes au Maroc ?", answer: "Oui, 70% des DRH les considerent aussi importantes que les competences techniques." },
       { question: "Peut-on apprendre les soft skills ?", answer: "Oui, par la pratique, la formation et le feedback continu." },
@@ -450,7 +450,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Emploi et Carriere",
     tags: ["competences techniques", "hard skills", "formation", "digital", "technologie"],
-    featuredImage: "/images/blog/competences-techniques-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=450&fit=crop",
     faq: [
       { question: "Quelle competence technique est la plus demande ?", answer: "Le developpement web (JavaScript, React) et la data science sont les plus demandes." },
       { question: "Faut-il une certification pour chaque competence ?", answer: "Les certifications valorisent votre profil mais ne remplacent pas l'experience pratique." },
@@ -469,7 +469,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Emploi et Carriere",
     tags: ["evolution", "promotion", "carriere", "formation continue", "leadership"],
-    featuredImage: "/images/blog/progresser-carriere.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&h=450&fit=crop",
     faq: [
       { question: "Combien de temps pour une promotion au Maroc ?", answer: "En general 2 a 4 ans dans le meme poste, selon les entreprises et les performances." },
       { question: "Comment demander une promotion ?", answer: "Preparez un dossier avec vos realisations, proposez un rendez-vous formel, soyez precis dans vos demandes." },
@@ -488,7 +488,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Salaire et Carriere",
     tags: ["salaire", "negociation", "augmentation", "remuneration", "carriere"],
-    featuredImage: "/images/blog/negocier-salaire.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=450&fit=crop",
     faq: [
       { question: "Peut-on negocier au Maroc ?", answer: "Oui, c'est courant et meme attendu pour les postes qualifies." },
       { question: "Combien peut-on gagner de plus en negociaint ?", answer: "En general 10 a 30% de plus sur le salaire de depart." },
@@ -507,7 +507,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 8,
     category: "Droit du Travail",
     tags: ["droit du travail", "code du travail", "contrat", "salaire", "conges"],
-    featuredImage: "/images/blog/droit-travail-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=800&h=450&fit=crop",
     faq: [
       { question: "Quel est le SMIG au Maroc en 2026 ?", answer: "3 111,29 MAD/mois pour 2 256 heures de travail par an." },
       { question: "Peut-on etre licencie pendant un conge ?", answer: "Non, le licenciement pendant le conge de maternite est interdit. Pour les autres conges, des regles specifiques s'appliquent." },
@@ -526,7 +526,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 6,
     category: "Entretien d'Embauche",
     tags: ["entretien video", "visioconference", "Zoom", "Teams", "recrutement"],
-    featuredImage: "/images/blog/entretien-video-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=800&h=450&fit=crop",
     faq: [
       { question: "Les entretiens video sont-ils courants au Maroc ?", answer: "Oui, de plus en plus, surtout dans les entreprises internationales et les startups." },
       { question: "Quel logiciel utiliser ?", answer: "Zoom, Microsoft Teams ou Google Meet selon l'entreprise. Preparez-vous a tous." },
@@ -545,7 +545,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "CV et Candidature",
     tags: ["CV", "erreurs", "candidature", "recrutement", "conseils"],
-    featuredImage: "/images/blog/erreurs-cv-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=450&fit=crop",
     faq: [
       { question: "Une faute d'orthographe elimine-t-elle un candidat ?", answer: "Dans 60% des cas, oui. Faites toujours relire votre CV par au moins 2 personnes." },
       { question: "Faut-il mettre un profil LinkedIn ?", answer: "Oui, c'est devenu indispensable. 87% des recruteurs consultent le LinkedIn des candidats." },
@@ -564,7 +564,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "CV et Candidature",
     tags: ["lettre motivation", "candidature", "CV", "recrutement", "redaction"],
-    featuredImage: "/images/blog/lettre-motivation-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=450&fit=crop",
     faq: [
       { question: "La lettre de motivation est-elle obligatoire au Maroc ?", answer: "Non, mais elle est fortement recommandee. Elle fait la difference entre deux candidats." },
       { question: "Combien de pages pour une lettre ?", answer: "1 page maximum. Les recruteurs n'ont pas le temps de lire de longues lettres." },
@@ -583,7 +583,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 8,
     category: "Salaire et Carriere",
     tags: ["salaire", "remuneration", "secteur", "guide", "barème"],
-    featuredImage: "/images/blog/guide-salaires-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&h=450&fit=crop",
     faq: [
       { question: "Quel est le salaire moyen au Maroc en 2026 ?", answer: "Environ 6 500 MAD/mois, avec de fortes variations selon le secteur et la region." },
       { question: "Les salaires sont-ils plus eleves a Casablanca ?", answer: "Oui, de 15 a 20% par rapport a la moyenne nationale." },
@@ -602,7 +602,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Emploi Tech",
     tags: ["tech", "informatique", "developpement", "IA", "startup"],
-    featuredImage: "/images/blog/emploi-tech-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=450&fit=crop",
     faq: [
       { question: "Faut-il un diplome en informatique pour travailler dans la tech ?", answer: "Non, le portfolio et les competences comptent plus que le diplome. Beaucoup de dev sont autodidactes." },
       { question: "Quel salaire pour un developpeur au Maroc ?", answer: "De 6 000 a 30 000 MAD/mois selon l'experience et la specialite." },
@@ -621,7 +621,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Emploi Tech",
     tags: ["digital", "marketing digital", "UX", "SEO", "data"],
-    featuredImage: "/images/blog/metiers-digital-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop",
     faq: [
       { question: "Quel metier digital est le plus demande ?", answer: "Le developpement web et la data science sont les plus demandes actuellement." },
       { question: "Combien de temps pour se former au digital ?", answer: "De 3 a 12 mois selon le metier et le niveau de maitrise souhaite." },
@@ -640,7 +640,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Entretien d'Embauche",
     tags: ["banque", "finance", "entretien", "banques marocaines", "recrutement"],
-    featuredImage: "/images/blog/entretien-banque-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1501167786227-4cba60f6d58f?w=800&h=450&fit=crop",
     faq: [
       { question: "Quel diplome pour travailler dans une banque ?", answer: "ISCAE, ENCG, Facultes de gestion pour les postes de cadre. BEM/BEC pour les postes d'execution." },
       { question: "Les banques recrutent-elles des jeunes diplomes ?", answer: "Oui, les banques ont des programmes de graduate et acceptent les stages de fin d'etudes." },
@@ -659,7 +659,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Emploi et Carriere",
     tags: ["hotellerie", "tourisme", "hotel", "restaurant", "hospitality"],
-    featuredImage: "/images/blog/hospitalite-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800&h=450&fit=crop",
     faq: [
       { question: "Faut-il un diplome pour travailler dans l'hotellerie ?", answer: "Non, des formations courtes et de la motivation suffisent pour debuter. L'experience compte beaucoup." },
       { question: "Les pourboires sont-ils importants ?", answer: "Oui, ils representent 20-30% du revenu total dans les hotels de luxe." },
@@ -678,7 +678,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 8,
     category: "Formation et Etudes",
     tags: ["bourses", "etranger", "etudes", "stage international", "formation"],
-    featuredImage: "/images/blog/bourses-etranger-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=450&fit=crop",
     faq: [
       { question: "Quel est le meilleur pays pour une bourse ?", answer: "La France (proximite culturelle), le Canada (immigration facile), l'Allemagne (frais reduits)." },
       { question: "Faut-il un excellent dossier pour une bourse ?", answer: "Oui, generalement au-dessus de 14/20, plus un bon dossier de motivation et des recommandations." },
@@ -697,7 +697,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 8,
     category: "Entrepreneuriat",
     tags: ["entreprise", "creation", "entrepreneuriat", "startup", "business"],
-    featuredImage: "/images/blog/creer-entreprise-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&h=450&fit=crop",
     faq: [
       { question: "Quel statut pour debuter ?", answer: "L'auto-entrepreneur pour les petits projets, la SARL pour les projets plus importants." },
       { question: "Combien coute la creation d'une SARL ?", answer: "Environ 5 000 a 10 000 MAD de frais de creation (notaire, immatriculation)." },
@@ -716,7 +716,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Emploi Tech",
     tags: ["IA", "data", "machine learning", "intelligence artificielle", "science des donnees"],
-    featuredImage: "/images/blog/metiers-ia-data-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=450&fit=crop",
     faq: [
       { question: "Faut-il un doctorat pour travailler dans l'IA ?", answer: "Non, un Master et des projets concrets suffisent pour la plupart des postes." },
       { question: "Quel salaire pour un data scientist au Maroc ?", answer: "De 15 000 a 35 000 MAD/mois selon l'experience et l'entreprise." },
@@ -735,7 +735,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 6,
     category: "Emploi et Carriere",
     tags: ["temps partiel", "mi-temps", "flexibilite", "emploi", "droit du travail"],
-    featuredImage: "/images/blog/travail-temps-partiel.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1590076215667-875d4ef2d7de?w=800&h=450&fit=crop",
     faq: [
       { question: "Le travail a temps partiel est-il legal au Maroc ?", answer: "Oui, il est encadre par le Code du Travail et doit faire l'objet d'un contrat ecrit." },
       { question: "Quel est le salaire pour un temps partiel ?", answer: "Proportionnel aux heures travaillees. Le SMIG horaire est d'environ 15,26 MAD." },
@@ -754,7 +754,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 6,
     category: "Emploi et Carriere",
     tags: ["networking", "reseau", "LinkedIn", "professionnel", "carriere"],
-    featuredImage: "/images/blog/reseau-professionnel.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&h=450&fit=crop",
     faq: [
       { question: "Combien de contacts LinkedIn faut-il ?", answer: "500+ connexions pertinentes est un bon objectif. La qualite prime sur la quantite." },
       { question: "Comment contacter un inconnu sur LinkedIn ?", answer: "Personnalisez votre demande, expliquez pourquoi vous le contactez, soyez bref." },
@@ -773,7 +773,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 6,
     category: "Salaire et Carriere",
     tags: ["avantages sociaux", "mutuelle", "prime", "remuneration", "conditions de travail"],
-    featuredImage: "/images/blog/avantages-sociaux.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=800&h=450&fit=crop",
     faq: [
       { question: "La mutuelle est-elle obligatoire au Maroc ?", answer: "Non, mais elle est de plus en plus offerte par les entreprises, surtout dans le prive." },
       { question: "Peut-on negocier les avantages en nature ?", answer: "Oui, surtout pour les postes de cadre. La voiture et la mutuelle sont les plus negotiables." },
@@ -792,7 +792,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 6,
     category: "Entretien d'Embauche",
     tags: ["automobile", "Renault", "Stellais", "industrie", "entretien"],
-    featuredImage: "/images/blog/entretien-automobile.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&h=450&fit=crop",
     faq: [
       { question: "Faut-il un diplome technique pour travailler dans l'automobile ?", answer: "Pour les postes de production, non. Pour les postes d'ingénieur, oui (Bac+3 a Bac+5)." },
       { question: "Les horaires sont-ils fixes ?", answer: "Dans l'industrie, les horaires rotatifs sont courants (matin, soir, nuit)." },
@@ -811,7 +811,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Emploi et Carriere",
     tags: ["sante", "medecin", "infirmier", "pharmacien", "hospitalier"],
-    featuredImage: "/images/blog/metiers-sante-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&h=450&fit=crop",
     faq: [
       { question: "Combien de temps pour devenir medecin au Maroc ?", answer: "6 ans de faculte, plus 3 a 5 ans de specialisation." },
       { question: "Les cliniques priveses recrutent-elles ?", answer: "Oui, les CLIN recrutent en continu des medecins, infirmiers et personnel technique." },
@@ -830,7 +830,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 6,
     category: "Emploi et Carriere",
     tags: ["commerce", "vente", "commercial", "negociation", "business"],
-    featuredImage: "/images/blog/commerce-vente-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1556740758-90de374c12ad?w=800&h=450&fit=crop",
     faq: [
       { question: "Faut-il un diplome pour vendre au Maroc ?", answer: "Non, la motivation et les qualites personnelles comptent plus que le diplome dans la vente." },
       { question: "Quel est le salaire d'un commercial ?", answer: "De 5 000 a 25 000 MAD/mois selon le poste et les commissions." },
@@ -849,7 +849,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Emploi et Carriere",
     tags: ["teletravail", "remote", "droit du travail", "bonnes pratiques", "home office"],
-    featuredImage: "/images/blog/teletravail-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=800&h=450&fit=crop",
     faq: [
       { question: "Le teletravail est-il legal au Maroc ?", answer: "Oui, la loi 09-21 encadre le teletravail depuis 2023." },
       { question: "L'employeur doit-il fournir du materiel ?", answer: "Oui, il doit fournir les equipements ou indemniser le salary." },
@@ -868,7 +868,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Emploi et Carriere",
     tags: ["BTP", "construction", "architecture", "genie civil", "travaux"],
-    featuredImage: "/images/blog/metiers-btp-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=450&fit=crop",
     faq: [
       { question: "Le BTP recrute-t-il beaucoup au Maroc ?", answer: "Oui, c'est l'un des secteurs qui recrutent le plus, grace aux grands projets d'infrastructure." },
       { question: "Faut-il un diplome d'ingenieur pour travailler dans le BTP ?", answer: "Pour les postes de conduite de travaux, oui. Pour les ouvriers, des formations courtes suffisent." },
@@ -887,7 +887,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Emploi et Carriere",
     tags: ["evolution", "junior", "senior", "promotion", "carriere"],
-    featuredImage: "/images/blog/junior-senior-carriere.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=450&fit=crop",
     faq: [
       { question: "Combien de temps pour devenir senior ?", answer: "En general 3 a 5 ans selon le domaine et les competences acquises." },
       { question: "Faut-il changer d'entreprise pour progresser ?", answer: "Pas toujours, mais c'est souvent le moyen le plus rapide d'obtenir une promotion." },
@@ -906,7 +906,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Formation et Etudes",
     tags: ["certification", "formation", "AWS", "Google", "PMP"],
-    featuredImage: "/images/blog/certifications-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&h=450&fit=crop",
     faq: [
       { question: "Les certifications sont-elles reconnues au Maroc ?", answer: "Oui, les entreprises marocaines valorisent de plus en plus les certifications internationales." },
       { question: "Faut-il payer pour se certifier ?", answer: "Cela depend. Google et HubSpot sont gratuits. AWS, PMP et CFA sont payants." },
@@ -925,7 +925,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Bien-etre au Travail",
     tags: ["stress", "bien-etre", "santé mentale", "management", "equilibre"],
-    featuredImage: "/images/blog/stress-travail-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=800&h=450&fit=crop",
     faq: [
       { question: "Le stress au travail est-il courant au Maroc ?", answer: "Oui, 60% des salaries marocains declare etre stresses par leur travail." },
       { question: "Comment en parler a son manager ?", answer: "Proposez un rendez-vous formel, exprimez vos besoins calmement, proposez des solutions." },
@@ -944,7 +944,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 7,
     category: "Emploi et Carriere",
     tags: ["education", "enseignant", "professeur", "formateur", "ecole"],
-    featuredImage: "/images/blog/metiers-education-maroc.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&h=450&fit=crop",
     faq: [
       { question: "Comment devenir enseignant au Maroc ?", answer: "Passer le concours de l'Education Nationale ou etre recrute dans le prive." },
       { question: "Les enseignants du prive gagnent-ils plus ?", answer: "Pas toujours. Cela depend de l'etablissement et de l'experience." },
@@ -963,7 +963,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readingTime: 8,
     category: "Emploi et Carriere",
     tags: ["tendances", "marche du travail", "2026", "digital", "emploi"],
-    featuredImage: "/images/blog/tendances-marche-travail-2026.jpg",
+    featuredImage: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=450&fit=crop",
     faq: [
       { question: "Quelle est la tendance numero 1 du marche marocain ?", answer: "La digitalisation massive. Tous les secteurs se digitalisent, creant de nouveaux emplois." },
       { question: "Les salaires vont-ils augmenter en 2026 ?", answer: "Oui, de 3 a 5% par an dans les secteurs porteurs comme la tech, la finance et l'automobile." },
