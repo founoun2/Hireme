@@ -6,29 +6,35 @@ import { FAQAccordion } from "@/components/FAQAccordion";
 import { JobCard } from "@/components/JobCard";
 import { PostulerModal } from "@/components/PostulerModal";
 import { supabase, Job } from "@/lib/supabase";
+import { csvJobs } from "@/data/csvJobs";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-async function fetchJob(id: string): Promise<Job | null> {
+async function fetchJob(slug: string): Promise<Job | null> {
   try {
     const { data, error } = await supabase
       .from("jobs")
       .select("*")
-      .eq("id", id)
+      .eq("id", slug)
       .single();
-    if (error || !data) return null;
-    return {
-      ...data,
-      contactPhone: data.contact_phone || data.contactPhone || '',
-      companyWebsite: data.company_website || data.companyWebsite || '',
-      companyEmail: data.company_email || data.companyEmail || '',
-      companyPhone: data.company_phone || data.companyPhone || '',
-    } as Job;
-  } catch {
-    return null;
-  }
+    if (!error && data) {
+      return {
+        ...data,
+        contactPhone: data.contact_phone || data.contactPhone || '',
+        companyWebsite: data.company_website || data.companyWebsite || '',
+        companyEmail: data.company_email || data.companyEmail || '',
+        companyPhone: data.company_phone || data.companyPhone || '',
+      } as Job;
+    }
+  } catch {}
+
+  const fallback = csvJobs.find(
+    (j) => String(j.id) === slug || j.slug === slug
+  );
+  if (fallback) return fallback as unknown as Job;
+  return null;
 }
 
 async function fetchSimilarJobs(job: Job): Promise<Job[]> {
@@ -40,11 +46,12 @@ async function fetchSimilarJobs(job: Job): Promise<Job[]> {
       .neq("id", job.id)
       .order("created_at", { ascending: false })
       .limit(4);
-    if (error) return [];
-    return (data || []) as Job[];
-  } catch {
-    return [];
-  }
+    if (!error && data && data.length > 0) return data as Job[];
+  } catch {}
+
+  return csvJobs
+    .filter((j) => j.category === job.category && j.id !== job.id)
+    .slice(0, 4) as unknown as Job[];
 }
 
 function timeAgoFromDate(dateString: string): string {
