@@ -1,0 +1,13 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://hirememaroc.online
+
+# Sitemaps
+Sitemap: https://hirememaroc.online/sitemap.xml
+Sitemap: https://hirememaroc.online/sitemap-blog.xml
+Sitemap: https://hirememaroc.online/sitemap-villes.xml
+Sitemap: https://hirememaroc.online/sitemap-categories.xml
+Sitemap: https://hirememaroc.online/sitemap-entreprises.xml

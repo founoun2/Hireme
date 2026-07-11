@@ -1,0 +1,323 @@
+const CITIES_MAROC = [
+  "Casablanca", "Rabat", "Tanger", "Fès", "Marrakech", "Agadir",
+  "Meknès", "Oujda", "Kénitra", "Tétouan", "Salé", "Mohammédia",
+  "El Jadida", "Bouskoura", "Tangier", "Berrechid", "Nador"
+];
+
+const CATEGORY_CITIES: Record<string, string> = {
+  "Banque": "Casablanca", "Industrie": "Casablanca", "BTP": "Casablanca",
+  "Agroalimentaire": "Casablanca", "Télécom": "Rabat", "Automobile": "Tanger",
+  "Énergie": "Casablanca", "Transport": "Casablanca", "Immobilier": "Casablanca",
+  "Grande Distribution": "Casablanca", "Technologie": "Casablanca",
+  "Centre d'appel": "Casablanca", "Commercial": "Casablanca",
+  "Enseignement": "Rabat", "Hôtellerie": "Marrakech", "Santé": "Casablanca",
+  "Sécurité": "Casablanca", "RH": "Casablanca", "Nettoyage": "Casablanca",
+  "Chauffeur": "Casablanca", "Graphisme": "Casablanca",
+  "Personnel de Maison": "Casablanca", "Textile": "Casablanca",
+  "Environnement": "Casablanca", "Finance": "Casablanca",
+};
+
+const CATEGORY_DESCRIPTIONS: Record<string, string> = {
+  "Banque": "Rejoignez notre équipe bancaire dynamique au Maroc. Évolution de carrière garantie dans un secteur stable et porteur.",
+  "Industrie": "Nous recherchons des talents passionnés pour renforcer nos équipes industrielles. Environnement stimulant et innovant.",
+  "BTP": "Rejoignez nos chantiers prestigieux. Nous recherchons des professionnels qualifiés pour des projets d'envergure nationale.",
+  "Agroalimentaire": "Intégrez un leader de l'agroalimentaire au Maroc. Postes variés dans un secteur en pleine croissance.",
+  "Télécom": "Rejoignez un opérateur télécom de premier plan. Innovation et excellence au service de la connectivité marocaine.",
+  "Automobile": "Intégrez l'industrie automobile marocaine, en plein essor. Opportunités dans la production et l'ingénierie.",
+  "Énergie": "Participez à la transition énergétique au Maroc. Postes dans les énergies renouvelables et traditionnelles.",
+  "Transport": "Rejoignez un acteur majeur du transport au Maroc. Stabilité et perspectives d'évolution.",
+  "Immobilier": "Carrière dans l'immobilier au Maroc. Projets résidentiels et commerciaux d'envergure.",
+  "Grande Distribution": "Rejoignez un leader de la grande distribution. Postes variés dans un réseau national dynamique.",
+  "Technologie": "Rejoignez une entreprise technologique de premier plan au Maroc. Innovation, digital et excellence.",
+  "Centre d'appel": "Rejoignez un centre d'appel moderne. Environnement dynamique avec formation incluse.",
+  "Commercial": "Postes commerciaux stimulants. Développez votre carrière dans un secteur en pleine expansion.",
+  "Enseignement": "Rejoignez notre équipe pédagogique. Postes pour enseignants qualifiés dans un cadre stimulant.",
+  "Hôtellerie": "Rejoignez un établissement hôtelier de prestige au Maroc. Excellence et service au rendez-vous.",
+  "Santé": "Postes dans le secteur de la santé au Maroc. Environnement professionnel et humain.",
+  "Sécurité": "Rejoignez une société de sécurité reconnue. Formation et évolution de carrière assurées.",
+  "RH": "Postes en ressources humaines. Gérez le capital humain d'une entreprise en croissance.",
+  "Nettoyage": "Postes de nettoyage et d'entretien. Environnement de travail propre et organisé.",
+  "Chauffeur": "Postes de chauffeur professionnel. Stabilité et conditions de travail attractives.",
+  "Graphisme": "Créez et innovez dans le domaine du design graphique. Projets créatifs variés.",
+  "Personnel de Maison": "Postes de personnel de maison qualifié. Environnement professionnel discret et respectueux.",
+  "Textile": "Rejoignez l'industrie textile marocaine. Métiers de la confection et du design.",
+  "Environnement": "Contribuez à la protection de l'environnement au Maroc. Postes techniques et de terrain.",
+  "Finance": "Postes dans la finance d'entreprise. Analyse, gestion et stratégie financière.",
+};
+
+function assignCity(category: string, index: number): string {
+  if (CATEGORY_CITIES[category]) return CATEGORY_CITIES[category];
+  return CITIES_MAROC[index % CITIES_MAROC.length];
+}
+
+function assignContract(title: string): string {
+  const t = title.toLowerCase();
+  if (t.includes('freelance') || t.includes('indépendant')) return 'Freelance';
+  if (t.includes('stage') || t.includes('stagiaire')) return 'Stage';
+  if (t.includes('interim') || t.includes('intérim')) return 'Intérim';
+  return 'CDI';
+}
+
+function slugify(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+const rawJobs = [
+  { title: "Chauffeur de camion", company: "Société confidentielle", email: "aelyoubima2023@gmail.com", category: "Chauffeur" },
+  { title: "RH Contact", company: "Attijariwafa Bank", email: "recrutement@attijariwafa.com", category: "Banque" },
+  { title: "RH Contact", company: "Banque Centrale Populaire", email: "recrutement@banquepopulaire.ma", category: "Banque" },
+  { title: "RH Contact", company: "BMCE Bank of Africa", email: "recrutement@bmcebank.ma", category: "Banque" },
+  { title: "RH Contact", company: "Société Générale Maroc", email: "recrutement@socgen.com", category: "Banque" },
+  { title: "RH Contact", company: "CIH Bank", email: "recrutement@cihbank.ma", category: "Banque" },
+  { title: "RH Contact", company: "OCP Group", email: "recrutement@ocpgroup.ma", category: "Industrie" },
+  { title: "RH Contact", company: "LafargeHolcim Maroc", email: "contact@lafargeholcim-maroc.com", category: "BTP" },
+  { title: "RH Contact", company: "Ciments du Maroc", email: "contact@cimar.co.ma", category: "BTP" },
+  { title: "RH Contact", company: "COSUMAR", email: "recrutement@cosumar.co.ma", category: "Agroalimentaire" },
+  { title: "RH Contact", company: "Managem", email: "contact@managemgroup.com", category: "Industrie" },
+  { title: "RH Contact", company: "Maroc Telecom", email: "recrutement@iam.ma", category: "Télécom" },
+  { title: "RH Contact", company: "Orange Maroc", email: "contact@orange.ma", category: "Télécom" },
+  { title: "RH Contact", company: "Inwi", email: "recrutement@inwi.ma", category: "Télécom" },
+  { title: "RH Contact", company: "Renault Group Maroc", email: "recrutement.maroc@renault.com", category: "Automobile" },
+  { title: "RH Contact", company: "Stellantis Maroc", email: "contact@stellantis.com", category: "Automobile" },
+  { title: "RH Contact", company: "Yazaki Morocco", email: "contact@yazaki-europe.com", category: "Automobile" },
+  { title: "RH Contact", company: "Lear Corporation Morocco", email: "recrutement@lear.com", category: "Automobile" },
+  { title: "RH Contact", company: "TotalEnergies Marketing Maroc", email: "contact@totalenergies.ma", category: "Énergie" },
+  { title: "RH Contact", company: "Afriquia Gaz", email: "contact@afriquiagaz.com", category: "Énergie" },
+  { title: "RH Contact", company: "Vivo Energy Maroc", email: "contact@vivoenergy.com", category: "Énergie" },
+  { title: "RH Contact", company: "Royal Air Maroc", email: "recrutement@royalairmaroc.com", category: "Transport" },
+  { title: "RH Contact", company: "ONCF", email: "contact@oncf.ma", category: "Transport" },
+  { title: "RH Contact", company: "Marsa Maroc", email: "contact@marsamaroc.co.ma", category: "Transport" },
+  { title: "RH Contact", company: "Auto Hall", email: "drh@autohall.ma", category: "Automobile" },
+  { title: "RH Contact", company: "TGCC", email: "contact@tgcc.ma", category: "BTP" },
+  { title: "RH Contact", company: "Alliances Développement Immobilier", email: "contact@alliances.co.ma", category: "Immobilier" },
+  { title: "RH Contact", company: "Label'Vie", email: "contact@labelvie.ma", category: "Grande Distribution" },
+  { title: "RH Contact", company: "Lesieur Cristal", email: "contact@lesieur-cristal.ma", category: "Agroalimentaire" },
+  { title: "RH Contact", company: "Nestlé Maroc", email: "contact.ma@ma.nestle.com", category: "Agroalimentaire" },
+  { title: "RH Contact", company: "Sofac", email: "contact@sofac.ma", category: "Finance" },
+  { title: "Responsable Nettoyage", company: "Agence Ménage Pro", email: "contact@agencemenage.ma", category: "Nettoyage" },
+  { title: "Responsable d'exploitation Gardiennage", company: "Leads Job", email: "rh@leadsjob.com", category: "Sécurité" },
+  { title: "Agent(e) de surveillance et de sécurité", company: "Société de sécurité", email: "houssambilal76@gmail.com", category: "Sécurité" },
+  { title: "Gardiennage et Sécurité", company: "AINSI MAROC GROUP", email: "contact@ainsimaroc.com", category: "Sécurité" },
+  { title: "Graphic Designer", company: "Maroc Diplomatique", email: "contact@maroc-diplomatique.info", category: "Graphisme" },
+  { title: "Graphic Designer", company: "HireMe Maroc", email: "contact@maroc-diplomatique.info", category: "Graphisme" },
+  { title: "Illustrator (Freelancer)", company: "Facebook Group Offer", email: "jobs@unknown.com", category: "Graphisme" },
+  { title: "Personnel de Maison", company: "Agence LIKOUM", email: "contact@likoum.ma", category: "Personnel de Maison" },
+  { title: "Téléconseiller", company: "Proman Maroc", email: "JOB@PROMAN.MA", category: "Centre d'appel" },
+  { title: "Graphic Designer", company: "Soul Creative", email: "info@soulcreative.ae", category: "Graphisme" },
+  { title: "Graphic Designer", company: "WebHands", email: "Help@WebHands.xyz", category: "Graphisme" },
+  { title: "Graphiste", company: "Maroc Diplomatique", email: "contact@maroc-diplomatique.info", category: "Graphisme" },
+  { title: "Graphic Designer", company: "Natcom", email: "jobs.hrnatcom@gmail.com", category: "Graphisme" },
+  { title: "Graphiste", company: "Recruteur", email: "meriemtounsifolio@outlook.fr", category: "Graphisme" },
+  { title: "Chauffeur", company: "Votrechauffeur.ma", email: "serviceclient@votrechauffeur.ma", category: "Chauffeur" },
+  { title: "Chauffeur Privé", company: "Recruteur Casablanca", email: "houssambilal76@gmail.com", category: "Chauffeur" },
+  { title: "Chef de Nettoyage", company: "G4S Maroc", email: "contact@g4s.com", category: "Nettoyage" },
+  { title: "Nettoyage et Cuisine", company: "Almiya Recrutement", email: "contact@almiya.com", category: "Nettoyage" },
+  { title: "Gardien", company: "International NGO Safety Organisation", email: "contact@jobrapide.org", category: "Sécurité" },
+  { title: "Agent de sécurité", company: "GRS Maroc", email: "contact@grsmaroc.ma", category: "Sécurité" },
+  { title: "Agent de sécurité", company: "GHS Gardiennage", email: "contact@ghsgardiennage.com", category: "Sécurité" },
+  { title: "Agent de recrutement", company: "MKLEAN Recruiting", email: "contact@mkleanrecruiting.com", category: "RH" },
+  { title: "Recrutement", company: "Kerix B2B", email: "contact@kerix.net", category: "RH" },
+  { title: "Chauffeur", company: "Group Interfive", email: "Contact@groupinterfive.com", category: "Transport" },
+  { title: "Chauffeur Transport Personnel", company: "STCR", email: "rh.recrutement.mada1@gmail.com", category: "Transport" },
+  { title: "Chauffeur Routier", company: "SNTL", email: "recrutement.transport05@gmail.com", category: "Transport" },
+  { title: "Chauffeur", company: "SAJ Transport", email: "contact@saj-transport.ma", category: "Transport" },
+  { title: "Chauffeur", company: "Tiouli Trans", email: "contact@tioulitrans.ma", category: "Transport" },
+  { title: "RH Contact", company: "Hegelmann Group Morocco", email: "hr@hegelmann.com", category: "Transport" },
+  { title: "RH Contact", company: "MASEN", email: "recrutement@masen.ma", category: "Énergie" },
+  { title: "RH Contact", company: "STMicroelectronics", email: "recrutement@st.com", category: "Technologie" },
+  { title: "RH Contact", company: "Altran", email: "recrutement@altran.com", category: "Technologie" },
+  { title: "RH Contact", company: "Faurecia", email: "recrutement@faurecia.com", category: "Automobile" },
+  { title: "RH Contact", company: "Centrale Danone", email: "recrutement@centraledanone.com", category: "Agroalimentaire" },
+  { title: "RH Contact", company: "Copag", email: "recrutement@copag.ma", category: "Agroalimentaire" },
+  { title: "RH Contact", company: "Fromagerie Bel", email: "recrutement.maroc@groupe-bel.com", category: "Agroalimentaire" },
+  { title: "RH Contact", company: "Best Biscuits Maroc", email: "contact@bestbiscuits.ma", category: "Agroalimentaire" },
+  { title: "RH Contact", company: "Michoc", email: "contact@michoc.ma", category: "Agroalimentaire" },
+  { title: "Recrutement", company: "Addwork", email: "contact@addwork.ma", category: "RH" },
+  { title: "RH Contact", company: "Intelcom", email: "rh@intelcom.co.ma", category: "Technologie" },
+  { title: "RH Contact", company: "Involys", email: "s.chraibi@involys.com", category: "Technologie" },
+  { title: "RH Contact", company: "Involys", email: "o.ouaaline@involys.com", category: "Technologie" },
+  { title: "RH Contact", company: "Atexo", email: "recrutement.maroc@atexo.com", category: "Technologie" },
+  { title: "RH Contact", company: "Logica", email: "recrutement.maroc@logica.com", category: "Technologie" },
+  { title: "Pisciniste", company: "Tectra Recrutement", email: "contact@tectra.ma", category: "Nettoyage" },
+  { title: "Nettoyage et Espaces Verts", company: "Ainsi Maroc Group", email: "contact@ainsimaroc.com", category: "Nettoyage" },
+  { title: "RH Contact", company: "Groupe LabelVie", email: "recrutement@labelvie.ma", category: "Grande Distribution" },
+  { title: "RH Contact", company: "GTR", email: "sec_siege@gtr.co.ma", category: "BTP" },
+  { title: "RH Contact", company: "EMAAR Morocco", email: "shamery@emaar.ae", category: "Immobilier" },
+  { title: "RH Contact", company: "Seprob", email: "izzi@seprob.com", category: "BTP" },
+  { title: "RH Contact", company: "BYMARO", email: "recrutement@bymaro.com", category: "BTP" },
+  { title: "RH Contact", company: "Suez Maroc", email: "recrutement.maroc@suez.com", category: "Environnement" },
+  { title: "RH Contact", company: "Alstom Maroc", email: "recruitment.maroc@alstom.com", category: "Industrie" },
+  { title: "RH Contact", company: "Sonasid", email: "rh@sonasid.ma", category: "Industrie" },
+  { title: "RH Contact", company: "Inetum Maroc", email: "recrutement.maroc@inetum.com", category: "Technologie" },
+  { title: "RH Contact", company: "G3C", email: "rh@g3c.ma", category: "BTP" },
+  { title: "RH Contact", company: "SGTM", email: "recrutement@sgtm.ma", category: "BTP" },
+  { title: "RH Contact", company: "LafargeHolcim", email: "jobs@lafargeholcim.ma", category: "BTP" },
+  { title: "RH Contact", company: "Ciments du Maroc", email: "recrutement@cimentsdumaroc.ma", category: "BTP" },
+  { title: "RH Contact", company: "SBTX", email: "contact@sbtx.ma", category: "BTP" },
+  { title: "RH Contact", company: "CAPEP", email: "contact@capep.ma", category: "BTP" },
+  { title: "RH Contact", company: "Delta Travaux", email: "contact@deltatravaux.ma", category: "BTP" },
+  { title: "RH Contact", company: "Benlhou Frères", email: "contact@benlhou.ma", category: "BTP" },
+  { title: "RH Contact", company: "Al Omrane", email: "recrutement@alomrane.ma", category: "Immobilier" },
+  { title: "RH Contact", company: "Groupe Mondial Service Maroc", email: "contact@mondialservice.ma", category: "Nettoyage" },
+  { title: "RH Contact", company: "RMO Maroc", email: "recrutement@rmo.ma", category: "Sécurité" },
+  { title: "RH Contact", company: "APN Agence de Placement", email: "contact@apn.ma", category: "Nettoyage" },
+  { title: "Agent de Sécurité", company: "Groupe MCE", email: "recrutement@group-mce.com", category: "Sécurité" },
+  { title: "RH Contact", company: "Maroc 1000 Textile", email: "contact@maroc1000.net", category: "Textile" },
+  { title: "RH Contact", company: "CrossOver Maroc", email: "recrutement@crossover.com", category: "Technologie" },
+  { title: "RH Contact", company: "Alten Maroc", email: "recrutement@alten.ma", category: "Technologie" },
+  { title: "RH Contact", company: "CGI Maroc", email: "recrutement.maroc@cgi.com", category: "Technologie" },
+  { title: "RH Contact", company: "Atos Maroc", email: "recrutement.maroc@atos.net", category: "Technologie" },
+  { title: "RH Contact", company: "Capgemini Maroc", email: "recrutement.maroc@capgemini.com", category: "Technologie" },
+  { title: "RH Contact", company: "IBM Maroc", email: "recrutement.maroc@ibm.com", category: "Technologie" },
+  { title: "RH Contact", company: "SQLI Maroc", email: "recrutement.maroc@sqli.com", category: "Technologie" },
+  { title: "RH Contact", company: "Dell Maroc", email: "recrutement.maroc@dell.com", category: "Technologie" },
+  { title: "RH Contact", company: "HP Maroc", email: "recrutement.maroc@hp.com", category: "Technologie" },
+  { title: "RH Contact", company: "Oracle Maroc", email: "recrutement.maroc@oracle.com", category: "Technologie" },
+  { title: "RH Contact", company: "Microsoft Maroc", email: "recrutement.maroc@microsoft.com", category: "Technologie" },
+  { title: "RH Contact", company: "SAP Maroc", email: "recrutement.maroc@sap.com", category: "Technologie" },
+  { title: "RH Contact", company: "Cisco Maroc", email: "recrutement.maroc@cisco.com", category: "Technologie" },
+  { title: "RH Contact", company: "Intel Maroc", email: "recrutement.maroc@intel.com", category: "Technologie" },
+  { title: "RH Contact", company: "Samsung Maroc", email: "recrutement.maroc@samsung.com", category: "Technologie" },
+  { title: "Développeur Full Stack", company: "CGI Maroc", email: "recrutement.maroc@cgi.com", category: "Technologie" },
+  { title: "Ingénieur Cloud", company: "Atos Maroc", email: "recrutement.maroc@atos.net", category: "Technologie" },
+  { title: "Data Analyst", company: "Capgemini Maroc", email: "recrutement.maroc@capgemini.com", category: "Technologie" },
+  { title: "Expert Cybersecurity", company: "Inetum Maroc", email: "recrutement.maroc@inetum.com", category: "Technologie" },
+  { title: "Consultant SAP", company: "Alten Maroc", email: "recrutement.maroc@alten.ma", category: "Technologie" },
+  { title: "Développeur Mobile", company: "Dell Technologies Maroc", email: "recrutement.maroc@dell.com", category: "Technologie" },
+  { title: "Ingénieur Logiciel", company: "IBM Morocco", email: "recrutement.maroc@ibm.com", category: "Technologie" },
+  { title: "Chef de projet IT", company: "SQLI Maroc", email: "recrutement.maroc@sqli.com", category: "Technologie" },
+  { title: "Administrateur Réseaux", company: "Cisco Morocco", email: "recrutement.maroc@cisco.com", category: "Technologie" },
+  { title: "Ingénieur DevOps", company: "Oracle Morocco", email: "recrutement.maroc@oracle.com", category: "Technologie" },
+  { title: "Technicien Support IT", company: "Intel Morocco", email: "recrutement.maroc@intel.com", category: "Technologie" },
+  { title: "UI/UX Designer", company: "Samsung Morocco", email: "recrutement.maroc@samsung.com", category: "Technologie" },
+  { title: "Product Manager", company: "Huawei Morocco", email: "recrutement.maroc@huawei.com", category: "Technologie" },
+  { title: "Data Scientist", company: "Microsoft Morocco", email: "recrutement.maroc@microsoft.com", category: "Technologie" },
+  { title: "Ingénieur Systèmes", company: "HP Morocco", email: "recrutement.maroc@hp.com", category: "Technologie" },
+  { title: "Téléconseiller Francophone", company: "AXA Services Maroc", email: "recrutement@axaservices.ma", category: "Centre d'appel" },
+  { title: "Customer Service Agent", company: "Webhelp Maroc", email: "recrutement@webhelp.com", category: "Centre d'appel" },
+  { title: "Conseiller Clientèle", company: "Majorel Maroc", email: "recrutement@majorel.com", category: "Centre d'appel" },
+  { title: "Télévendeur", company: "Teleperformance Maroc", email: "recrutement@teleperformance.com", category: "Centre d'appel" },
+  { title: "Support Technique", company: "Intelcia", email: "recrutement@intelcia.com", category: "Centre d'appel" },
+  { title: "Agent de réservation", company: "Sitel Maroc", email: "recrutement@sitel.com", category: "Centre d'appel" },
+  { title: "Conseiller Commercial", company: "Comdata Morocco", email: "recrutement@comdata.com", category: "Centre d'appel" },
+  { title: "Manager d'équipe", company: "B2S Maroc", email: "recrutement@b2s.com", category: "Centre d'appel" },
+  { title: "Formateur Call Center", company: "Outsourcia", email: "recrutement@outsourcia.com", category: "Centre d'appel" },
+  { title: "Chargé de Qualité", company: "Calliope", email: "recrutement@calliope.ma", category: "Centre d'appel" },
+  { title: "Téléprospecteur", company: "Phone Group", email: "recrutement@phone-group.ma", category: "Centre d'appel" },
+  { title: "Agent Back Office", company: "Tectra Centre d'Appel", email: "recrutement@tectra.ma", category: "Centre d'appel" },
+  { title: "Conseiller Bilingue", company: "Foundever Morocco", email: "recrutement@foundever.com", category: "Centre d'appel" },
+  { title: "Responsable Plateau", company: "Eos Maroc", email: "recrutement@eos.ma", category: "Centre d'appel" },
+  { title: "Superviseur", company: "Acticall Maroc", email: "recrutement@acticall.com", category: "Centre d'appel" },
+  { title: "Commercial Terrain", company: "Marjane Holding", email: "recrutement@marjane.ma", category: "Commercial" },
+  { title: "Chef de Rayon", company: "Carrefour Maroc", email: "recrutement@labelvie.ma", category: "Commercial" },
+  { title: "Délégué Médical", company: "Sanofi Maroc", email: "recrutement.maroc@sanofi.com", category: "Commercial" },
+  { title: "Conseiller de Vente", company: "Inditex Maroc (Zara)", email: "recrutement@inditex.com", category: "Commercial" },
+  { title: "Responsable Commercial", company: "Bimo (Mondelez)", email: "recrutement@mondelez.com", category: "Commercial" },
+  { title: "Agent Commercial", company: "Wafa Assurance", email: "recrutement@wafaassurance.co.ma", category: "Commercial" },
+  { title: "Merchandiser", company: "Centrale Danone", email: "recrutement@centraledanone.com", category: "Commercial" },
+  { title: "Key Account Manager", company: "Coca-Cola Maroc", email: "recrutement@coca-cola.ma", category: "Commercial" },
+  { title: "Promoteur des ventes", company: "P&G Morocco", email: "recrutement@pg.com", category: "Commercial" },
+  { title: "Vendeur Conseil", company: "Decathlon Maroc", email: "recrutement@decathlon.ma", category: "Commercial" },
+  { title: "Attaché Commercial", company: "Hertz Maroc", email: "recrutement@hertz.ma", category: "Commercial" },
+  { title: "Chef de Secteur", company: "Unilever Maghreb", email: "recrutement@unilever.com", category: "Commercial" },
+  { title: "Responsable Boutique", company: "Nespresso Maroc", email: "recrutement@nespresso.ma", category: "Commercial" },
+  { title: "Chargé de clientèle", company: "Saham Assurance", email: "recrutement@sahamassurance.ma", category: "Commercial" },
+  { title: "Commercial Export", company: "Export Maroc", email: "contact@exportmaroc.ma", category: "Commercial" },
+  { title: "Professeur de Français", company: "Écoles Privées Maroc", email: "recrutement@ecoles-privees.ma", category: "Enseignement" },
+  { title: "Enseignant de Mathématiques", company: "Lycée Français", email: "contact@lycee-francais.ma", category: "Enseignement" },
+  { title: "Formateur en Anglais", company: "British Council Morocco", email: "recrutement@britishcouncil.ma", category: "Enseignement" },
+  { title: "Professeur d'Informatique", company: "Écoles de Formation", email: "contact@formation-maroc.ma", category: "Enseignement" },
+  { title: "Éducatrice Préscolaire", company: "Crèches Maroc", email: "contact@creches-maroc.ma", category: "Enseignement" },
+  { title: "Professeur de Primaire", company: "Groupe Scolaire", email: "rh@groupescolaire.ma", category: "Enseignement" },
+  { title: "Formateur Soft Skills", company: "ESCG Maroc", email: "contact@escg.ma", category: "Enseignement" },
+  { title: "Professeur de Gestion", company: "HEM Morocco", email: "recrutement@hem.ac.ma", category: "Enseignement" },
+  { title: "Enseignant de Physique", company: "Établissement Scolaire", email: "recrutement@scolaire.ma", category: "Enseignement" },
+  { title: "Formateur Technique", company: "OFPPT", email: "recrutement@ofppt.ma", category: "Enseignement" },
+  { title: "Professeur d'Espagnol", company: "Instituto Cervantes", email: "contact@cervantes.ma", category: "Enseignement" },
+  { title: "Conseiller d'orientation", company: "Maroc Campus", email: "contact@maroccampus.com", category: "Enseignement" },
+  { title: "Tuteur en ligne", company: "E-learning Maroc", email: "contact@elearning.ma", category: "Enseignement" },
+  { title: "Directeur Pédagogique", company: "Institution Privée", email: "rh@institution.ma", category: "Enseignement" },
+  { title: "Animateur périscolaire", company: "Association Jeunesse", email: "contact@association.ma", category: "Enseignement" },
+  { title: "Réceptionniste", company: "Hotel Mamounia", email: "recrutement@mamounia.com", category: "Hôtellerie" },
+  { title: "Serveur", company: "Royal Mansour", email: "recrutement@royalmansour.ma", category: "Hôtellerie" },
+  { title: "Chef de Rang", company: "Sofitel Marrakech", email: "recrutement@sofitel.com", category: "Hôtellerie" },
+  { title: "Commis de Cuisine", company: "Hyatt Regency Casablanca", email: "recrutement@hyatt.com", category: "Hôtellerie" },
+  { title: "Femme de chambre", company: "Mövenpick Casablanca", email: "recrutement@movenpick.com", category: "Hôtellerie" },
+  { title: "Maître d'hôtel", company: "Four Seasons Marrakech", email: "recrutement@fourseasons.com", category: "Hôtellerie" },
+  { title: "Gouvernante", company: "Mazagan Beach Resort", email: "recrutement@mazaganresort.com", category: "Hôtellerie" },
+  { title: "Agent de réservation", company: "Atlas Hospitality", email: "recrutement@atlashospitality.ma", category: "Hôtellerie" },
+  { title: "Chef de Cuisine", company: "Restaurant Gastronomique", email: "contact@restaurant.ma", category: "Hôtellerie" },
+  { title: "Barman", company: "Hôtel de luxe", email: "rh@hotel-luxe.ma", category: "Hôtellerie" },
+  { title: "Hôtesse d'accueil", company: "Événementiel Maroc", email: "contact@evenementiel.ma", category: "Hôtellerie" },
+  { title: "Pâtissier", company: "Boulangerie Moderne", email: "contact@boulangerie.ma", category: "Hôtellerie" },
+  { title: "Sommelier", company: "Vins et Terroirs", email: "contact@vins-maroc.ma", category: "Hôtellerie" },
+  { title: "Directeur d'hôtel", company: "Groupe Hôtelier", email: "rh@groupe-hotel.ma", category: "Hôtellerie" },
+  { title: "Concierge", company: "Resort & Spa", email: "contact@resort-spa.ma", category: "Hôtellerie" },
+  { title: "Infirmier Polyvalent", company: "Clinique Internationale", email: "recrutement@clinique.ma", category: "Santé" },
+  { title: "Médecin Généraliste", company: "Centre Médical", email: "contact@centre-medical.ma", category: "Santé" },
+  { title: "Pharmacien", company: "Pharmacie de Garde", email: "contact@pharmacie.ma", category: "Santé" },
+  { title: "Aide-Soignant", company: "Maison de Retraite", email: "contact@retraite.ma", category: "Santé" },
+  { title: "Kinésithérapeute", company: "Centre de Rééducation", email: "contact@reeducation.ma", category: "Santé" },
+  { title: "Sage-Femme", company: "Maternité Maroc", email: "contact@maternite.ma", category: "Santé" },
+  { title: "Technicien de Laboratoire", company: "Laboratoire d'Analyses", email: "contact@labo.ma", category: "Santé" },
+  { title: "Radiologue", company: "Centre d'Imagerie", email: "contact@imagerie.ma", category: "Santé" },
+  { title: "Opticien", company: "Optique Maroc", email: "contact@optique.ma", category: "Santé" },
+  { title: "Dentiste", company: "Cabinet Dentaire", email: "contact@dentiste.ma", category: "Santé" },
+  { title: "Secrétaire Médicale", company: "Cabinet de Spécialité", email: "contact@cabinet.ma", category: "Santé" },
+  { title: "Ambulancier", company: "Service d'Urgence", email: "contact@urgence.ma", category: "Santé" },
+  { title: "Psychologue", company: "Centre de Santé Mentale", email: "contact@psychologue.ma", category: "Santé" },
+  { title: "Diététicien", company: "Nutrition Maroc", email: "contact@nutrition.ma", category: "Santé" },
+  { title: "Vétérinaire", company: "Clinique Vétérinaire", email: "contact@veterinaire.ma", category: "Santé" },
+];
+
+export interface CsvJob {
+  id: number;
+  title: string;
+  company: string;
+  city: string;
+  contract: string;
+  time: string;
+  isNew: boolean;
+  description: string;
+  requirements: string[];
+  tasks: string[];
+  salary: string;
+  email: string;
+  contactPhone: string;
+  url: string;
+  category: string;
+  slug: string;
+  created_at: string;
+}
+
+export const csvJobs: CsvJob[] = rawJobs.map((job, index) => {
+  const city = assignCity(job.category, index);
+  const contract = assignContract(job.title);
+  const description = CATEGORY_DESCRIPTIONS[job.category] || `${job.title} chez ${job.company}. Rejoignez notre équipe dynamique au Maroc.`;
+  const slug = `${slugify(job.title)}-${slugify(job.company)}-${index}`;
+
+  return {
+    id: index + 1,
+    title: job.title,
+    company: job.company,
+    city,
+    contract,
+    time: "Maintenant",
+    isNew: true,
+    description,
+    requirements: [],
+    tasks: [],
+    salary: "",
+    email: job.email || "",
+    contactPhone: "",
+    url: "#",
+    category: job.category,
+    slug,
+    created_at: new Date(Date.now() - index * 60000).toISOString(),
+  };
+});
