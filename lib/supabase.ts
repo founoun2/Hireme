@@ -5,7 +5,10 @@ let _supabase: SupabaseClient | null = null;
 function getClient(): SupabaseClient | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return null;
+  if (!url || !key) {
+    console.warn('Supabase env vars missing: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY');
+    return null;
+  }
   if (!_supabase) {
     _supabase = createClient(url, key);
   }
@@ -58,9 +61,13 @@ export async function getAllJobs(): Promise<Job[]> {
       .from('jobs')
       .select('*')
       .order('created_at', { ascending: false });
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase getAllJobs error:', error.message, error.code);
+      return [];
+    }
     return (data || []) as Job[];
-  } catch {
+  } catch (err) {
+    console.error('Supabase getAllJobs exception:', err);
     return [];
   }
 }
@@ -74,9 +81,13 @@ export async function getJobsByCity(city: string): Promise<Job[]> {
       .select('*')
       .ilike('city', city)
       .order('created_at', { ascending: false });
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase getJobsByCity error:', error.message);
+      return [];
+    }
     return (data || []) as Job[];
-  } catch {
+  } catch (err) {
+    console.error('Supabase getJobsByCity exception:', err);
     return [];
   }
 }
@@ -90,9 +101,13 @@ export async function getJobsByCategory(category: string): Promise<Job[]> {
       .select('*')
       .ilike('category', category)
       .order('created_at', { ascending: false });
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase getJobsByCategory error:', error.message);
+      return [];
+    }
     return (data || []) as Job[];
-  } catch {
+  } catch (err) {
+    console.error('Supabase getJobsByCategory exception:', err);
     return [];
   }
 }
@@ -106,9 +121,13 @@ export async function getJobsByCompany(company: string): Promise<Job[]> {
       .select('*')
       .ilike('company', company)
       .order('created_at', { ascending: false });
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase getJobsByCompany error:', error.message);
+      return [];
+    }
     return (data || []) as Job[];
-  } catch {
+  } catch (err) {
+    console.error('Supabase getJobsByCompany exception:', err);
     return [];
   }
 }
@@ -122,9 +141,13 @@ export async function searchJobs(query: string): Promise<Job[]> {
       .select('*')
       .or(`title.ilike.%${query}%,company.ilike.%${query}%,city.ilike.%${query}%`)
       .order('created_at', { ascending: false });
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase searchJobs error:', error.message);
+      return [];
+    }
     return (data || []) as Job[];
-  } catch {
+  } catch (err) {
+    console.error('Supabase searchJobs exception:', err);
     return [];
   }
 }

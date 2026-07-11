@@ -4,10 +4,13 @@ import { SearchBar } from '@/components/SearchBar';
 import { JobCard } from '@/components/JobCard';
 import { NewsletterSignup } from '@/components/NewsletterSignup';
 import { getAllJobs } from '@/lib/supabase';
+import { csvJobs } from '@/data/csvJobs';
 import { CITIES_DATA } from '@/data/cities';
 import { CATEGORIES_DATA } from '@/data/categories';
 import { BLOG_ARTICLES } from '@/data/blog-articles';
 import { CITIES, CONTRACTS, PROFESSIONS } from '@/lib/constants';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'HireMe Maroc - Offres d\'Emploi au Maroc | Smart Job Hub',
@@ -45,7 +48,10 @@ function timeAgo(dateString: string): string {
 }
 
 export default async function HomePage() {
-  const jobs = await getAllJobs();
+  let jobs = await getAllJobs();
+  if (jobs.length === 0) {
+    jobs = csvJobs as unknown as typeof jobs;
+  }
   const featuredJobs = jobs.slice(0, 6);
   const latestArticles = BLOG_ARTICLES.slice(0, 3);
   const topCities = CITIES_DATA.slice(0, 8);

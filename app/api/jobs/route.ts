@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { csvJobs } from '@/data/csvJobs';
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,10 +8,13 @@ export async function GET(request: NextRequest) {
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
-      return NextResponse.json(
-        { error: 'Configuration Supabase manquante.' },
-        { status: 500 }
-      );
+      console.warn('Supabase env vars missing, using fallback csvJobs data');
+      return NextResponse.json({
+        jobs: csvJobs,
+        total: csvJobs.length,
+        limit: csvJobs.length,
+        offset: 0,
+      });
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -50,24 +54,30 @@ export async function GET(request: NextRequest) {
     const { data, error, count } = await query;
 
     if (error) {
-      console.error('Erreur Supabase:', error);
-      return NextResponse.json(
-        { error: 'Erreur lors de la récupération des offres.' },
-        { status: 500 }
-      );
+      console.error('Supabase query error:', error.message, error.code);
+      return NextResponse.json({
+        jobs: csvJobs,
+        total: csvJobs.length,
+        limit: csvJobs.length,
+        offset: 0,
+      });
     }
 
+    const jobs = data && data.length > 0 ? data : csvJobs;
+
     return NextResponse.json({
-      jobs: data || [],
-      total: count || 0,
+      jobs,
+      total: count || jobs.length,
       limit,
       offset,
     });
   } catch (error) {
-    console.error('Erreur API jobs:', error);
-    return NextResponse.json(
-      { error: 'Une erreur interne est survenue.' },
-      { status: 500 }
-    );
+    console.error('API jobs error:', error);
+    return NextResponse.json({
+      jobs: csvJobs,
+      total: csvJobs.length,
+      limit: csvJobs.length,
+      offset: 0,
+    });
   }
 }
