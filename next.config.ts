@@ -24,11 +24,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  async redirects() {
-    return [
-      { source: '/blog/:slug', destination: '/blog/:slug', permanent: true },
-    ];
-  },
 };
 
 export default nextConfig;
