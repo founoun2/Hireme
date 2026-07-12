@@ -13,7 +13,7 @@ const FOOTER_COLUMNS = [
   {
     title: "Plateforme",
     links: [
-      { label: "A Propos", href: "/a-propos" },
+      { label: "À Propos", href: "/a-propos" },
       { label: "Blog", href: "/blog" },
       { label: "FAQ", href: "/faq" },
       { label: "Contact", href: "/contact" },
@@ -22,8 +22,8 @@ const FOOTER_COLUMNS = [
   {
     title: "Legal",
     links: [
-      { label: "Confidentialite", href: "/confidentialite" },
-      { label: "Conditions", href: "/conditions" },
+      { label: "Confidentialité", href: "/confidentialite" },
+      { label: "Conditions Générales", href: "/conditions" },
       { label: "Cookies", href: "/cookies" },
       { label: "Avertissement", href: "/avertissement" },
     ],
@@ -74,7 +74,7 @@ export function SiteFooter() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-zinc-600">
-            &copy; 2026 HireMe Maroc. Tous droits reserves.
+            &copy; 2026 HireMe Maroc. Tous droits réservés.
           </p>
           <p className="text-[10px] text-zinc-700 font-bold uppercase tracking-widest">
             hirememaroc.online

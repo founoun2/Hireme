@@ -3,6 +3,7 @@ import './globals.css';
 import { SiteHeader } from '@/components/SiteHeader';
 import { SiteFooter } from '@/components/SiteFooter';
 import { CookieConsent } from '@/components/CookieConsent';
+import { AdSenseLoader } from '@/components/AdSenseLoader';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://hirememaroc.online'),
@@ -81,11 +82,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
         <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2474444884447314"
-          crossOrigin="anonymous"
-        />
-        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
@@ -99,6 +95,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="flex-grow">{children}</main>
         <SiteFooter />
         <CookieConsent />
+        <AdSenseLoader />
       </body>
     </html>
   );
